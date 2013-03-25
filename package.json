@@ -1,0 +1,73 @@
+{
+  "name": "lx-valid",
+  "description": "A cross-browser / node.js validator, based on flatiron revalidator.",
+  "version": "0.3.0",
+  "homepage": "https://github.com/litixsoft/lx-valid",
+  "author": {
+    "name": "Litixsoft GmbH",
+    "email": "info@litixsoft.de"
+  },
+  "maintainers": [
+    {
+      "name": "Timo Liebetrau",
+      "email": "t.liebetrau@litixsoft.de"
+    },
+    {
+      "name": "Thomas Heinrich Linke",
+      "email": "t.heinrich-linke@litixsoft.de"
+    },
+    {
+      "name": "Marco Kannenberg",
+      "email": "m.kannenberg@litixsoft.de"
+    },
+    {
+      "name": "Andreas Krummsdorf",
+      "email": "a.krummsdorf@litixsoft.de"
+    },
+    {
+      "name": "Sven Bernstein",
+      "email": "s.bernstein@litixsoft.de"
+    },
+    {
+      "name": "Thomas Scheibe",
+      "email": "th.scheibe@litixsoft.de"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/litixsoft/lx-valid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/litixsoft/lx-valid/issues"
+  },
+  "keywords": [
+    "json schema",
+    "schema validator",
+    "validator",
+    "browser validator"
+  ],
+  "license": "The MIT License (MIT)",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/litixsoft/lx-valid/blob/master/LICENSE"
+    }
+  ],
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "revalidator": "~0.1.5",
+    "async": "~0.2.5"
+  },
+  "main": "lib/lx-valid.js",
+  "scripts": {
+    "test": "grunt test --force"
+  },
+  "devDependencies": {
+    "grunt": "0.4.0rc7",
+    "grunt-contrib-concat": "0.1.2rc6",
+    "grunt-contrib-jshint": "git://github.com/litixsoft/grunt-contrib-jshint.git",
+    "grunt-contrib-uglify": "0.1.1rc6",
+    "grunt-contrib-watch": "0.2.0rc7",
+    "grunt-jasmine-node": "0.0.6"
+  }
+}

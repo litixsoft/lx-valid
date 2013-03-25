@@ -1,0 +1,6 @@
+.git*
+doc/
+example/
+test/
+.travis.yml
+Gruntfile.js
