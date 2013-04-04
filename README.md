@@ -1,4 +1,4 @@
-lx-valid
+lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.png?branch=master)](https://travis-ci.org/litixsoft/lx-valid)
 ===========
 A validator for Node.js and the client, based on Flatiron Revalidator.
 
