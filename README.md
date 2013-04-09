@@ -73,6 +73,8 @@ In case the validation failed (rules are violated), the returned object also con
 This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. (_default true_)
 * cast: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
 e.g. "42" => 42, but"forty2" => "forty2" for the integer type.
+* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. (_default false_)
+* __convert__: Converts a property by the format defined in the schema and returns the converted object in the result. (_default undefined_)
 
 For a property an  value  is that which is given as input for validation where as an  expected value  is the value
 of the below fields.
@@ -143,70 +145,94 @@ The integer value and the array are not required to be present in the tested obj
 so there will be no errors concerning the missing intTest property. The boolTest however will fail since the
 the expected type is boolean while the property contains a string.
 
-#### Validation rules
+### Validation rules
 
-##### pattern
+#### pattern
 The expected value regex needs to be satisfied by the value.
 
+```js
 { pattern: /^[a-z]+$/ }
+```
 
-##### maxLength  ( string und array )
+#### maxLength  ( string und array )
 The length of value must be greater than or equal to expected value.
 
+```js
 { maxLength: 8 }
+```
 
-##### minLength ( string und array )
+#### minLength ( string und array )
 The length of value must be lesser than or equal to expected value.
 
+```js
 { minLength: 8 }
+```
 
-##### minimum ( number )
+#### minimum ( number )
 Value must be greater than or equal to the expected value.
 
+```js
 { minimum: 10 }
+```
 
-##### maximum ( number )
+#### maximum ( number )
 Value must be lesser than or equal to the expected value.
 
+```js
 { maximum: 10 }
+```
 
-##### exclusiveMinimum ( number )
+#### exclusiveMinimum ( number )
 Value must be greater than expected value.
 
+```js
 { exclusiveMinimum: 9 }
+```
 
-##### exclusiveMaximum ( number )
+#### exclusiveMaximum ( number )
 Value must be lesser than expected value.
 
+```js
 { exclusiveMaximum: 11 }
+```
 
-##### divisibleBy ( number )
+#### divisibleBy ( number )
 Value must be divisible by expected value.
 
+```js
 { divisibleBy: 5 }
 { divisibleBy: 0.5 }
+```
 
-##### minItems ( array )
+#### minItems ( array )
 Value must contain more then expected value number of items.
 
+```js
 { minItems: 2 }
+```
 
-##### maxItems ( array )
+#### maxItems ( array )
 Value must contains less then expected value number of items.
 
+```js
 { maxItems: 5 }
+```
 
-##### uniqueItems ( array )
+#### uniqueItems ( array )
 Value must hold a unique set of values.
 
+```js
 { uniqueItems: true }
+```
 
-##### enum (array )
+#### enum (array )
 Value must be present in the array of expected value.
 
+```js
 { enum: ['month', 'year'] }
+```
 
-##### Example for rules
+#### Example for rules
 
 ```js
 var typeTest = {
@@ -242,7 +268,7 @@ The value should match a valid format.
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format }
+{ format: 'number-format' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -392,6 +418,39 @@ We also allow custom message for different constraints.
 }
 ```
 
+### Convert option
+Converts a property by the format defined in the schema and returns the converted object in the result.
+
+```js
+var data = {
+  birthdate: '1979-03-01T15:55:00.000Z'
+};
+
+var schema = {
+  properties: {
+    birthdate: {
+      type: 'string',
+      format: 'date-time'
+    }
+  }
+};
+
+var convertFn = function(format, value) {
+  if (format === 'date-time') {
+    return new Date(value);
+  }
+
+  return value;
+};
+
+var result = validate(data, schema, {convert: convertFn});
+
+// birthdate was converted
+typeof result.convertedObject === 'object';
+typeof result.convertedObject.birthdate === 'object';
+
+```
+
 ### Validation without schema
 There is a simple API allowing for testing types, rules and formats without having to define a schema.
 
@@ -480,7 +539,7 @@ Just like in JSON schema validation, values can be tested against predefined for
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format }
+{ format: 'number-format' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
