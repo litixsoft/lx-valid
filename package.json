@@ -55,7 +55,7 @@
     ],
     "readmeFilename": "README.md",
     "dependencies": {
-        "revalidator": "~0.1.5",
+        "revalidator": "git://github.com/litixsoft/revalidator.git",
         "async": "~0.2.5"
     },
     "main": "lib/lx-valid.js",
