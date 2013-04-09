@@ -124,4 +124,15 @@ describe('Formats', function () {
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
     });
+
+    it('should validate an url correctly', function () {
+        var res1 = val.formats.mongoId('511106fc574d81d815000001');
+        var res2 = val.formats.mongoId('google');
+
+        expect(res1.valid).toBe(true);
+        expect(res1.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+    });
 });

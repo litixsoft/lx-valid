@@ -12,6 +12,10 @@ module.exports = function (grunt) {
             ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
             ' * Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
             ' */\n\n',
+        // Before generating any new files, remove any previously-created files.
+        clean: {
+            build: ['build']
+        },
         concat: {
             options: {
                 stripBanners: true,
@@ -40,34 +44,26 @@ module.exports = function (grunt) {
             junit: 'build/reports/jshint.xml',
             checkstyle: 'build/reports/jshint_checkstyle.xml',
             options: {
-                node: true,
-                jquery: true,
-                es5: true,
-                browser: true,
                 bitwise: true,
-                forin: true,
                 curly: true,
                 eqeqeq: true,
+                forin: true,
                 immed: true,
-                indent: 4,
                 latedef: true,
-                loopfunc: true,
                 newcap: true,
                 noarg: true,
                 noempty: true,
                 nonew: true,
-                quotmark: 'single',
-                sub: true,
-                strict: true,
-                trailing: true,
-                white: true,
+                regexp: true,
                 undef: true,
                 unused: true,
-                boss: true,
-                eqnull: true,
-                globals: {
-                    exports: true
-                }
+                strict: true,
+                indent: 4,
+                quotmark: 'single',
+                es5: true,
+                loopfunc: true,
+                browser: true,
+                node: true
             }
         },
         watch: {
@@ -93,9 +89,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-jasmine-node');
 
     // Default task.
-    grunt.registerTask('default', ['jshint:files', 'jasmine_node', 'concat', 'uglify']);
-    grunt.registerTask('test', ['jshint:files', 'jasmine_node']);
+    grunt.registerTask('default', ['clean', 'jshint:files', 'jasmine_node', 'concat', 'uglify']);
+    grunt.registerTask('test', ['clean', 'jshint:files', 'jasmine_node']);
 };

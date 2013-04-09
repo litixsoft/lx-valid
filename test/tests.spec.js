@@ -10,7 +10,7 @@ var typeForTest = {
     boolTest: true,
     objectTest: {name: 'xenia'},
     nullTest: null,
-    dateTest: new Date(),
+    dateTest: '1973-06-01T15:49:00.000Z',
     urlTest: 'http://google.de'
 };
 
@@ -140,6 +140,64 @@ describe('Validator', function () {
         var result2 = val.validate(convertJson(typeForTest), schemaForTest);
         expect(result2.valid).toBe(true);
         expect(result2.errors.length).toBe(0);
+    });
+
+    it('validate() should convert if convert function is defined', function () {
+        var convertFn = function(format, value) {
+            if (format === 'mongo-id') {
+                return 'convertedMongoId';
+            }
+
+            if (format === 'date-time') {
+                return 'convertedDateTime';
+            }
+
+            return value;
+        };
+
+        var result = val.validate(convertJson(typeForTest), schemaForTest, {convert: convertFn});
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+        expect(result.convertedObject).toBeDefined();
+        expect(typeof result.convertedObject).toBe('object');
+        expect(result.convertedObject.UuidTest).toBe('convertedMongoId');
+        expect(result.convertedObject.dateTest).toBe('convertedDateTime');
+    });
+
+    it('validate() should not convert if no convert function is defined', function () {
+        var result = val.validate(convertJson(typeForTest), schemaForTest);
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+        expect(result.convertedObject).toBeUndefined();
+    });
+
+    it('validate() should remove properties in object which are no properties of the schema', function () {
+        var data = {
+            UuidTest: '507f191e810c19729de860ea',
+            stringTest: '3.31',
+            floatTest: 3.2,
+            IntTest: 2,
+            arrayTest: [1, 2, 3],
+            boolTest: true,
+            objectTest: {name: 'xenia'},
+            nullTest: null,
+            dateTest: '1973-06-01T15:49:00.000Z',
+            urlTest: 'http://google.de'
+        };
+
+        data.someUnknownProperty = 'wayne';
+        data.someUnknownObject = {
+            id: 1,
+            name: 'wayne'
+        };
+
+        var result = val.validate(data, schemaForTest, {deleteUnknownProperties: true});
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+        expect(typeForTest.someUnknownProperty).toBeUndefined();
+        expect(typeForTest.someUnknownObject).toBeUndefined();
     });
 
     it('validate() should validate a string correctly', function () {
