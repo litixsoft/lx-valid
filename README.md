@@ -658,6 +658,11 @@ Please refer to the change list and roadmap for further information on developme
 
 ## Change List
 
+### v0.2.1 update
+* update revalidator dependency
+* add option for removing properties from object which are not defined in the schema
+* add option to convert properties by the format defined in the schema
+
 ### v0.2.0 update
 * asynchronous validation
 
