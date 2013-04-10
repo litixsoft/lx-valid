@@ -149,19 +149,19 @@ describe('Validator', function () {
             }
 
             if (format === 'date-time') {
-                return 'convertedDateTime';
+                return new Date(value);
             }
 
             return value;
         };
+        var data = convertJson(typeForTest);
 
-        var result = val.validate(convertJson(typeForTest), schemaForTest, {convert: convertFn});
+        var result = val.validate(data, schemaForTest, {convert: convertFn});
         expect(result.valid).toBe(true);
         expect(result.errors.length).toBe(0);
-        expect(result.convertedObject).toBeDefined();
-        expect(typeof result.convertedObject).toBe('object');
-        expect(result.convertedObject.UuidTest).toBe('convertedMongoId');
-        expect(result.convertedObject.dateTest).toBe('convertedDateTime');
+        expect(data.UuidTest).toBe('convertedMongoId');
+        expect(typeof data.dateTest).toBe('object');
+        expect(data.dateTest.getFullYear()).toBe(1973);
     });
 
     it('validate() should not convert if no convert function is defined', function () {
