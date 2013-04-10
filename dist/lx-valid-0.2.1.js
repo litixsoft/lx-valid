@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.0 - 2013-03-26
+ * lx-valid - v0.2.1 - 2013-04-09
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -34,7 +34,8 @@
   // (<code>{}</code>) in this case.
   //
   function validate(object, schema, options) {
-    options = mixin({}, options, validate.defaults);
+    options = mixin({}, validate.defaults, options);
+  
     var errors = [];
 
     validateObject(object, schema, options, errors);
@@ -44,10 +45,17 @@
     // if (! options.selfDescribing) { ... }
     //
 
-    return {
+    var result = {
       valid: !(errors.length),
       errors: errors
     };
+
+    // add converted object to result
+    if (options.convert && typeof options.convert === 'function') {
+        result.convertedObject = object;
+    }
+
+    return result;
   };
 
   /**
@@ -84,7 +92,25 @@
        * <em>Default: <code>true</code></em>
        * </p>
        */
-      validateFormatExtensions: true
+      validateFormatExtensions: true,
+      /**
+       * <p>
+       * When {@link #addMissingDefaults} is <code>true</code>,
+       * if property is missing and it has a default value it will be added to the object.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+       addMissingDefaults: false,
+       /**
+       * <p>
+       * When {@link #deleteUnknownProperties} is <code>true</code>,
+       * if property is not declared in schema it is deleted from object.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+       deleteUnknownProperties: false
   };
 
   /**
@@ -201,6 +227,16 @@
       }
     }
 
+    // deleteUnknownProperties
+    if(options.deleteUnknownProperties){
+      props = schema.properties ? Object.keys(schema.properties) : [];
+      props = props.concat(schema.patternProperties ? Object.keys(schema.patternProperties) : []);
+      for (var p in object){
+        if (props.indexOf(p) === -1)
+          delete object[p];
+      }
+    }
+
     // see 5.4
     if (undefined !== schema.additionalProperties) {
       var i, l;
@@ -208,6 +244,7 @@
       var unvisitedProps = allProps.filter(function(k){
         return -1 === visitedProps.indexOf(k);
       });
+
 
       // Prevent additional properties; each unvisited property is therefore an error
       if (schema.additionalProperties === false && unvisitedProps.length > 0) {
@@ -238,7 +275,12 @@
     }
 
     if (value === undefined) {
-      if (schema.required && schema.type !== 'any') {
+      if(schema.default !== undefined && options.addMissingDefaults){
+        if (typeof schema.default === 'function')
+          object[property] = value = schema.default();
+        else
+          object[property] = value = schema.default;
+      }else if (schema.required && schema.type !== 'any') {
         return error('required', property, undefined, schema, errors);
       } else {
         return;
@@ -274,6 +316,11 @@
       else {
         if (!spec.test(value)) {
           return error('format', property, value, schema, errors);
+        } else {
+            // try to convert property by schema format
+            if (options.convert && typeof options.convert === 'function') {
+                object[property] = options.convert(schema.format, value);
+            }
         }
       }
     }

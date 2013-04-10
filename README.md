@@ -74,7 +74,7 @@ This option is used for lx-valid format extensions and additional custom formats
 * cast: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
 e.g. "42" => 42, but"forty2" => "forty2" for the integer type.
 * __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. (_default false_)
-* __convert__: Converts a property by the format defined in the schema and returns the converted object in the result. (_default undefined_)
+* __convert__: Converts a property by the format defined in the schema. Modifies the original object. (_default undefined_)
 
 For a property an  value  is that which is given as input for validation where as an  expected value  is the value
 of the below fields.
@@ -419,7 +419,7 @@ We also allow custom message for different constraints.
 ```
 
 ### Convert option
-Converts a property by the format defined in the schema and returns the converted object in the result.
+Converts a property by the format defined in the schema. Modifies the original object.
 
 ```js
 var data = {
@@ -446,8 +446,7 @@ var convertFn = function(format, value) {
 var result = validate(data, schema, {convert: convertFn});
 
 // birthdate was converted
-typeof result.convertedObject === 'object';
-typeof result.convertedObject.birthdate === 'object';
+typeof data.birthdate === 'object';
 
 ```
 
