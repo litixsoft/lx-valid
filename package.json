@@ -69,6 +69,6 @@
         "grunt-contrib-jshint": "git://github.com/litixsoft/grunt-contrib-jshint.git",
         "grunt-contrib-uglify": "0.2.0",
         "grunt-contrib-watch": "0.3.1",
-        "grunt-jasmine-node": "git://github.com/litixsoft/grunt-jasmine-node.git"
+        "grunt-jasmine-node": "0.1.0"
     }
 }
