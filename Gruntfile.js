@@ -2,7 +2,6 @@ module.exports = function (grunt) {
     'use strict';
 
     // Project configuration.
-    //noinspection JSUnresolvedFunction
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         banner: '/*!\n' +
@@ -40,9 +39,6 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
-            files: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js'],
-            junit: 'build/reports/jshint.xml',
-            checkstyle: 'build/reports/jshint_checkstyle.xml',
             options: {
                 bitwise: true,
                 curly: true,
@@ -60,10 +56,28 @@ module.exports = function (grunt) {
                 strict: true,
                 indent: 4,
                 quotmark: 'single',
-                es5: true,
                 loopfunc: true,
                 browser: true,
                 node: true
+            },
+            test: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js'],
+            jslint: {
+                options: {
+                    reporter: 'jslint',
+                    reporterOutput: 'build/reports/jshint.xml'
+                },
+                files: {
+                    src: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js']
+                }
+            },
+            checkstyle: {
+                options: {
+                    reporter: 'checkstyle',
+                    reporterOutput: 'build/reports/jshint_checkstyle.xml'
+                },
+                files: {
+                    src: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js']
+                }
             }
         },
         watch: {
@@ -93,6 +107,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jasmine-node');
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'jshint:files', 'jasmine_node', 'concat', 'uglify']);
-    grunt.registerTask('test', ['clean', 'jshint:files', 'jasmine_node']);
+    grunt.registerTask('default', ['clean', 'jshint:test', 'jasmine_node', 'concat', 'uglify']);
+    grunt.registerTask('test', ['clean', 'jshint:test', 'jasmine_node']);
+    grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'jasmine_node']);
 };
