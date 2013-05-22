@@ -2,7 +2,6 @@ module.exports = function (grunt) {
     'use strict';
 
     // Project configuration.
-    //noinspection JSUnresolvedFunction
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         banner: '/*!\n' +
@@ -39,33 +38,6 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
             }
         },
-//        jshint: {
-//            files: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js'],
-//            junit: 'build/reports/jshint.xml',
-//            checkstyle: 'build/reports/jshint_checkstyle.xml',
-//            options: {
-//                bitwise: true,
-//                curly: true,
-//                eqeqeq: true,
-//                forin: true,
-//                immed: true,
-//                latedef: true,
-//                newcap: true,
-//                noarg: true,
-//                noempty: true,
-//                nonew: true,
-//                regexp: true,
-//                undef: true,
-//                unused: true,
-//                strict: true,
-//                indent: 4,
-//                quotmark: 'single',
-//                es5: true,
-//                loopfunc: true,
-//                browser: true,
-//                node: true
-//            }
-//        },
         jshint: {
             options: {
                 bitwise: true,
