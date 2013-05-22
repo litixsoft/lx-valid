@@ -137,5 +137,5 @@ module.exports = function (grunt) {
     // Default task.
     grunt.registerTask('default', ['clean', 'jshint:test', 'jasmine_node', 'concat', 'uglify']);
     grunt.registerTask('test', ['clean', 'jshint:test', 'jasmine_node']);
-    grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle'], 'jasmine_node');
+    grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'jasmine_node']);
 };
