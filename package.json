@@ -64,11 +64,13 @@
     },
     "devDependencies": {
         "grunt": "0.4.1",
+        "grunt-bg-shell": "~2.0.1",
         "grunt-contrib-clean": "~0.4.0",
         "grunt-contrib-concat": "~0.2.0",
         "grunt-contrib-jshint": "~0.5.3",
         "grunt-contrib-uglify": "~0.2.0",
-        "grunt-contrib-watch": "~0.3.1",
-        "grunt-jasmine-node": "0.1.0"
+        "grunt-jasmine-node": "0.1.0",
+        "grunt-open": "~0.2.0",
+        "istanbul": "~0.1.35"
     }
 }

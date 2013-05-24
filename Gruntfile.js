@@ -80,9 +80,18 @@ module.exports = function (grunt) {
                 }
             }
         },
-        watch: {
-            files: '<%= jshint.files %>',
-            tasks: ['jshint:files']
+        bgShell: {
+            coverage: {
+                cmd: 'node node_modules/istanbul/lib/cli.js cover --dir build/coverage node_modules/grunt-jasmine-node/node_modules/jasmine-node/bin/jasmine-node test'
+            },
+            cobertura: {
+                cmd: 'node node_modules/istanbul/lib/cli.js report --root build/coverage --dir build/coverage/cobertura cobertura'
+            }
+        },
+        open: {
+            file: {
+                path: 'build/coverage/lcov-report/index.html'
+            }
         },
         jasmine_node: {
             specNameMatcher: './*.spec', // load only specs containing specNameMatcher
@@ -102,12 +111,16 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-jasmine-node');
+    grunt.loadNpmTasks('grunt-bg-shell');
+    grunt.loadNpmTasks('grunt-open');
+
+    // Register tasks.
+    grunt.registerTask('test', ['clean:build', 'jshint:test', 'jasmine_node']);
+    grunt.registerTask('cover', ['clean:build', 'jshint:test', 'bgShell:coverage', 'open']);
+    grunt.registerTask('ci', ['clean:build', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura']);
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'jshint:test', 'jasmine_node', 'concat', 'uglify']);
-    grunt.registerTask('test', ['clean', 'jshint:test', 'jasmine_node']);
-    grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'jasmine_node']);
+    grunt.registerTask('default', ['test', 'concat', 'uglify']);
 };
