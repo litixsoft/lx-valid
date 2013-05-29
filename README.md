@@ -684,6 +684,9 @@ Please refer to the change list and roadmap for further information on developme
 
 ## Change List
 
+### v0.2.2 update
+* add helper function to get validation function
+
 ### v0.2.1 update
 * update revalidator dependency
 * add option for removing properties from object which are not defined in the schema
