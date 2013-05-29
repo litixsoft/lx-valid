@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.1 - 2013-05-24
+ * lx-valid - v0.2.2 - 2013-05-29
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -1426,7 +1426,7 @@
      * @param extensionName
      * @param extensionValue
      */
-    function extendFormatExtensions(extensionName, extensionValue) {
+    function extendFormatExtensions (extensionName, extensionValue) {
         if (typeof extensionName !== 'string' || !(extensionValue instanceof RegExp)) {
             throw new Error('extensionName or extensionValue undefined or not correct type');
         }
@@ -1446,7 +1446,7 @@
      * @param replacement
      * @return {String}
      */
-    function getMsg(msgTyp, replacement) {
+    function getMsg (msgTyp, replacement) {
         return String(revalidator.validate.messages[msgTyp].replace('%{expected}', replacement));
     }
 
@@ -1457,7 +1457,7 @@
      * @param actual
      * @return {Object}
      */
-    function getError(type, expected, actual) {
+    function getError (type, expected, actual) {
         var error = {
             attribute: '',
             expected: '',
@@ -1478,7 +1478,7 @@
      * @param err
      * @return {object}
      */
-    function getResult(err) {
+    function getResult (err) {
         var res = {
             valid: true,
             errors: []
@@ -1497,7 +1497,7 @@
      * @param val
      * @return {Boolean}
      */
-    function uniqueArrayHelper(val) {
+    function uniqueArrayHelper (val) {
         var h = {};
 
         for (var i = 0, l = val.length; i < l; i++) {
@@ -1515,7 +1515,7 @@
      * Check formats
      * @return {Object}
      */
-    function formats() {
+    function formats () {
         var pub = {};
 
         pub.email = function (val) {
@@ -1597,14 +1597,14 @@
         };
         pub.mongoId = function (val) {
             if (!revalidator.validate.formatExtensions['mongo-id'].test(val)) {
-                return getResult(getError('format', 'url', val));
+                return getResult(getError('format', 'mongoId', val));
             }
 
             return getResult(null);
         };
         pub.numberFloat = function (val) {
             if (!revalidator.validate.formatExtensions['number-float'].test(val)) {
-                return getResult(getError('format', 'url', val));
+                return getResult(getError('format', 'float', val));
             }
 
             return getResult(null);
@@ -1617,7 +1617,7 @@
      * Check types
      * @return {Object}
      */
-    function types() {
+    function types () {
         var pub = {};
 
         pub.string = function (val) {
@@ -1655,7 +1655,6 @@
 
             return getResult(null);
         };
-
         pub.integer = function (val) {
 
             /*jshint bitwise: false */
@@ -1709,7 +1708,7 @@
      * Check rules
      * @return {Object}
      */
-    function rules() {
+    function rules () {
         var pub = {};
         pub.maxLength = function (val, max) {
 
@@ -1793,7 +1792,6 @@
                 (div - Math.floor(div)).toString().length - 2);
             multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
 
-
             if ((val * multiplier) % (div * multiplier) !== 0) {
                 return getResult(getError('divisibleBy', div, val));
             }
@@ -1830,7 +1828,7 @@
                 return getResult(new Error('rules.uniqueItems(fail): value must be a array'));
             }
 
-            if (! (uniqueArrayHelper(val))) {
+            if (!(uniqueArrayHelper(val))) {
                 return getResult(getError('uniqueItems', val, true));
             }
 
@@ -1838,7 +1836,7 @@
         };
         pub.enum = function (val, en) {
 
-            if (typeof val === 'undefined' || ! Array.isArray(en)) {
+            if (typeof val === 'undefined' || !Array.isArray(en)) {
                 return getResult(new Error('rules.enum(fail): value must be a defined and enum mus be a array'));
             }
 
@@ -1852,7 +1850,7 @@
         return pub;
     }
 
-    function asyncValidate() {
+    function asyncValidate () {
         var pub = {},
             validators = [];
 
@@ -1885,6 +1883,36 @@
         return pub;
     }
 
+    /**
+     * Gets the validate function and encapsulates some param checks
+     *
+     * @param {object=} validationOptions The validation options for revalidator.
+     * @return {function(doc, schema, options)}
+     */
+    function getValidationFunction (validationOptions) {
+        return function (doc, schema, options) {
+            doc = doc || {};
+            options = options || {};
+            options.isUpdate = options.isUpdate || false;
+
+            // check is update
+            if (options.isUpdate) {
+                var i,
+                    keys = Object.keys(schema.properties),
+                    length = keys.length;
+
+                for (i = 0; i < length; i++) {
+                    if (!doc.hasOwnProperty(keys[i])) {
+                        schema.properties[keys[i]].required = false;
+                    }
+                }
+            }
+
+            // json schema validate
+            return exports.validate(doc, schema, validationOptions);
+        };
+    }
+
     exports.validate = revalidator.validate;
     exports.mixin = revalidator.mixin;
     exports.extendFormat = extendFormatExtensions;
@@ -1892,8 +1920,9 @@
     exports.types = types();
     exports.rules = rules();
     exports.asyncValidate = asyncValidate();
+    exports.getValidationFunction = getValidationFunction;
 })(
         typeof(window) === 'undefined' ? module.exports : (window.lxvalid = window.lxvalid || {}),
-        typeof(window) === 'undefined' ? require('revalidator'): (window.json),
-        typeof(window) === 'undefined' ? require('async'): (window.async)
+        typeof(window) === 'undefined' ? require('revalidator') : (window.json),
+        typeof(window) === 'undefined' ? require('async') : (window.async)
     );
