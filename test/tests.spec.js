@@ -312,6 +312,27 @@ describe('Validator', function () {
         expect(result2.errors.length).toBe(0);
     });
 
+    it('getValidationFunction() should return the validation function', function () {
+        var valFn = val.getValidationFunction();
+        var data = convertJson(typeForTest);
+        var result = valFn(data, schemaForTest);
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+
+        // delete required property
+        delete data.UuidTest;
+        result = valFn(data, schemaForTest, {isUpdate: true});
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+
+        result = valFn(null, schemaForTest, {isUpdate: true});
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+    });
+
     it('validate() should convert if convert function is defined', function () {
         var convertFn = function (format, value) {
             if (format === 'mongo-id') {

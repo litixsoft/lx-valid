@@ -449,6 +449,33 @@ var result = validate(data, schema, {convert: convertFn});
 typeof data.birthdate === 'object';
 
 ```
+### Schema validation when updating data
+When working with db's, you often update data. Sometimes you send just a part of the data and the the schema validation will be false because some required fields may be missing.
+To prevent this there is an option `isUpdate`. When set to `true` all required fields in the schema which are not part of the data are set to `required: false`.
+There is a helper function to get the validate function with this update check.
+
+```js
+var val = require('lx-valid');
+var data = {name: 'wayne'};
+var schema = {
+    properties: {
+        id: {
+            type: 'int',
+            required: true
+        },
+        name: {
+            type: 'string',
+            required: false
+        }
+    }
+}
+
+var valFn = val.getValidationFunction();
+var result = valFn(data, schema, {isUpdate: true});
+
+expect(result.valid).toBe(true);
+expect(result.errors.length).toBe(0);
+```
 
 ### Validation without schema
 There is a simple API allowing for testing types, rules and formats without having to define a schema.
