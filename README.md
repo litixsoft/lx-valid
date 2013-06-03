@@ -684,6 +684,9 @@ Please refer to the change list and roadmap for further information on developme
 
 ## Change List
 
+### v0.2.3 update
+* add type mongoId
+
 ### v0.2.2 update
 * add helper function to get validation function
 
