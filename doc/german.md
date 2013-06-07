@@ -267,7 +267,7 @@ Der Wert muss einem gültigen Format entsprechen.
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format }
+{ format: 'number-format' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -568,7 +568,7 @@ Wie in der Json Schema Validierung können auch Formate geprüft werden.
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format }
+{ format: 'number-format' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
