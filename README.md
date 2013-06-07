@@ -564,7 +564,7 @@ var res = val.types.regexp(/^hello/);
 var res = val.types.date(new Date());
 ```
 
-There are more examples to be found in [test/types.spec.js](/test/types.spec.js).
+There are more examples to be found in [test/types.spec.js](test/types.spec.js).
 
 ### Formats
 Just like in JSON schema validation, values can be tested against predefined formats.
@@ -602,7 +602,7 @@ var res1 = val.formats.ipv6("2001:0db8:85a3:08d3:1319:8a2e:0370:7344");
 var res1 = val.formats.dateTime("2013-01-09T12:28:03.150Z");
 ```
 
-More examples can be found in test/formats.spec.js
+More examples can be found in [test/formats.spec.js](test/formats.spec.js)
 
 ### Rules
 Of course the API also supports testing against rules.
@@ -639,7 +639,7 @@ var res = val.rules.minLength("test",2);
 var res = val.rules.divisibleBy(6,3);
 ```
 
-More examples are to be found in test/rules.spec.js
+More examples are to be found in [test/rules.spec.js](test/rules.spec.js)
 
 ## Asynchronous validation
 The Asynchronous validation consists of registration of validators and the execution of validators.
@@ -665,7 +665,7 @@ val.asyncValidate.register(function2, value2);
 val.asyncValidate.exec(valResult, callback);
 ```
 
-More examples are to be found in test/tests.spec.js
+More examples are to be found in [test/tests.spec.js](test/tests.spec.js)
 
 ## Development
 The lx-valid validator is currently under development. Scheduled functions are implemented step by step.
