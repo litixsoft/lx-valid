@@ -73,12 +73,12 @@ In case the validation failed (rules are violated), the returned object also con
 ```
 
 ##### Available Options
-* __validateFormats__: Enforce format constraints (__default: `true`__)
+* __validateFormats__: Enforce format constraints ( __default: `true`__ )
 * __validateFormatsStrict__: When `validateFormats` is `true` treat unrecognized formats as validation errors (__default `false`__)
 * __validateFormatExtensions__: When `validateFormats` is `true` also validate formats defined in `validate.formatExtensions`.
 This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. (__default: `true`__)
 * __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
-e.g. `"42" => 42`, but `"forty2" => "forty2" for the integer type. (__default: `undefined`__)
+e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. (__default: `undefined`__)
 * __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. (__default: `false`__)
 * __convert__: Converts a property by the format defined in the schema. Modifies the original object. (__default: `undefined`__)
 
@@ -494,9 +494,9 @@ console.log(res.errors.length); // 0
 ## Validation without schema
 There is a simple API allowing for testing types, rules and formats without having to define a schema.
 
-`lx-valid.formats.<formatname>(value)`
-`lx-valid.types.<typename>(value)`
-`lx-valid.rules.<rulename>(value)`
+* `lx-valid.formats.<formatname>(value)`
+* `lx-valid.types.<typename>(value)`
+* `lx-valid.rules.<rulename>(value)`
 
 An object is returned that contains information on the tested value matching the rule.
 In case of rule violation the returned object contains an array with the validation errors.
@@ -644,8 +644,8 @@ More examples are to be found in test/rules.spec.js
 ## Asynchronous validation
 The Asynchronous validation consists of registration of validators and the execution of validators.
 
-`lx-valid.asyncValidate.register(function, value)`
-`lx-valid.asyncValidate.exec(validationResult, callback)`
+* `lx-valid.asyncValidate.register(function, value)`
+* `lx-valid.asyncValidate.exec(validationResult, callback)`
 
 `lx-valid.asyncValidate.exec` executes the registered validators in parallel.
 
