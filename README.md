@@ -669,7 +669,7 @@ More examples are to be found in test/tests.spec.js
 
 ## Development
 The lx-valid validator is currently under development. Scheduled functions are implemented step by step.
-Please refer to the change list and roadmap for further information on development progress.
+Please refer to the changelog and roadmap for further information on development progress.
 
 ## Roadmap
 

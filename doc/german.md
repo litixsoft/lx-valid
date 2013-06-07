@@ -664,7 +664,7 @@ Mehr Beispiele findet man in test/tests.spec.js
 
 ## Entwicklung
 Der Validator lx-valid befindet sich noch in der Entwicklung. Die geplanten Funktionen werden nach und nach eingebaut
-und können der Change List und Roadmap entnommen werden.
+und können dem Changelog und Roadmap entnommen werden.
 
 ## Roadmap
 
@@ -682,7 +682,7 @@ und können der Change List und Roadmap entnommen werden.
 * Neue Funktion, welche die Validierung-Funktion mit der Option `isUpdate` zurückliefert
 
 ### v0.2.1
-* Modul revalidator aktualisisert
+* Modul revalidator aktualisiert
 * Neue Option zum Entfernen von Eigenschaften aus dem zu validieren Objekt, welche nicht im Schema definiert sind
 * Neue Option zum Konvertieren von Eigenschaften mit dem Format, welches im Schema angegeben ist
 
