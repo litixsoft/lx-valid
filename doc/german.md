@@ -66,14 +66,14 @@ Wenn dies nicht der Fall ist, enthält das zurückgegebene Objekt die Fehler, we
 ```
 
 ##### Verfügbare Optionen
-* __validateFormats__: Erzwingen von Format Einschränkungen. (__Standardwert: `true`__)
-* __validateFormatsStrict__: Wenn `validateFormats` `true` ist, dann werden unbekannte Formate wie Prüffehler behandelt. (__Standardwert: `false`__)
+* __validateFormats__: Erzwingen von Format Einschränkungen. ( __Standardwert: `true`__ )
+* __validateFormatsStrict__: Wenn `validateFormats` `true` ist, dann werden unbekannte Formate wie Prüffehler behandelt. ( __Standardwert: `false`__ )
 * __validateFormatExtensions__: Wenn `validateFormats` `true` ist, dann sollen auch alle Formate unter `validate.formatExtensions`
-geprüft werden. Diese Option ist für die lx-valid Formate und alle zusätzlichen eigenen Formate wichtig, da diese genau an dieser Stelle gespeichert werden. (__Standardwert: `true`__)
+geprüft werden. Diese Option ist für die lx-valid Formate und alle zusätzlichen eigenen Formate wichtig, da diese genau an dieser Stelle gespeichert werden. ( __Standardwert: `true`__ )
 * __cast__: Erzwingen von Typumwandlungen, wenn es möglich ist. Wird nur für integer und number unterstützt.
-Beispiel für integer: `"42" => 42` aber `"forty2" => "forty2"` (__Standardwert: `undefined`__)
-* __deleteUnknownProperties__: Löscht alle Eigenschaften aus dem zu validierenden Objekt welche nicht im Schema definiert sind. (__Standardwert: `false`__)
-* __convert__: Konvertiert eine Eigenschaft aus dem zu validierenden Objekt mit dem Format, welches im Schema definiert ist. Dabei wird das zu validierenden Objekt geändert. (__Standardwert: `undefined`__)
+Beispiel für integer: `"42" => 42` aber `"forty2" => "forty2"` ( __Standardwert: `undefined`__ )
+* __deleteUnknownProperties__: Löscht alle Eigenschaften aus dem zu validierenden Objekt welche nicht im Schema definiert sind. ( __Standardwert: `false`__ )
+* __convert__: Konvertiert eine Eigenschaft aus dem zu validierenden Objekt mit dem Format, welches im Schema definiert ist. Dabei wird das zu validierenden Objekt geändert. ( __Standardwert: `undefined`__ )
 
 ### Validation nach Typ
 Der Wert einer Eigenschaft, welcher an die Validierung übergeben wird, ist dann ein akzeptierter Wert,
@@ -489,9 +489,9 @@ console.log(res.errors.length); // 0
 ## Schemalose Validierung
 Alle Typen, Regeln und Formate der Schema Validierung können auch über eine einfache API ohne ein Schema geprüft werden.
 
-`lx-valid.formats.<formatname>(value)`
-`lx-valid.types.<typename>(value)`
-`lx-valid.rules.<rulename>(value)`
+* `lx-valid.formats.<formatname>(value)`
+* `lx-valid.types.<typename>(value)`
+* `lx-valid.rules.<rulename>(value)`
 
 Als Ergebnis erhält man ein Objekt welches angibt, ob das zu prüfende Objekt dem Schema entspricht.
 Wenn dies nicht der Fall ist, enthält das zurückgegebene Objekt die Fehler, welche bei der Validierung aufgetreten sind.
@@ -639,8 +639,8 @@ Mehr Beispiele findet man unter test/rules.spec.js
 #### Asynchrone Validierung
 Die Asynchrone Validierung besteht aus Registrierung von Validatoren und der Ausführung dieser Validatoren.
 
-`lx-valid.asyncValidate.register(funktion, parameter)`
-`lx-valid.asyncValidate.exec(validationResult, callback)`
+* `lx-valid.asyncValidate.register(funktion, parameter)`
+* `lx-valid.asyncValidate.exec(validationResult, callback)`
 
 `lx-valid.asyncValidate.exec` führt die über register hinzugefügten Validatoren parallel aus.
 

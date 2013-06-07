@@ -74,13 +74,13 @@ In case the validation failed (rules are violated), the returned object also con
 
 ##### Available Options
 * __validateFormats__: Enforce format constraints ( __default: `true`__ )
-* __validateFormatsStrict__: When `validateFormats` is `true` treat unrecognized formats as validation errors (__default `false`__)
+* __validateFormatsStrict__: When `validateFormats` is `true` treat unrecognized formats as validation errors ( __default `false`__ )
 * __validateFormatExtensions__: When `validateFormats` is `true` also validate formats defined in `validate.formatExtensions`.
-This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. (__default: `true`__)
+This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. ( __default: `true`__ )
 * __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
-e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. (__default: `undefined`__)
-* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. (__default: `false`__)
-* __convert__: Converts a property by the format defined in the schema. Modifies the original object. (__default: `undefined`__)
+e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. ( __default: `undefined`__ )
+* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ )
+* __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
 
 ### Validation types
 For a property an `value` is that which is given as input for validation where as an `expected value` is the value
@@ -564,7 +564,7 @@ var res = val.types.regexp(/^hello/);
 var res = val.types.date(new Date());
 ```
 
-There are more examples to be found in test/types.spec.js.
+There are more examples to be found in [test/types.spec.js](/test/types.spec.js).
 
 ### Formats
 Just like in JSON schema validation, values can be tested against predefined formats.
