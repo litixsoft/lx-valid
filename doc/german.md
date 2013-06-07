@@ -1,6 +1,6 @@
 lx-valid
 ===========
-Ein Validator für Node.js und den Browser, basierend auf flatiron revalidator.
+Ein Validator für Node.js und den Browser, basierend auf [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
 ## Die Idee
 Der Revalidator von Nodejitsu ist ein Json Schema Validator, der seine Arbeit hervorragend macht und die Basis
@@ -11,72 +11,78 @@ ohne Json Schema, das Filtern von Strings und die Konvertierung von Daten mögli
 ## Beispiel
 lx-valid verwendet im Kern revalidator und ist zu diesem vollständig kompatibel. Mehr zum revalidator finden
 Sie unter [https://github.com/flatiron/revalidator](https://github.com/flatiron/revalidator).
-Das Bespiel vom revalidator für die Validierung von Schemen lässt sich genauso in lx-valid verwenden.
+Das Beispiel vom revalidator für die Validierung von Schemen lässt sich genauso in lx-valid verwenden.
 
 ```js
-var val = require('lx-valid');
-console.dir(val.validate(someObject,
-{
-    properties: {
-      url: {
-        description: 'the url the object should be stored at',
-        type: 'string',
-        pattern: '^/[^#%&*{}\\:<>?\/+]+$',
-        required: true
-      },
-      challenge: {
-        description: 'a means of protecting data (insufficient for production, used as example)',
-        type: 'string',
-        minLength: 5
-      },
-      body: {
-        description: 'what to store at the url',
-        type: 'any',
-        default: null
-      }
-    }
-  }));
+var val = require('lx-valid'),
+    someObject = {
+        url: 'http://www.litixsoft.de',
+        challenge: 'change the world',
+        body: 123
+    },
+    schema = {
+        properties: {
+            url: {
+                description: 'the url the object should be stored at',
+                type: 'string',
+                pattern: '^/[^#%&*{}\\:<>?\/+]+$',
+                required: true
+            },
+            challenge: {
+                description: 'a means of protecting data (insufficient for production, used as example)',
+                type: 'string',
+                minLength: 5
+            },
+            body: {
+                description: 'what to store at the url',
+                type: 'any',
+                default: null
+            }
+        }
+    },
+    res = val.validate(someObject, schema);
+
+console.log(res);
 ```
 
 ## Installation
-
 ``` bash
 npm install lx-valid
 ```
 
-## Verwendung
+## Schema Validierung
+lx-valid benötigt dafür ein JSON Schema und ein Objekt.
 
-### Schema Validierung
-lx-valid benötigt dafür ein Json Schema und ein Objekt.
+`lx-valid.validate(object, schema, optionen)
 
-**lx-valid.validate(obj, schema, optionen).**
-
-Das liefert ein Objekt zurück, welches angibt, ob das zu prüfende Objekt dem Schema entspricht.
+Als Ergebnis erhält man ein Objekt welches angibt, ob das zu prüfende Objekt dem Schema entspricht.
 Wenn dies nicht der Fall ist, enthält das zurückgegebene Objekt die Fehler, welche bei der Validierung aufgetreten sind.
 
 ```js
 {
-  valid: true // oder false
-  errors: [/* Array mit Fehlern wenn valid false ist */]
+    valid: true // oder false
+    errors: [/* Array mit Fehlern (wenn valid false ist) */]
 }
 ```
 
 ##### Verfügbare Optionen
-* validate formats: Erzwingen von Format Einschränkungen. ( default true )
-* validateFormatsStrict: Wenn validate formats: true ist, dann unbekannte Formate wie Prüffehler behandeln. ( default false )
-* validateFormatExtensions: Wenn validate formats: true ist, dann sollen auch alle Formate unter validate.formatExtensions
-geprüft werden. Diese Option ist für die lx-valid Formate und alle zusätzlichen eigenen Formate wichtig,
-da diese genau an dieser Stelle gespeichert werden. ( default true )
-* cast: Erzwingen von Typumwandlungen wenn es möglich ist. Wird nur für integer und number unterstützt.
-Beispiel für integer:  "42" => 42 aber "forty2" => "forty2"
+* __validateFormats__: Erzwingen von Format Einschränkungen. (__Standardwert: `true`__)
+* __validateFormatsStrict__: Wenn `validateFormats` `true` ist, dann werden unbekannte Formate wie Prüffehler behandelt. (__Standardwert: `false`__)
+* __validateFormatExtensions__: Wenn `validateFormats` `true` ist, dann sollen auch alle Formate unter `validate.formatExtensions`
+geprüft werden. Diese Option ist für die lx-valid Formate und alle zusätzlichen eigenen Formate wichtig, da diese genau an dieser Stelle gespeichert werden. (__Standardwert: `true`__)
+* __cast__: Erzwingen von Typumwandlungen, wenn es möglich ist. Wird nur für integer und number unterstützt.
+Beispiel für integer: `"42" => 42` aber `"forty2" => "forty2"` (__Standardwert: `undefined`__)
+* __deleteUnknownProperties__: Löscht alle Eigenschaften aus dem zu validierenden Objekt welche nicht im Schema definiert sind. (__Standardwert: `false`__)
+* __convert__: Konvertiert eine Eigenschaft aus dem zu validierenden Objekt mit dem Format, welches im Schema definiert ist. Dabei wird das zu validierenden Objekt geändert. (__Standardwert: `undefined`__)
 
-Der Wert einer Eigenschaft welcher an die Validierung übergeben wird ist dann ein akzeptierter Wert,
+### Validation nach Typ
+Der Wert einer Eigenschaft, welcher an die Validierung übergeben wird, ist dann ein akzeptierter Wert,
 wenn er im Schema angegeben wurde und den Regeln entspricht.
 
-##### required
-Wenn das true ist muss der Wert vorhanden sein und sollte nicht leer sein.
+#### required
+Wenn `true`, dann muss der Wert vorhanden sein und sollte nicht leer sein.
 
-##### type
+#### type
 Der Typ des Wertes sollte dem im Schema angegebenen Wert entsprechen.
 
 ```js
@@ -91,149 +97,172 @@ Der Typ des Wertes sollte dem im Schema angegebenen Wert entsprechen.
 { type: ['boolean', 'string'] }
 ```
 
-##### Beispiel für die Typen
+##### Beispiel für Typ Validierung
 
 ```js
-var typeTest = {
-    stringTest:"test",
-    arrayTest:[1,2,3],
-    boolTest:"test"
-};
-var schemaTest = {
-   "properties":{
-        "IntTest": {
-            "type":"integer",
-            "id": "IntTest",
-            "required":false
-        },
-        "arrayTest": {
-            "type":"array",
-            "id": "arrayTest",
-            "required":false,
-            "maxItems":3,
-            "items":
-            {
-                "type":"integer",
-                "id": "0",
-                "required":false
+var val = require('lx-valid'),
+    typeTest = {
+        stringTest: "test",
+        arrayTest: [1, 2, 3],
+        boolTest: "test"
+    },
+    schemaTest = {
+        "properties": {
+            "IntTest": {
+                "type": "integer",
+                "id": "IntTest",
+                "required": false
+            },
+            "arrayTest": {
+                "type": "array",
+                "id": "arrayTest",
+                "required": false,
+                "maxItems": 3,
+                "items": {
+                    "type": "integer",
+                    "id": "0",
+                    "required": false
+                }
+            },
+            "boolTest": {
+                "type": "boolean",
+                "id": "boolTest",
+                "required": true
+            },
+            "stringTest": {
+                "type": "string",
+                "id": "stringTest",
+                "required": true
             }
-        },
-        "boolTest": {
-            "type":"boolean",
-            "id": "boolTest",
-            "required":true
-        },
-        "stringTest": {
-            "type":"string",
-            "id": "stringTest",
-            "required":true
         }
-    }
-};
-var val = require('lx-valid');
-var res = val.validate(typeTest,schemaTest);
+    },
+    res = val.validate(typeTest, schemaTest);
+
 console.log(res);
 ```
 
 Der Integer und das Array muss nicht vorhanden sein, weshalb es trotz des Fehlens von IntTest keinen Fehler gibt.
-Allerdings schlägt die Validierung wegen boolTest fehl, da der erwartete Typ boolean ist, das Object jedoch einen
-String liefert.
+Allerdings schlägt die Validierung wegen boolTest fehl, da der erwartete Typ `boolean` ist, das Object jedoch einen
+`string`liefert.
 
-#### Die Regeln für die Validierung
+### Die Regeln für die Validierung
 
-##### pattern
+#### pattern
 Der erwartete Wert muss dem Regex entsprechen
 
+```js
 { pattern: /^[a-z]+$/ }
+```
 
-##### maxLength  ( string und array )
-Die Länge des Wertes muss gößer oder gleich des akzeptierten Wertes sein.
-
-{ maxLength: 8 }
-
-##### minLength ( string und array )
-Die Länge des Wertes muss kleiner oder gleich des akzeptierten Wertes sein.
-
-{ minLength: 8 }
-
-##### minimum ( number )
-Wert muss größer oder gleich des akzeptierten Wertes sein.
-
-{ minimum: 10 }
-
-##### maximum ( number )
-Wert muss kleiner oder gleich des akzeptierten Wertes sein.
-
-{ maximum: 10 }
-
-##### exclusiveMinimum ( number )
-Wert muss größer als der akzeptierte Wert sein.
-
-{ exclusiveMinimum: 9 }
-
-##### exclusiveMaximum ( number )
-Wert muss kleiner als der akzeptierte Wert sein.
-
-{ exclusiveMaximum: 11 }
-
-##### divisibleBy ( number )
-Wert muss durch den akzeptierten Wert teilbar sein.
-
-{ divisibleBy: 5 }
-{ divisibleBy: 0.5 }
-
-##### minItems ( array )
-Anzahl der Einträge muss größer oder gleich sein,  als die akzeptierte Anzahl von Einträgen.
-
-{ minItems: 2 }
-
-##### maxItems ( array )
-Anzahl der Einträge muss kleiner oder gleich sein,  als die akzeptierte Anzahl von Einträgen.
-
-{ maxItems: 5 }
-
-##### uniqueItems ( array )
-Der Wert muss in dem Array eindeutig sein.
-
-{ uniqueItems: true }
-
-##### enum (array )
-Der Wert muss in dem übergebenen Array enthalten sein.
-
-{ enum: ['month', 'year'] }
-
-##### Beispiel für die Regeln
+#### maxLength  ( string und array )
+Die Länge des Wertes muss größer oder gleich des akzeptierten Wertes sein.
 
 ```js
-var typeTest = {
-    stringTest:"test",
-    arrayTest:[1,2,3],
-    boolTest:"test"
-};
-var schemaTest = {
-   "properties":{
-        "arrayTest": {
-            "type":"array",
-            "required":false,
-            "maxItems":3,
-            "items":
-            {
-                "type":"integer",
-                "id": "0",
-                "required":false
+{ maxLength: 8 }
+```
+
+#### minLength ( string und array )
+Die Länge des Wertes muss kleiner oder gleich des akzeptierten Wertes sein.
+
+```js
+{ minLength: 8 }
+```
+
+#### minimum ( number )
+Wert muss größer oder gleich des akzeptierten Wertes sein.
+
+```js
+{ minimum: 10 }
+```
+
+#### maximum ( number )
+Wert muss kleiner oder gleich des akzeptierten Wertes sein.
+
+```js
+{ maximum: 10 }
+```
+
+#### exclusiveMinimum ( number )
+Wert muss größer als der akzeptierte Wert sein.
+
+```js
+{ exclusiveMinimum: 9 }
+```
+
+#### exclusiveMaximum ( number )
+Wert muss kleiner als der akzeptierte Wert sein.
+
+```js
+{ exclusiveMaximum: 11 }
+```
+
+#### divisibleBy ( number )
+Wert muss durch den akzeptierten Wert teilbar sein.
+
+```js
+{ divisibleBy: 5 }
+{ divisibleBy: 0.5 }
+```
+
+#### minItems ( array )
+Anzahl der Einträge muss größer oder gleich sein,  als die akzeptierte Anzahl von Einträgen.
+
+```js
+{ minItems: 2 }
+```
+
+#### maxItems ( array )
+Anzahl der Einträge muss kleiner oder gleich sein,  als die akzeptierte Anzahl von Einträgen.
+
+```js
+{ maxItems: 5 }
+```
+
+#### uniqueItems ( array )
+Der Wert muss in dem Array eindeutig sein.
+
+```js
+{ uniqueItems: true }
+```
+
+#### enum (array )
+Der Wert muss in dem übergebenen Array enthalten sein.
+
+```js
+{ enum: ['month', 'year'] }
+```
+
+#### Beispiel für die Validierungsregeln
+
+```js
+var val = require('lx-valid'),
+    typeTest = {
+        stringTest: "test",
+        arrayTest: [1, 2, 3],
+        boolTest: "test"
+    },
+    schemaTest = {
+        "properties": {
+            "arrayTest": {
+                "type": "array",
+                "required": false,
+                "maxItems": 3,
+                "items": {
+                    "type": "integer",
+                    "id": "0",
+                    "required": false
+                }
             }
         }
-    }
-};
+    },
+    res = val.validate(typeTest, schemaTest);
 
-var val = require('lx-valid');
-var res = val.validate(typeTest,schemaTest);
 console.log(res);
 ```
 
 Die Validierung ist erfolgreich, da das Array 3 Werte beinhaltet, welche alle vom Typ integer sind.
 
-#### Die Formate für die Validierung
+#### Validierung nach Format
 Der Wert muss einem gültigen Format entsprechen.
 
 ```js
@@ -252,34 +281,35 @@ Der Wert muss einem gültigen Format entsprechen.
 { format: 'regex' }
 ```
 
-##### Beispiel für Format
+##### Beispiel für Validierung nach Format
 
 ```js
-var val = require('lx-valid');
-var objForTest = {
-    UuidTest:"507f191e810c19729de860ea",
-    floatTest:3.2,
-    IntTest:2
-};
-var schemaForTest = {
-    "properties":{
-        "UuidTest": {
-            "type":'string',
-            "required":true,
-            "format":'mongo-id'
-        },
-        "IntTest": {
-            "type":"integer",
-            "required":false
-        },
-        "floatTest": {
-            "type":"number",
-            "required":false,
-            "format":'number-float'
+var val = require('lx-valid'),
+    objForTest = {
+        UuidTest: "507f191e810c19729de860ea",
+        floatTest: 3.2,
+        IntTest: 2
+    },
+    schemaForTest = {
+        "properties": {
+            "UuidTest": {
+                "type": 'string',
+                "required": true,
+                "format": 'mongo-id'
+            },
+            "IntTest": {
+                "type": "integer",
+                "required": false
+            },
+            "floatTest": {
+                "type": "number",
+                "required": false,
+                "format": 'number-float'
+            }
         }
-    }
-}
-var result = val.validate(objForTest, schemaForTest);
+    },
+    result = val.validate(objForTest, schemaForTest);
+
 console.log(result);
 ```
 
@@ -287,133 +317,198 @@ Hier werden die Werte auf spezielle Formate geprüft. Der UuidTest muss ein Stri
 Der floatTest muss eine Number sein, welche dem Format eines Float entspricht. Fügt man der Uuid noch ein paar Werte
 hinzu, wird die Validierung fehlschlagen.
 
-##### Erweitern mit eigenen Formaten
+#### Erweitern mit eigenen Formaten
 Man kann die bestehenden Formate auch mit eigenen Formaten erweitern. Folgendes Beispiel zeigt wie:
 
 ```js
 var val = require('lx-valid'),
-    testFormat = /^Test[0-9]{2}Test$/;
+    testFormat = /^Test[0-9]{2}Test$/,
+    objForTest = {
+        OwnFormatTest: "Test24Test"
+    },
+    schemaForTest = {
+        "properties": {
+            "OwnFormatTest": {
+                "type": 'string',
+                "required": true,
+                "format": 'test-format'
+            }
+        }
+    };
+
 try {
-    val.extendFormat('test-format',testFormat);
+    val.extendFormat('test-format', testFormat);
 }
 catch (e) {
     console.log(e);
 }
-var objForTest = {
-    OwnFormatTest:"Test24Test"
-};
-var schemaForTest = {
-    "properties":{
-        "OwnFormatTest": {
-            "type":'string',
-            "required":true,
-            "format":'test-format'
-        }
-    }
-}
-var result = val.validate(objForTest, schemaForTest);
-console.log(result);
+
+var res = val.validate(objForTest, schemaForTest);
+console.log(res);
 ```
 
-Nach der Erweiterung mit dem eigenen Format, kann dieses nun jederzeit von jedem Schema verwendet werden.
-Formate werden nur übernommen, wenn es diese noch nicht gibt. Das wird aktuell noch mit einer Exception realisiert,
+Nach der Erweiterung mit dem eigenen Format kann dieses nun jederzeit von jedem Schema verwendet werden.
+Formate werden nur übernommen, wenn es diese noch nicht gibt. Dass wird aktuell noch mit einer Exception realisiert,
 soll aber bei einem der kommenden Updates geändert werden.
 
-#### conform benutzerdefinierte Validierung
+### Benutzerdefinierte Validierung mit conform
 Wert muss der Bedingung entsprechen. Mit Conform kann man umfangreiche Validatoren realisieren.
 Sie bestehen aus einer Funktion, welche den Wert als Parameters übergeben bekommt. Die Rückgabe der Funktion muss
-immer true oder false sein.
+immer `true` oder `false` sein.
 
 ```js
-{ conform: function (v) {
-    if (v%3==1) return true;
-    return false;
-  }
+{
+    conform: function (v) {
+        if (v % 3 == 1) {
+            return true;
+        }
+        return false;
+    }
 }
 ```
 
-#### Abhängigkeiten
+### Abhängigkeiten
 Der Wert ist nur gültig, wenn der abhängige Wert gültig ist.
 
 ```js
 {
-  town: { required: true, dependencies: 'country' },
-  country: { maxLength: 3, required: true }
+    town: {
+        required: true,
+        dependencies: 'country'
+    },
+    country: {
+        required: true,
+        maxLength: 3
+    }
 }
 ```
 
-#### verschachtelte Schemas
+### Verschachtelte Schemas
 Es sind auch verschachtelte Schemas möglich.
 
 ```js
 {
-  properties: {
-    title: {
-      type: 'string',
-      maxLength: 140,
-      required: true
-    },
-    author: {
-      type: 'object',
-      required: true,
-      properties: {
-        name: {
-          type: 'string',
-          required: true
+    properties: {
+        title: {
+            required: true,
+            type: 'string',
+            maxLength: 140
         },
-        email: {
-          type: 'string',
-          format: 'email'
+        author: {
+            type: 'object',
+            required: true,
+            properties: {
+                name: {
+                    required: true,
+                    type: 'string'
+                },
+                email: {
+                    type: 'string',
+                    format: 'email'
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
-#### Benutzerdefinierte Nachrichten
+### Benutzerdefinierte Nachrichten
 Benutzerdefinierte Nachrichten sind auch für verschiedene Bedingungen möglich.
 
 ```js
 {
-  type: 'string',
-  format: 'url'
-  messages: {
-    type: 'Not a string type',
-    format: 'Expected format is a url'
-  }
-{
-  conform: function () { ... },
-  message: 'This can be used as a global message'
+    type: 'string',
+    format: 'url',
+    messages: {
+        type: 'Not a string type',
+        format: 'Expected format is a url'
+    },
+    {
+        conform: function () { ... },
+        message: 'This can be used as a global message'
+    }
 }
 ```
 
-### Schemalose Validierung
-Alle Typen, Regeln und Formate der Schema Validierung können Sie auch über eine einfache API ohne ein Schema prüfen.
+### Konvertierung
+Konvertiert eine Eigenschaft aus dem zu validierenden Objekt mit dem Format, welches im Schema definiert ist. Dabei wird das zu validierenden Objekt geändert.
 
-* lx-valid.formats.<formatname>(value)
-* lx-valid.types.<typename>(value)
-* lx-valid.rules.<rulename>(value)
+```js
+var data = {
+        birthdate: '1979-03-01T15:55:00.000Z'
+    },
+    schema = {
+        properties: {
+            birthdate: {
+                type: 'string',
+                format: 'date-time'
+            }
+        }
+    },
+    convertFn = function (format, value) {
+        if (format === 'date-time') {
+            return new Date(value);
+        }
 
-Das liefert ein Objekt zurück, welches angibt, ob der zu prüfende Wert der Regel entspricht.
+        return value;
+    },
+    res = validate(data, schema, {convert: convertFn});
+
+// birthdate was converted
+console.log(typeof data.birthdate === 'object'); // true
+```
+
+### Schema Validierung beim Update
+Wenn man mit einer Datenbank arbeitet, sollten die hinzugefügten und aktualisierten Daten validiert werden. Dabei wird manchmal nur ein Teil der Daten zur Validierung gesendet, und nicht das komplette Objekt.
+Dabei würde die Validierung Fehler zurückgeben, wenn die required Eigenschaften fehlen. Um dies zu verhindern gibt es die Option `isUpdate`. Wird diese auf `true` gesetzt werden alle Eigenschaften aus dem Schema,
+welche nicht im zu validierenden Objekt sind, auf `required: false` gesetzt. Es gibt eine Funktion, welche die validate Funktion zurückgibt und `isUpdate` auf `true` gesetzt ist.
+
+```js
+var val = require('lx-valid'),
+    data = {name: 'wayne'},
+    schema = {
+        properties: {
+            id: {
+                type: 'int',
+                required: true
+            },
+            name: {
+                type: 'string',
+                required: false
+            }
+        }
+    },
+
+    valFn = val.getValidationFunction(),
+    res = valFn(data, schema, {isUpdate: true});
+
+console.log(res.valid); // true
+console.log(res.errors.length); // 0
+```
+
+## Schemalose Validierung
+Alle Typen, Regeln und Formate der Schema Validierung können auch über eine einfache API ohne ein Schema geprüft werden.
+
+`lx-valid.formats.<formatname>(value)`
+`lx-valid.types.<typename>(value)`
+`lx-valid.rules.<rulename>(value)`
+
+Als Ergebnis erhält man ein Objekt welches angibt, ob das zu prüfende Objekt dem Schema entspricht.
 Wenn dies nicht der Fall ist, enthält das zurückgegebene Objekt die Fehler, welche bei der Validierung aufgetreten sind.
 
 ```js
 {
-  valid: true // oder false
-  errors: [/* Array mit Fehlern wenn valid false ist */]
+    valid: true // oder false
+    errors: [/* Array mit Fehlern (wenn valid false ist) */]
 }
 ```
 
-#### Beispiele für die Schemalose Validierung
+### Typen
+Die Typen in lx-valid erweitern die JSON Schema Typen um die restlichen Javascript Typen.
 
-##### Typen
-Die Typen in lx-valid erweitern die Json Schema Typen um die restlichen Javascript Typen.
+`lx-valid.types.<typename>(value)`
 
-**lx-valid.types.<typename>(value)**
-
-##### Json Schema Typen
-
+#### JSON Schema Typen
 ```js
 { type: 'string' }
 { type: 'number' }
@@ -426,53 +521,50 @@ Die Typen in lx-valid erweitern die Json Schema Typen um die restlichen Javascri
 { type: ['boolean', 'string'] }
 ```
 
-##### lx-valid Typen
-
+#### lx-valid Typen
 ```js
 { type: 'string' }
 { type: 'number' }
 { type: 'boolean' }
 { type: 'object' }
-{ type: 'undefined' } *
+{ type: 'undefined' }
 { type: 'integer' }
-{ type: 'float' } *
+{ type: 'float' }
 { type: 'array' }
-{ type: 'date' } *
-{ type: 'regexp' } *
-{ type: 'null' } *
+{ type: 'date' }
+{ type: 'regexp' }
+{ type: 'null' }
+{ type: 'mongoId' }
 ```
 
-Es werden alle Typen des Json Schema abgedeckt und zusätzlich noch alle Javascript Typen.
+Es werden alle Typen des JSON Schema abgedeckt und zusätzlich noch alle Javascript Typen.
 
-##### integer
-
+#### integer
 ```js
 var res = val.types.integer(123);
 ```
 
-##### float
-
+#### float
 ```js
 var res = val.types.float(12.3);
 ```
 
-##### regexp
+#### regexp
 ```js
 var res = val.types.regexp(/^hello/);
 ```
 
-##### date
-
+#### date
 ```js
 var res = val.types.date(new Date());
 ```
 
-Mehr Beispiele finden Sie unter test/types.js.
+Mehr Beispiele findet man unter test/types.spec.js.
 
-##### Formate
+### Formate
 Wie in der Json Schema Validierung können auch Formate geprüft werden.
 
-**lx-valid.formats.<formatname>(value)**
+`lx-valid.formats.<formatname>(value)`
 
 ```js
 { format: 'mongo-id' }
@@ -490,30 +582,27 @@ Wie in der Json Schema Validierung können auch Formate geprüft werden.
 { format: 'regex' }
 ```
 
-##### ipAddress
-
+#### ipAddress
 ```js
 var res1 = val.formats.ipAddress("192.168.1.10");
 ```
 
-##### ipv6
-
+#### ipv6
 ```js
 var res1 = val.formats.ipv6("2001:0db8:85a3:08d3:1319:8a2e:0370:7344");
 ```
 
-##### dateTime
-
+#### dateTime
 ```js
 var res1 = val.formats.dateTime("2013-01-09T12:28:03.150Z");
 ```
 
-Mehr Beispiele finden Sie unter test/formats.js
+Mehr Beispiele findet man unter test/formats.spec.js
 
-##### Regeln
+### Regeln
 Ach die Regeln können über die API geprüft werden.
 
-**lx-valid.rules.<rulename>(value,ruleValue)**
+`lx-valid.rules.<rulename>(value,ruleValue)`
 
 ```js
 { pattern: /^[a-z]+$/ }
@@ -530,57 +619,48 @@ Ach die Regeln können über die API geprüft werden.
 { enum: ['month', 'year'] }
 ```
 
-##### maxLength
-
+#### maxLength
 ```js
 var res = val.rules.maxLength("test",4);
 ```
 
-##### minLength
-
+#### minLength
 ```js
 var res = val.rules.minLength("test",2);
 ```
 
-##### divisibleBy
-
+#### divisibleBy
 ```js
 var res = val.rules.divisibleBy(6,3);
 ```
 
-Mehr Beispiele finden Sie unter test/rules.js
+Mehr Beispiele findet man unter test/rules.spec.js
 
-#### Asyncrone Validierung (ab 0.2.0)
-Die Asynchrone Validierung besteht aus Registrierung von Validatoren und der Ausführung von Validatoren.
+#### Asynchrone Validierung
+Die Asynchrone Validierung besteht aus Registrierung von Validatoren und der Ausführung dieser Validatoren.
 
-**lx-valid.asyncValidate.register(function, parameter)**
-**lx-valid.asyncValidate.exec(validationResult, callback)**
+`lx-valid.asyncValidate.register(funktion, parameter)`
+`lx-valid.asyncValidate.exec(validationResult, callback)`
 
-lx-valid.asyncValidate.exec führt die über register hinzugefügten Validatoren parallel aus.
-
-```js
-validationResult = {
-    valid: true,
-    errors: []
-};
-```
+`lx-valid.asyncValidate.exec` führt die über register hinzugefügten Validatoren parallel aus.
 
 Am besten ist es, die Validierung nach der Schemavalidierung durchzuführen.
 Das Ergebnis der Schemavalidierung wird an die asynchrone Validierung übergeben.
 
 ```js
 // json schema validate
-var valResult = val.validate(doc, schema);
+var val = require('lx-valid'),
+    valResult = val.validate(doc, schema);
 
 // register async validator
-val.asyncValidate.register(function1, userName);
-val.asyncValidate.register(function2, email);
+val.asyncValidate.register(function1, value1);
+val.asyncValidate.register(function2, value2);
 
 // async validate
-val.asyncValidate.exec(valResult, cb);
+val.asyncValidate.exec(valResult, callback);
 ```
 
-Mehr Beispiele in test/tests.spec.js
+Mehr Beispiele findet man in test/tests.spec.js
 
 ## Entwicklung
 Der Validator lx-valid befindet sich noch in der Entwicklung. Die geplanten Funktionen werden nach und nach eingebaut
@@ -593,23 +673,34 @@ und können der Change List und Roadmap entnommen werden.
 * Änderungen welche sich durch die Integration in ein Produktiv-Projekt ergeben
 * Filter und Bereinigung von Strings
 
-## Change List
+## Changelog
 
-### v0.2.0 update
+### v0.2.3
+* Neuer Typ mongoId
+
+### v0.2.2
+* Neue Funktion, welche die Validierung-Funktion mit der Option `isUpdate` zurückliefert
+
+### v0.2.1
+* Modul revalidator aktualisisert
+* Neue Option zum Entfernen von Eigenschaften aus dem zu validieren Objekt, welche nicht im Schema definiert sind
+* Neue Option zum Konvertieren von Eigenschaften mit dem Format, welches im Schema angegeben ist
+
+### v0.2.0
 * Asynchrone Validierung
 
-### v0.1.4 update
+### v0.1.4
 * Aktualisierung von Grunt auf Version v0.4
 * Umstellung der Unit-Tests auf jasmine-node
 
-### v0.1.3 update
+### v0.1.3
 * Einbau Grunt
 * Anpassungen für jsHint
 
-### v0.1.2 update
+### v0.1.2
 * Ausnahmen bei Regeln entfernt
 
-### v0.1.1 update
+### v0.1.1
 
 * Dokumentation angepasst
 * Dokumentation in Deutsch übersetzt
