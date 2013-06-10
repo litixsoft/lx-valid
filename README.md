@@ -22,24 +22,24 @@ The Revalidator example showing schema validation works exactly the same with lx
 var val = require('lx-valid'),
     someObject = {
         url: 'http://www.litixsoft.de',
-        challenge: 'change the world',
-        body: 123
+        mission: 'change the world',
+        body: 'Chuck Norris'
     },
     schema = {
         properties: {
             url: {
-                description: 'the url the object should be stored at',
+                description: 'Company url',
                 type: 'string',
                 pattern: '^/[^#%&*{}\\:<>?\/+]+$',
                 required: true
             },
-            challenge: {
-                description: 'a means of protecting data (insufficient for production, used as example)',
+            mission: {
+                description: 'Company mission',
                 type: 'string',
                 minLength: 5
             },
             body: {
-                description: 'what to store at the url',
+                description: 'WAT',
                 type: 'any',
                 default: null
             }

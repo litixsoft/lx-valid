@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="lxValid">
+<head>
+    <title>lx-valid Demos</title>
+    <script type="text/javascript" src="../dist/lx-valid-0.2.3.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+</head>
+<body ng-controller="demoCtrl">
+    <h1>Schema validation</h1>
+
+    name: <input type="text" ng-model="person.name" /> <br />
+    position: <input type="text" ng-model="person.position" /> <br />
+    email: <input type="text" ng-model="person.email" /> <br />
+    homepage: <input type="text" ng-model="person.homepage" /> <br />
+    age: <input type="number" ng-model="person.age" /> <br />
+    birthdate: <input type="date" ng-model="person.birthdate" /> <br />
+
+    <pre>{{person}}</pre>
+
+    <pre>{{result | json}}</pre>
+
+    <!--<p>see browser console</p>-->
+    <!--<script type="text/javascript">-->
+    <!--(function () {-->
+    <!--var data = {name: 'Golf 6', price: 27000};-->
+    <!--var schema = {-->
+    <!--properties: {-->
+    <!--name: {-->
+    <!--type: 'string',-->
+    <!--required: true-->
+    <!--},-->
+    <!--price: {-->
+    <!--type: 'number',-->
+    <!--required: true-->
+    <!--}-->
+    <!--}-->
+    <!--};-->
+
+    <!--console.log("validate schema with revalidator direct access...");-->
+    <!--var res = json.validate(data, schema);-->
+    <!--console.log(res);-->
+
+    <!--console.log("validate schema with lxvalidator...");-->
+    <!--var res = lxvalid.validate(data, schema);-->
+    <!--console.log(res);-->
+
+    <!--console.log("validate lxvalidator rules");-->
+    <!--var res = lxvalid.rules.maxLength("test", 4);-->
+    <!--console.log(res);-->
+    <!--})();-->
+    <!--</script>-->
+
+    <!--<script type="text/javascript" src="../dist/lx-valid-0.2.3.js"></script>-->
+</body>
+</html>

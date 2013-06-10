@@ -17,24 +17,24 @@ Das Beispiel vom revalidator für die Validierung von Schemen lässt sich genaus
 var val = require('lx-valid'),
     someObject = {
         url: 'http://www.litixsoft.de',
-        challenge: 'change the world',
-        body: 123
+        mission: 'change the world',
+        body: 'Chuck Norris'
     },
     schema = {
         properties: {
             url: {
-                description: 'the url the object should be stored at',
+                description: 'Company url',
                 type: 'string',
                 pattern: '^/[^#%&*{}\\:<>?\/+]+$',
                 required: true
             },
-            challenge: {
-                description: 'a means of protecting data (insufficient for production, used as example)',
+            mission: {
+                description: 'Company mission',
                 type: 'string',
                 minLength: 5
             },
             body: {
-                description: 'what to store at the url',
+                description: 'WAT',
                 type: 'any',
                 default: null
             }
@@ -53,7 +53,7 @@ npm install lx-valid
 ## Schema Validierung
 lx-valid benötigt dafür ein JSON Schema und ein Objekt.
 
-`lx-valid.validate(object, schema, optionen)
+`lx-valid.validate(object, schema, optionen)`
 
 Als Ergebnis erhält man ein Objekt welches angibt, ob das zu prüfende Objekt dem Schema entspricht.
 Wenn dies nicht der Fall ist, enthält das zurückgegebene Objekt die Fehler, welche bei der Validierung aufgetreten sind.
