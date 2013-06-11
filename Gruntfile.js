@@ -39,6 +39,15 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
             }
         },
+        compress: {
+            main: {
+                options: {
+                    mode: 'zip',
+                    archive: 'dist/<%= pkg.name %>-<%= pkg.version %>.zip'
+                },
+                src: ['dist/<%= pkg.name %>-<%= pkg.version %>.js', 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js']
+            }
+        },
         jshint: {
             options: {
                 bitwise: true,
@@ -116,6 +125,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-bg-shell');
     grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-contrib-compress');
 
     // Register tasks.
     grunt.registerTask('test', ['clean:jasmine', 'jshint:test', 'jasmine_node']);
@@ -123,5 +133,5 @@ module.exports = function (grunt) {
     grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node']);
 
     // Default task.
-    grunt.registerTask('default', ['test', 'concat', 'uglify']);
+    grunt.registerTask('default', ['test', 'concat', 'uglify', 'compress']);
 };
