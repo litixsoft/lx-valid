@@ -274,7 +274,7 @@ The value should match a valid format.
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format' }
+{ format: 'number-float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -573,7 +573,7 @@ Just like in JSON schema validation, values can be tested against predefined for
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format' }
+{ format: 'number-float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }

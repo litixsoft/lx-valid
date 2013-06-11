@@ -139,7 +139,7 @@ describe('Formats', function () {
     it('should validate a float number correctly', function () {
         var res1 = val.formats.numberFloat(2.66);
         var res2 = val.formats.numberFloat(3);
-        var res3 = val.formats.numberFloat(2,88);
+        var res3 = val.formats.numberFloat('2,88');
 
         expect(res1.valid).toBe(true);
         expect(res1.errors.length).toBe(0);
