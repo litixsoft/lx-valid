@@ -600,7 +600,7 @@ var res1 = val.formats.dateTime("2013-01-09T12:28:03.150Z");
 Mehr Beispiele findet man unter [test/formats.spec.js](../test/formats.spec.js).
 
 ### Regeln
-Ach die Regeln können über die API geprüft werden.
+Auch die Regeln können über die API geprüft werden.
 
 `lx-valid.rules.<rulename>(value,ruleValue)`
 
@@ -621,22 +621,22 @@ Ach die Regeln können über die API geprüft werden.
 
 #### maxLength
 ```js
-var res = val.rules.maxLength("test",4);
+var res = val.rules.maxLength('test', 4);
 ```
 
 #### minLength
 ```js
-var res = val.rules.minLength("test",2);
+var res = val.rules.minLength('test', 2);
 ```
 
 #### divisibleBy
 ```js
-var res = val.rules.divisibleBy(6,3);
+var res = val.rules.divisibleBy(6, 3);
 ```
 
 Mehr Beispiele findet man unter [test/rules.spec.js](../test/rules.spec.js).
 
-#### Asynchrone Validierung
+## Asynchrone Validierung
 Die Asynchrone Validierung besteht aus Registrierung von Validatoren und der Ausführung dieser Validatoren.
 
 * `lx-valid.asyncValidate.register(funktion, parameter)`
