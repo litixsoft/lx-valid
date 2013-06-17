@@ -43,7 +43,7 @@ module.exports = function (grunt) {
             main: {
                 options: {
                     mode: 'zip',
-                    archive: 'dist/<%= pkg.name %>-<%= pkg.version %>.zip'
+                    archive: 'dist/<%= pkg.name %>.zip'
                 },
                 src: ['dist/<%= pkg.name %>-<%= pkg.version %>.js', 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js']
             }

@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.3 - 2013-06-11
+ * lx-valid - v0.2.3 - 2013-06-17
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
