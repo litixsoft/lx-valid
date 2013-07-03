@@ -7,12 +7,16 @@ describe('Formats', function () {
     it('should validate an email correctly', function () {
         var res1 = val.formats.email('test@gmail.com');
         var res2 = val.formats.email('test-gmail.com');
+        var res3 = val.formats.email('');
 
         expect(res1.valid).toBe(true);
         expect(res1.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
     });
 
     it('should validate an ip-address correctly', function () {
@@ -149,5 +153,28 @@ describe('Formats', function () {
 
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
+    });
+
+    it('should validate an empty string correctly', function () {
+        var res1 = val.formats.empty('');
+        var res2 = val.formats.empty(null);
+        var res3 = val.formats.empty(undefined);
+        var res4 = val.formats.empty('test');
+        var res5 = val.formats.empty(123);
+
+        expect(res1.valid).toBe(true);
+        expect(res1.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(res4.valid).toBe(false);
+        expect(res4.errors.length).toBe(1);
+
+        expect(res5.valid).toBe(false);
+        expect(res5.errors.length).toBe(1);
     });
 });

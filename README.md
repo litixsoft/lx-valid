@@ -286,6 +286,7 @@ The value should match a valid format.
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
 #### Example for format
@@ -294,7 +295,8 @@ var val = require('lx-valid'),
     objForTest = {
         UuidTest: "507f191e810c19729de860ea",
         floatTest: 3.2,
-        IntTest: 2
+        IntTest: 2,
+        EmptyEmailTest: ''
     },
     schemaForTest = {
         "properties": {
@@ -311,6 +313,14 @@ var val = require('lx-valid'),
                 "type": "number",
                 "required": false,
                 "format": 'number-float'
+            },
+            "ip": {
+                "type": "string",
+                "format": ['ip-address', 'ipv6']
+            },
+            "emptyMail": {
+                "type": "string",
+                "format": ['empty', 'email']
             }
         }
     },
@@ -322,6 +332,7 @@ console.log(result);
 In this case values will be tested against predefined formats. The UuidTest property's value should be a string
 matching the format of a MongoDB ObjectId. The floatTest value should be a number matching a float.
 If additional characters are added to UuidTest's value, validation fails.
+It is also supported to validate an array of formats.
 
 #### Extension by custom formats
 Additionally the predefined formats can be extended by custom ones as the following example shows:
@@ -678,6 +689,12 @@ Please refer to the changelog and roadmap for further information on development
 * filtering and sanitising of string
 
 ## Changelog
+
+### v0.2.4
+
+* add new format 'empty'
+* update dependency revalidator
+* add support to validate an array of formats
 
 ### v0.2.3
 * add type mongoId

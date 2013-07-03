@@ -78,6 +78,16 @@ var schemaForTest = {
             'id': 'urlTest',
             'required': false,
             'format': 'url'
+        },
+        'emailTest': {
+            'type': 'string',
+            'id': 'emailTest',
+            'format': 'email'
+        },
+        'emptyEmailTest': {
+            'type': 'string',
+            'id': 'emptyemailTest',
+            'format': ['empty', 'email']
         }
     }
 };
@@ -205,7 +215,9 @@ beforeEach(function () {
         objectTest: {name: 'xenia'},
         nullTest: null,
         dateTest: '1973-06-01T15:49:00.000Z',
-        urlTest: 'http://google.de'
+        urlTest: 'http://google.de',
+        emailTest: 'info@litixsoft.de',
+        emptyEmailTest: ''
     };
 
     dataForConvertTest = {

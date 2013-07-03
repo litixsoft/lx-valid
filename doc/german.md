@@ -279,6 +279,7 @@ Der Wert muss einem gültigen Format entsprechen.
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
 ##### Beispiel für Validierung nach Format
@@ -305,6 +306,14 @@ var val = require('lx-valid'),
                 "type": "number",
                 "required": false,
                 "format": 'number-float'
+            },
+            "ip": {
+                "type": "string",
+                "format": ['ip-address', 'ipv6']
+            },
+            "emptyMail": {
+                "type": "string",
+                "format": ['empty', 'email']
             }
         }
     },
@@ -315,7 +324,7 @@ console.log(result);
 
 Hier werden die Werte auf spezielle Formate geprüft. Der UuidTest muss ein String sein und das Format einer MongoId haben.
 Der floatTest muss eine Number sein, welche dem Format eines Float entspricht. Fügt man der Uuid noch ein paar Werte
-hinzu, wird die Validierung fehlschlagen.
+hinzu, wird die Validierung fehlschlagen. Mann kann auch ein Array von Formaten angeben.
 
 #### Erweitern mit eigenen Formaten
 Man kann die bestehenden Formate auch mit eigenen Formaten erweitern. Folgendes Beispiel zeigt wie:
@@ -674,6 +683,11 @@ und können dem Changelog und Roadmap entnommen werden.
 * Filter und Bereinigung von Strings
 
 ## Changelog
+
+### v0.2.4
+* Neues Format empty
+* Paket revalidator aktualisiert
+* Unterstützung der Validierung von mehreren Formaten
 
 ### v0.2.3
 * Neuer Typ mongoId
