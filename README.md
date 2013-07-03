@@ -596,6 +596,7 @@ Just like in JSON schema validation, values can be tested against predefined for
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
 #### ipAddress

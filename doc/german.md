@@ -589,6 +589,7 @@ Wie in der Json Schema Validierung können auch Formate geprüft werden.
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
 #### ipAddress
