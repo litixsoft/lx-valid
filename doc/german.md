@@ -685,6 +685,10 @@ und können dem Changelog und Roadmap entnommen werden.
 
 ## Changelog
 
+### v0.2.5
+
+* Fehler im IE behoben, Javascripts Keywords in Objekten werden nun mit Array Notation gelesen und geschrieben (aus pub.null wird pub['null'])
+
 ### v0.2.4
 * Neues Format empty
 * Paket revalidator aktualisiert

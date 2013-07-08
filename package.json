@@ -1,7 +1,7 @@
 {
     "name": "lx-valid",
     "description": "A cross-browser / node.js validator, based on flatiron revalidator.",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "homepage": "https://github.com/litixsoft/lx-valid",
     "author": {
         "name": "Litixsoft GmbH",
@@ -56,7 +56,7 @@
     "readmeFilename": "README.md",
     "dependencies": {
         "revalidator": "git://github.com/litixsoft/revalidator.git",
-        "async": "~0.2.5"
+        "async": "~0.2.9"
     },
     "main": "lib/lx-valid.js",
     "scripts": {
@@ -72,6 +72,6 @@
         "grunt-contrib-uglify": "~0.2.0",
         "grunt-jasmine-node": "0.1.0",
         "grunt-open": "~0.2.0",
-        "istanbul": "~0.1.35"
+        "istanbul": "~0.1.40"
     }
 }

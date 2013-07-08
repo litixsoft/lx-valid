@@ -691,6 +691,10 @@ Please refer to the changelog and roadmap for further information on development
 
 ## Changelog
 
+### v0.2.5
+
+* Fix error in IE when using the javascript keywords null and enum (pub.null is now pub['null'])
+
 ### v0.2.4
 
 * add new format 'empty'
