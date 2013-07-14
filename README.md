@@ -736,6 +736,10 @@ Please refer to the changelog and roadmap for further information on development
 * additional validation formats mongo-id and number-float
 * functionality for extending validation formats with custom ones
 
+## Author
+[Litixsoft GmbH](http://www.litixsoft.de)
+
+## License
 (The MIT License)
 
 Copyright (C) 2013 Litixsoft GmbH info@litixsoft.de
