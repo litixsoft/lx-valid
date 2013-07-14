@@ -4,7 +4,7 @@ A validator for Node.js and the client, based on [Flatiron Revalidator](https://
 
 ### available languages:
 * english
-* [german](https://github.com/litixsoft/lx-valid/blob/master/doc/german.md)
+* [german](http://www.litixsoft.de/products-lxvalid)
 
 ## The idea
 Nodejitsu's Revalidator is a great JSON schema validator and therefore the backbone of lx-valid.
