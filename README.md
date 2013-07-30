@@ -161,14 +161,14 @@ The expected value regex needs to be satisfied by the value.
 { pattern: /^[a-z]+$/ }
 ```
 
-#### maxLength  ( string und array )
+#### maxLength  ( string and array )
 The length of value must be greater than or equal to expected value.
 
 ```js
 { maxLength: 8 }
 ```
 
-#### minLength ( string und array )
+#### minLength ( string and array )
 The length of value must be lesser than or equal to expected value.
 
 ```js
