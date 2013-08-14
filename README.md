@@ -81,6 +81,8 @@ This option is used for lx-valid format extensions and additional custom formats
 e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. ( __default: `undefined`__ )
 * __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ )
 * __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
+* __trim__: Trims all properties of type `string`. Modifies the original object. ( __default: `false`__ )
+* __strictRequired__: Sets validity of empty `string` to `false`. ( __default: `false`__ )
 
 ### Validation types
 For a property an `value` is that which is given as input for validation where as an `expected value` is the value
@@ -380,6 +382,24 @@ The return value of the function must be boolean `true` or `false`.
             return true;
         }
         return false;
+    }
+}
+```
+
+```js
+{
+    name: {
+        type: 'string'
+    },
+    verifiedName: {
+        type: 'string',
+        conform: function (actual, original) {
+            if (actual === original.name) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
 ```
@@ -691,12 +711,14 @@ Please refer to the changelog and roadmap for further information on development
 
 ## Changelog
 
-### v0.2.5
+### v0.2.6
+* Update revalidator dependency
+* Add tests
 
+### v0.2.5
 * Fix error in IE when using the javascript keywords null and enum (pub.null is now pub['null'])
 
 ### v0.2.4
-
 * add new format 'empty'
 * update dependency revalidator
 * add support to validate an array of formats

@@ -437,6 +437,107 @@ describe('Validator', function () {
         schemaForTest.properties.stringTest = oldSchema;
     });
 
+    it('validate() should trim the string values when option trim is true', function () {
+        var schema = {
+                properties: {
+                    name: {
+                        type: 'string'
+                    },
+                    names: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        }
+                    }
+                }
+            },
+            data = {
+                name: ' wayne ',
+                names: ['wayne', ' chuck', 'norris ', ' wat ']
+            };
+
+        var result = val.validate(data, schema);
+
+        expect(result.valid).toBeTruthy();
+        expect(data.name).toBe(' wayne ');
+        expect(data.names).toEqual(['wayne', ' chuck', 'norris ', ' wat ']);
+
+        result = val.validate(data, schema, {trim: true});
+
+        expect(result.valid).toBeTruthy();
+        expect(data.name).toBe('wayne');
+        expect(data.names).toEqual(['wayne', 'chuck', 'norris', 'wat']);
+    });
+
+    it('validate() should validate to false when the string values are empty and the option strictRequired is true', function () {
+        var schema = {
+                properties: {
+                    name: {
+                        type: 'string',
+                        required: true
+                    },
+                    names: {
+                        type: 'array',
+                        items: {
+                            type: 'string',
+                            required: true
+                        }
+                    }
+                }
+            },
+            data = {
+                name: '',
+                names: ['wayne', ' chuck', 'norris ', '']
+            };
+
+        var result = val.validate(data, schema);
+
+        expect(result.valid).toBeTruthy();
+
+        result = val.validate(data, schema, {strictRequired: true});
+
+        expect(result.valid).toBeFalsy();
+        expect(result.errors[0].property).toBe('name');
+        expect(result.errors[0].message).toBe('is required');
+        expect(result.errors[1].property).toBe('names');
+        expect(result.errors[1].message).toBe('is required');
+    });
+
+    it('validate() should validate to false when the string values are empty and the option strictRequired is true', function () {
+        var schema = {
+                properties: {
+                    name: {
+                        type: 'string'
+                    },
+                    verifiedName: {
+                        type: 'string',
+                        conform: function (actual, original) {
+                            if (actual === original.name) {
+                                return true;
+                            }
+
+                            return false;
+                        }
+
+                    }
+                }
+            },
+            data = {
+                name: 'wayne',
+                verifiedName: 'wayne'
+            },
+            data2 = {
+                name: 'wayne',
+                verifiedName: 'fail'
+            };
+
+        var result = val.validate(data, schema);
+        var result2 = val.validate(data2, schema);
+
+        expect(result.valid).toBeTruthy();
+        expect(result2.valid).toBeFalsy();
+    });
+
     it('asyncValidate() should find already existing values ​​and properly validate', function () {
 
         // test mock

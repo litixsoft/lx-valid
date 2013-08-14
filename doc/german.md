@@ -74,6 +74,8 @@ geprüft werden. Diese Option ist für die lx-valid Formate und alle zusätzlich
 Beispiel für integer: `"42" => 42` aber `"forty2" => "forty2"` ( __Standardwert: `undefined`__ )
 * __deleteUnknownProperties__: Löscht alle Eigenschaften aus dem zu validierenden Objekt welche nicht im Schema definiert sind. ( __Standardwert: `false`__ )
 * __convert__: Konvertiert eine Eigenschaft aus dem zu validierenden Objekt mit dem Format, welches im Schema definiert ist. Dabei wird das zu validierenden Objekt geändert. ( __Standardwert: `undefined`__ )
+* __trim__: Entfernt alle Leerzeichen am Anfang und Ende von Eigenscahften, welche vom Typ `string` sind. Dabei wird das zu validierenden Objekt geändert. ( __Standardwert: `false`__ )
+* __strictRequired__: Leere Strings werden als invalide behandelt. ( __Standardwert: `false`__ )
 
 ### Validation nach Typ
 Der Wert einer Eigenschaft, welcher an die Validierung übergeben wird, ist dann ein akzeptierter Wert,
@@ -372,6 +374,24 @@ immer `true` oder `false` sein.
             return true;
         }
         return false;
+    }
+}
+```
+
+```js
+{
+    name: {
+        type: 'string'
+    },
+    verifiedName: {
+        type: 'string',
+        conform: function (actual, original) {
+            if (actual === original.name) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
 ```
@@ -685,8 +705,11 @@ und können dem Changelog und Roadmap entnommen werden.
 
 ## Changelog
 
-### v0.2.5
+### v0.2.6
+* Module revalidator aktualisiert
+* Tests hinzugefügt
 
+### v0.2.5
 * Fehler im IE behoben, Javascripts Keywords in Objekten werden nun mit Array Notation gelesen und geschrieben (aus pub.null wird pub['null'])
 
 ### v0.2.4

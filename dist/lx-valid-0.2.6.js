@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.5 - 2013-07-08
+ * lx-valid - v0.2.6 - 2013-08-14
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -36,6 +36,15 @@
   function validate(object, schema, options) {
     options = mixin({}, validate.defaults, options);
 
+    if (options.trim === true) {
+      // ensure that trim works in old browsers
+      if(!String.prototype.trim) {
+        String.prototype.trim = function () {
+          return this.replace(/^\s+|\s+$/g,'');
+        };
+      }
+    }
+
     var errors = [];
 
     validateObject(object, schema, options, errors);
@@ -49,7 +58,6 @@
       valid: !(errors.length),
       errors: errors
     };
-
   }
 
   /**
@@ -95,8 +103,8 @@
        * <em>Default: <code>false</code></em>
        * </p>
        */
-       addMissingDefaults: false,
-       /**
+      addMissingDefaults: false,
+      /**
        * <p>
        * When {@link #deleteUnknownProperties} is <code>true</code>,
        * if property is not declared in schema it is deleted from object.
@@ -104,28 +112,47 @@
        * <em>Default: <code>false</code></em>
        * </p>
        */
-       deleteUnknownProperties: false
+      deleteUnknownProperties: false,
+      /**
+       * <p>
+       * When {@link #trim} is <code>true</code>,
+       * all string values are trimmed.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+      trim: false,
+      /**
+       * <p>
+       * When {@link #strictRequired} is <code>true</code>,
+       * all empty string values ('') which are required will be invalid.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+      strictRequired: false
   };
 
   /**
    * Default messages to include with validation errors.
    */
   validate.messages = {
-      required:         "is required",
-      minLength:        "is too short (minimum is %{expected} characters)",
-      maxLength:        "is too long (maximum is %{expected} characters)",
-      pattern:          "invalid input",
-      minimum:          "must be greater than or equal to %{expected}",
-      maximum:          "must be less than or equal to %{expected}",
-      exclusiveMinimum: "must be greater than %{expected}",
-      exclusiveMaximum: "must be less than %{expected}",
-      divisibleBy:      "must be divisible by %{expected}",
-      minItems:         "must contain more than %{expected} items",
-      maxItems:         "must contain less than %{expected} items",
-      uniqueItems:      "must hold a unique set of values",
-      format:           "is not a valid %{expected}",
-      conform:          "must conform to given constraint",
-      type:             "must be of %{expected} type"
+      required:             "is required",
+      minLength:            "is too short (minimum is %{expected} characters)",
+      maxLength:            "is too long (maximum is %{expected} characters)",
+      pattern:              "invalid input",
+      minimum:              "must be greater than or equal to %{expected}",
+      maximum:              "must be less than or equal to %{expected}",
+      exclusiveMinimum:     "must be greater than %{expected}",
+      exclusiveMaximum:     "must be less than %{expected}",
+      divisibleBy:          "must be divisible by %{expected}",
+      minItems:             "must contain more than %{expected} items",
+      maxItems:             "must contain less than %{expected} items",
+      uniqueItems:          "must hold a unique set of values",
+      format:               "is not a valid %{expected}",
+      conform:              "must conform to given constraint",
+      type:                 "must be of %{expected} type",
+      additionalProperties: "must not exist"
   };
   validate.messages['enum'] = "must be present in given enumerator";
 
@@ -139,7 +166,7 @@
     'date-time':      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:.\d{1,3})?Z$/,
     'date':           /^\d{4}-\d{2}-\d{2}$/,
     'time':           /^\d{2}:\d{2}:\d{2}$/,
-    'color':          /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|and yellow$/i,
+    'color':          /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow$/i,
     //'style':        (not supported)
     //'phone':        (not supported)
     //'uri':          (not supported)
@@ -165,11 +192,6 @@
   validate.formatExtensions = {
     'url': /^(https?|ftp|git):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
   };
-
-
-  function getFormat(format) {
-
-  }
 
   function mixin(obj) {
     var sources = Array.prototype.slice.call(arguments, 1);
@@ -268,18 +290,18 @@
         type;
 
     function constrain(name, value, assert) {
-      if (schema[name] !== undefined && !assert(value, schema[name])) {
+      if (schema[name] !== undefined && !assert(value, schema[name], object)) {
         error(name, property, value, schema, errors);
       }
     }
 
-    if (value === undefined) {
+    if (value === undefined || (value === '' && options.strictRequired === true)) {
       if(schema['default'] !== undefined && options.addMissingDefaults){
         if (typeof schema['default'] === 'function')
           object[property] = value = schema['default']();
         else
           object[property] = value = schema['default'];
-      }else if (schema.required && schema.type !== 'any') {
+      } else if (schema.required && schema.type !== 'any') {
         return error('required', property, undefined, schema, errors);
       } else {
         return;
@@ -333,7 +355,7 @@
                         if (isArray(object[property])) {
                             // convert values in array
                             var index = object[property].indexOf(value);
-                            object[property][index] = options.convert(schema.format, value)
+                            object[property][index] = options.convert(schema.format, value);
                         } else {
                             object[property] = options.convert(schema.format, value);
                         }
@@ -375,10 +397,20 @@
     checkType(value, schema.type, function(err, type) {
       if (err) return error('type', property, typeof value, schema, errors);
 
-      constrain('conform', value, function (a, e) { return e(a) });
+      constrain('conform', value, function (a, e, o) { return e(a, o) });
 
       switch (type || (isArray(value) ? 'array' : typeof value)) {
         case 'string':
+          if (options.trim === true) {
+            if (isArray(object[property])) {
+              // convert values in array
+               var index = object[property].indexOf(value);
+               object[property][index] = value.trim();
+            } else {
+               object[property] = value.trim();
+            }
+          }
+
           constrain('minLength', value.length, function (a, e) { return a >= e });
           constrain('maxLength', value.length, function (a, e) { return a <= e });
           constrain('pattern',   value,        function (a, e) {
@@ -453,7 +485,7 @@
           type === 'any' ? typeof val !== 'undefined' : false) {
         return callback(null, type);
       }
-    };
+    }
 
     callback(true);
   }
@@ -484,7 +516,6 @@
     }
     return false;
   }
-
 
 })(typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
 
