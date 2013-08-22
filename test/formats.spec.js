@@ -54,13 +54,17 @@ describe('Formats', function () {
 
     it('should validate a date correctly', function () {
         var res1 = val.formats.date('2013-01-09');
-        var res2 = val.formats.date('234');
+        var res2 = val.formats.date('09.01.2013');
+        var res3 = val.formats.date('234');
 
         expect(res1.valid).toBe(true);
         expect(res1.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
     });
 
     it('should validate a time correctly', function () {
