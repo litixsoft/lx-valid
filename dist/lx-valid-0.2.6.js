@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.1 - 2013-05-24
+ * lx-valid - v0.2.6 - 2013-08-14
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -35,7 +35,16 @@
   //
   function validate(object, schema, options) {
     options = mixin({}, validate.defaults, options);
-  
+
+    if (options.trim === true) {
+      // ensure that trim works in old browsers
+      if(!String.prototype.trim) {
+        String.prototype.trim = function () {
+          return this.replace(/^\s+|\s+$/g,'');
+        };
+      }
+    }
+
     var errors = [];
 
     validateObject(object, schema, options, errors);
@@ -49,7 +58,6 @@
       valid: !(errors.length),
       errors: errors
     };
-
   }
 
   /**
@@ -95,8 +103,8 @@
        * <em>Default: <code>false</code></em>
        * </p>
        */
-       addMissingDefaults: false,
-       /**
+      addMissingDefaults: false,
+      /**
        * <p>
        * When {@link #deleteUnknownProperties} is <code>true</code>,
        * if property is not declared in schema it is deleted from object.
@@ -104,28 +112,47 @@
        * <em>Default: <code>false</code></em>
        * </p>
        */
-       deleteUnknownProperties: false
+      deleteUnknownProperties: false,
+      /**
+       * <p>
+       * When {@link #trim} is <code>true</code>,
+       * all string values are trimmed.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+      trim: false,
+      /**
+       * <p>
+       * When {@link #strictRequired} is <code>true</code>,
+       * all empty string values ('') which are required will be invalid.
+       * </p><p>
+       * <em>Default: <code>false</code></em>
+       * </p>
+       */
+      strictRequired: false
   };
 
   /**
    * Default messages to include with validation errors.
    */
   validate.messages = {
-      required:         "is required",
-      minLength:        "is too short (minimum is %{expected} characters)",
-      maxLength:        "is too long (maximum is %{expected} characters)",
-      pattern:          "invalid input",
-      minimum:          "must be greater than or equal to %{expected}",
-      maximum:          "must be less than or equal to %{expected}",
-      exclusiveMinimum: "must be greater than %{expected}",
-      exclusiveMaximum: "must be less than %{expected}",
-      divisibleBy:      "must be divisible by %{expected}",
-      minItems:         "must contain more than %{expected} items",
-      maxItems:         "must contain less than %{expected} items",
-      uniqueItems:      "must hold a unique set of values",
-      format:           "is not a valid %{expected}",
-      conform:          "must conform to given constraint",
-      type:             "must be of %{expected} type"
+      required:             "is required",
+      minLength:            "is too short (minimum is %{expected} characters)",
+      maxLength:            "is too long (maximum is %{expected} characters)",
+      pattern:              "invalid input",
+      minimum:              "must be greater than or equal to %{expected}",
+      maximum:              "must be less than or equal to %{expected}",
+      exclusiveMinimum:     "must be greater than %{expected}",
+      exclusiveMaximum:     "must be less than %{expected}",
+      divisibleBy:          "must be divisible by %{expected}",
+      minItems:             "must contain more than %{expected} items",
+      maxItems:             "must contain less than %{expected} items",
+      uniqueItems:          "must hold a unique set of values",
+      format:               "is not a valid %{expected}",
+      conform:              "must conform to given constraint",
+      type:                 "must be of %{expected} type",
+      additionalProperties: "must not exist"
   };
   validate.messages['enum'] = "must be present in given enumerator";
 
@@ -139,7 +166,7 @@
     'date-time':      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:.\d{1,3})?Z$/,
     'date':           /^\d{4}-\d{2}-\d{2}$/,
     'time':           /^\d{2}:\d{2}:\d{2}$/,
-    'color':          /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|and yellow$/i,
+    'color':          /^#[a-z0-9]{6}|#[a-z0-9]{3}|(?:rgb\(\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*,\s*(?:[+-]?\d+%?)\s*\))aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow$/i,
     //'style':        (not supported)
     //'phone':        (not supported)
     //'uri':          (not supported)
@@ -263,18 +290,18 @@
         type;
 
     function constrain(name, value, assert) {
-      if (schema[name] !== undefined && !assert(value, schema[name])) {
+      if (schema[name] !== undefined && !assert(value, schema[name], object)) {
         error(name, property, value, schema, errors);
       }
     }
 
-    if (value === undefined) {
-      if(schema.default !== undefined && options.addMissingDefaults){
-        if (typeof schema.default === 'function')
-          object[property] = value = schema.default();
+    if (value === undefined || (value === '' && options.strictRequired === true)) {
+      if(schema['default'] !== undefined && options.addMissingDefaults){
+        if (typeof schema['default'] === 'function')
+          object[property] = value = schema['default']();
         else
-          object[property] = value = schema.default;
-      }else if (schema.required && schema.type !== 'any') {
+          object[property] = value = schema['default'];
+      } else if (schema.required && schema.type !== 'any') {
         return error('required', property, undefined, schema, errors);
       } else {
         return;
@@ -298,29 +325,51 @@
     }
 
     if (schema.format && options.validateFormats) {
-      format = schema.format;
+        var formats = isArray(schema.format) ? schema.format : [schema.format];
+        valid = false;
 
-      if (options.validateFormatExtensions) { spec = validate.formatExtensions[format] }
-      if (!spec) { spec = validate.formats[format] }
-      if (!spec) {
-        if (options.validateFormatsStrict) {
-          return error('format', property, value, schema, errors);
-        }
-      }
-      else {
-        if (!spec.test(value)) {
-          return error('format', property, value, schema, errors);
-        } else if (options.convert && typeof options.convert === 'function') {
-            // try to convert property by schema format
-            if (Array.isArray(object[property])) {
-                // convert values in array
-                var index = object[property].indexOf(value);
-                object[property][index] = options.convert(schema.format, value)
+        // Go through available formats
+        // And find first matching
+        for (i = 0, l = formats.length; i < l; i++) {
+            format = formats[i].toLowerCase().trim();
+
+            if (options.validateFormatExtensions) {
+                spec = validate.formatExtensions[format]
+            }
+
+            if (!spec) {
+                spec = validate.formats[format]
+            }
+
+            if (!spec) {
+                if (options.validateFormatsStrict) {
+                    valid = false;
+                    break;
+                }
             } else {
-                object[property] = options.convert(schema.format, value);
+                if (!spec.test(value)) {
+                    valid = false;
+                } else {
+                    if (options.convert && typeof options.convert === 'function') {
+                        // try to convert property by schema format
+                        if (isArray(object[property])) {
+                            // convert values in array
+                            var index = object[property].indexOf(value);
+                            object[property][index] = options.convert(schema.format, value);
+                        } else {
+                            object[property] = options.convert(schema.format, value);
+                        }
+                    }
+
+                    valid = true;
+                    break;
+                }
             }
         }
-      }
+
+        if (!valid) {
+            return error('format', property, value, schema, errors);
+        }
     }
 
     if (schema['enum'] && schema['enum'].indexOf(value) === -1) {
@@ -348,10 +397,20 @@
     checkType(value, schema.type, function(err, type) {
       if (err) return error('type', property, typeof value, schema, errors);
 
-      constrain('conform', value, function (a, e) { return e(a) });
+      constrain('conform', value, function (a, e, o) { return e(a, o) });
 
       switch (type || (isArray(value) ? 'array' : typeof value)) {
         case 'string':
+          if (options.trim === true) {
+            if (isArray(object[property])) {
+              // convert values in array
+               var index = object[property].indexOf(value);
+               object[property][index] = value.trim();
+            } else {
+               object[property] = value.trim();
+            }
+          }
+
           constrain('minLength', value.length, function (a, e) { return a >= e });
           constrain('maxLength', value.length, function (a, e) { return a <= e });
           constrain('pattern',   value,        function (a, e) {
@@ -426,7 +485,7 @@
           type === 'any' ? typeof val !== 'undefined' : false) {
         return callback(null, type);
       }
-    };
+    }
 
     callback(true);
   }
@@ -457,7 +516,6 @@
     }
     return false;
   }
-
 
 })(typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
 
@@ -537,8 +595,11 @@
     //// nextTick implementation with browser-compatible fallback ////
     if (typeof process === 'undefined' || !(process.nextTick)) {
         if (typeof setImmediate === 'function') {
-            async.setImmediate = setImmediate;
-            async.nextTick = setImmediate;
+            async.nextTick = function (fn) {
+                // not a direct alias for IE10 compatibility
+                setImmediate(fn);
+            };
+            async.setImmediate = async.nextTick;
         }
         else {
             async.nextTick = function (fn) {
@@ -1420,13 +1481,14 @@
     // add formats to revalidator
     revalidator.validate.formatExtensions['mongo-id'] = /^[0-9a-fA-F]{8}[0-9a-fA-F]{6}[0-9a-fA-F]{4}[0-9a-fA-F]{6}$/;
     revalidator.validate.formatExtensions['number-float'] = /^[\-\+]?\b(\d+[.]\d+$)$/;
+    revalidator.validate.formatExtensions['empty'] = /^$/;
 
     /**
      * Extend revalidator format extensions
      * @param extensionName
      * @param extensionValue
      */
-    function extendFormatExtensions(extensionName, extensionValue) {
+    function extendFormatExtensions (extensionName, extensionValue) {
         if (typeof extensionName !== 'string' || !(extensionValue instanceof RegExp)) {
             throw new Error('extensionName or extensionValue undefined or not correct type');
         }
@@ -1446,7 +1508,7 @@
      * @param replacement
      * @return {String}
      */
-    function getMsg(msgTyp, replacement) {
+    function getMsg (msgTyp, replacement) {
         return String(revalidator.validate.messages[msgTyp].replace('%{expected}', replacement));
     }
 
@@ -1457,7 +1519,7 @@
      * @param actual
      * @return {Object}
      */
-    function getError(type, expected, actual) {
+    function getError (type, expected, actual) {
         var error = {
             attribute: '',
             expected: '',
@@ -1478,7 +1540,7 @@
      * @param err
      * @return {object}
      */
-    function getResult(err) {
+    function getResult (err) {
         var res = {
             valid: true,
             errors: []
@@ -1497,7 +1559,7 @@
      * @param val
      * @return {Boolean}
      */
-    function uniqueArrayHelper(val) {
+    function uniqueArrayHelper (val) {
         var h = {};
 
         for (var i = 0, l = val.length; i < l; i++) {
@@ -1515,7 +1577,7 @@
      * Check formats
      * @return {Object}
      */
-    function formats() {
+    function formats () {
         var pub = {};
 
         pub.email = function (val) {
@@ -1597,14 +1659,21 @@
         };
         pub.mongoId = function (val) {
             if (!revalidator.validate.formatExtensions['mongo-id'].test(val)) {
-                return getResult(getError('format', 'url', val));
+                return getResult(getError('format', 'mongoId', val));
             }
 
             return getResult(null);
         };
         pub.numberFloat = function (val) {
             if (!revalidator.validate.formatExtensions['number-float'].test(val)) {
-                return getResult(getError('format', 'url', val));
+                return getResult(getError('format', 'float', val));
+            }
+
+            return getResult(null);
+        };
+        pub.empty = function (val) {
+            if (!revalidator.validate.formatExtensions['empty'].test(val)) {
+                return getResult(getError('format', 'empty', val));
             }
 
             return getResult(null);
@@ -1617,7 +1686,7 @@
      * Check types
      * @return {Object}
      */
-    function types() {
+    function types () {
         var pub = {};
 
         pub.string = function (val) {
@@ -1655,7 +1724,6 @@
 
             return getResult(null);
         };
-
         pub.integer = function (val) {
 
             /*jshint bitwise: false */
@@ -1694,9 +1762,16 @@
 
             return getResult(null);
         };
-        pub.null = function (val) {
+        pub['null'] = function (val) {
             if (val !== null) {
                 return getResult(getError('type', 'null', val));
+            }
+
+            return getResult(null);
+        };
+        pub.mongoId = function (val) {
+            if (!revalidator.validate.formatExtensions['mongo-id'].test(val.toString())) {
+                return getResult(getError('type', 'mongoId', val));
             }
 
             return getResult(null);
@@ -1709,7 +1784,7 @@
      * Check rules
      * @return {Object}
      */
-    function rules() {
+    function rules () {
         var pub = {};
         pub.maxLength = function (val, max) {
 
@@ -1793,7 +1868,6 @@
                 (div - Math.floor(div)).toString().length - 2);
             multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
 
-
             if ((val * multiplier) % (div * multiplier) !== 0) {
                 return getResult(getError('divisibleBy', div, val));
             }
@@ -1830,15 +1904,15 @@
                 return getResult(new Error('rules.uniqueItems(fail): value must be a array'));
             }
 
-            if (! (uniqueArrayHelper(val))) {
+            if (!(uniqueArrayHelper(val))) {
                 return getResult(getError('uniqueItems', val, true));
             }
 
             return getResult(null);
         };
-        pub.enum = function (val, en) {
+        pub['enum'] = function (val, en) {
 
-            if (typeof val === 'undefined' || ! Array.isArray(en)) {
+            if (typeof val === 'undefined' || !Array.isArray(en)) {
                 return getResult(new Error('rules.enum(fail): value must be a defined and enum mus be a array'));
             }
 
@@ -1852,7 +1926,7 @@
         return pub;
     }
 
-    function asyncValidate() {
+    function asyncValidate () {
         var pub = {},
             validators = [];
 
@@ -1885,6 +1959,36 @@
         return pub;
     }
 
+    /**
+     * Gets the validate function and encapsulates some param checks
+     *
+     * @param {object=} validationOptions The validation options for revalidator.
+     * @return {function(doc, schema, options)}
+     */
+    function getValidationFunction (validationOptions) {
+        return function (doc, schema, options) {
+            doc = doc || {};
+            options = options || {};
+            options.isUpdate = options.isUpdate || false;
+
+            // check is update
+            if (options.isUpdate) {
+                var i,
+                    keys = Object.keys(schema.properties),
+                    length = keys.length;
+
+                for (i = 0; i < length; i++) {
+                    if (!doc.hasOwnProperty(keys[i])) {
+                        schema.properties[keys[i]].required = false;
+                    }
+                }
+            }
+
+            // json schema validate
+            return exports.validate(doc, schema, validationOptions);
+        };
+    }
+
     exports.validate = revalidator.validate;
     exports.mixin = revalidator.mixin;
     exports.extendFormat = extendFormatExtensions;
@@ -1892,8 +1996,9 @@
     exports.types = types();
     exports.rules = rules();
     exports.asyncValidate = asyncValidate();
+    exports.getValidationFunction = getValidationFunction;
 })(
         typeof(window) === 'undefined' ? module.exports : (window.lxvalid = window.lxvalid || {}),
-        typeof(window) === 'undefined' ? require('revalidator'): (window.json),
-        typeof(window) === 'undefined' ? require('async'): (window.async)
+        typeof(window) === 'undefined' ? require('revalidator') : (window.json),
+        typeof(window) === 'undefined' ? require('async') : (window.async)
     );

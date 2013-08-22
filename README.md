@@ -1,12 +1,12 @@
 lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.png?branch=master)](https://travis-ci.org/litixsoft/lx-valid)
 ===========
-A validator for Node.js and the client, based on Flatiron Revalidator.
+A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
 ### available languages:
 * english
-* [german](https://github.com/litixsoft/lx-valid/blob/master/doc/german.md)
+* [german](http://www.litixsoft.de/products-lxvalid)
 
-## The concept
+## The idea
 Nodejitsu's Revalidator is a great JSON schema validator and therefore the backbone of lx-valid.
 But in practice there is often a need for a more general validator for simple checks that works on the client as
 well as on the server. The basic concept is to extend Revalidator and create a more complete validation framework
@@ -19,28 +19,35 @@ You can find more information about Revalidator here: [https://github.com/flatir
 The Revalidator example showing schema validation works exactly the same with lx-valid:
 
 ```js
-var val = require('lx-valid');
-console.dir(val.validate(someObject,
-{
-    properties: {
-      url: {
-        description: 'the url the object should be stored at',
-        type: 'string',
-        pattern: '^/[^#%&*{}\\:<>?\/+]+$',
-        required: true
-      },
-      challenge: {
-        description: 'a means of protecting data (insufficient for production, used as example)',
-        type: 'string',
-        minLength: 5
-      },
-      body: {
-        description: 'what to store at the url',
-        type: 'any',
-        default: null
-      }
-    }
-  }));
+var val = require('lx-valid'),
+    someObject = {
+        url: 'http://www.litixsoft.de',
+        mission: 'change the world',
+        body: 'Chuck Norris'
+    },
+    schema = {
+        properties: {
+            url: {
+                description: 'Company url',
+                type: 'string',
+                pattern: '^/[^#%&*{}\\:<>?\/+]+$',
+                required: true
+            },
+            mission: {
+                description: 'Company mission',
+                type: 'string',
+                minLength: 5
+            },
+            body: {
+                description: 'WAT',
+                type: 'any',
+                default: null
+            }
+        }
+    },
+    res = val.validate(someObject, schema);
+
+console.log(res);
 ```
 
 ## Installation
@@ -49,40 +56,42 @@ console.dir(val.validate(someObject,
 npm install lx-valid
 ```
 
-## Usage
+## Schema validation
 
-### Schema validation
-For schema validation lx-valid requires an object to be validated and a JSON schema.
+For schema validation lx-valid requires an `object` to be validated and a JSON schema.
 
-**lx-valid.validate(obj, schema, optionen).**
+`lx-valid.validate(obj, schema, options)`
 
 The validate method returns an object with information on the tested object matching the rules from the JSON schema.
 In case the validation failed (rules are violated), the returned object also contains an array with the validation errors.
 
 ```js
 {
-  valid: true // or false
-  errors: [/* in case valid: false, an array with validation rule violations */]
+    valid: true // or false
+    errors: [/* in case valid: false, an array with validation rule violations */]
 }
 ```
 
 ##### Available Options
-* validateFormats: Enforce format constraints (_default true_)
-* validateFormatsStrict: When validateFormats is true treat unrecognized formats as validation errors (_default false_)
-* validateFormatExtensions: When validateFormats is true also validate formats defined in validate.formatExtensions.
-This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. (_default true_)
-* cast: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
-e.g. "42" => 42, but"forty2" => "forty2" for the integer type.
-* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. (_default false_)
-* __convert__: Converts a property by the format defined in the schema. Modifies the original object. (_default undefined_)
+* __validateFormats__: Enforce format constraints ( __default: `true`__ )
+* __validateFormatsStrict__: When `validateFormats` is `true` treat unrecognized formats as validation errors ( __default `false`__ )
+* __validateFormatExtensions__: When `validateFormats` is `true` also validate formats defined in `validate.formatExtensions`.
+This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. ( __default: `true`__ )
+* __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
+e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. ( __default: `undefined`__ )
+* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ )
+* __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
+* __trim__: Trims all properties of type `string`. Modifies the original object. ( __default: `false`__ )
+* __strictRequired__: Sets validity of empty `string` to `false`. ( __default: `false`__ )
 
-For a property an  value  is that which is given as input for validation where as an  expected value  is the value
+### Validation types
+For a property an `value` is that which is given as input for validation where as an `expected value` is the value
 of the below fields.
 
-##### required
-If true, the value should not be empty.
+#### required
+If `true`, the value should not be empty.
 
-##### type
+#### type
 The type of value should be equal to the expected value.
 
 ```js
@@ -97,53 +106,53 @@ The type of value should be equal to the expected value.
 { type: ['boolean', 'string'] }
 ```
 
-##### Example for types
+#### Example for types
 
 ```js
-var typeTest = {
-    stringTest:"test",
-    arrayTest:[1,2,3],
-    boolTest:"test"
-};
-var schemaTest = {
-   "properties":{
-        "IntTest": {
-            "type":"integer",
-            "id": "IntTest",
-            "required":false
-        },
-        "arrayTest": {
-            "type":"array",
-            "id": "arrayTest",
-            "required":false,
-            "maxItems":3,
-            "items":
-            {
-                "type":"integer",
-                "id": "0",
-                "required":false
+var val = require('lx-valid'),
+    typeTest = {
+        stringTest: "test",
+        arrayTest: [1, 2, 3],
+        boolTest: "test"
+    },
+    schemaTest = {
+        "properties": {
+            "IntTest": {
+                "type": "integer",
+                "id": "IntTest",
+                "required": false
+            },
+            "arrayTest": {
+                "type": "array",
+                "id": "arrayTest",
+                "required": false,
+                "maxItems": 3,
+                "items": {
+                    "type": "integer",
+                    "id": "0",
+                    "required": false
+                }
+            },
+            "boolTest": {
+                "type": "boolean",
+                "id": "boolTest",
+                "required": true
+            },
+            "stringTest": {
+                "type": "string",
+                "id": "stringTest",
+                "required": true
             }
-        },
-        "boolTest": {
-            "type":"boolean",
-            "id": "boolTest",
-            "required":true
-        },
-        "stringTest": {
-            "type":"string",
-            "id": "stringTest",
-            "required":true
         }
-    }
-};
-var val = require('lx-valid');
-var res = val.validate(typeTest,schemaTest);
+    },
+    res = val.validate(typeTest, schemaTest);
+
 console.log(res);
 ```
 
 The integer value and the array are not required to be present in the tested object,
 so there will be no errors concerning the missing intTest property. The boolTest however will fail since the
-the expected type is boolean while the property contains a string.
+the expected type is `boolean` while the property contains a `string`.
 
 ### Validation rules
 
@@ -154,14 +163,14 @@ The expected value regex needs to be satisfied by the value.
 { pattern: /^[a-z]+$/ }
 ```
 
-#### maxLength  ( string und array )
+#### maxLength  ( string and array )
 The length of value must be greater than or equal to expected value.
 
 ```js
 { maxLength: 8 }
 ```
 
-#### minLength ( string und array )
+#### minLength ( string and array )
 The length of value must be lesser than or equal to expected value.
 
 ```js
@@ -235,29 +244,28 @@ Value must be present in the array of expected value.
 #### Example for rules
 
 ```js
-var typeTest = {
-    stringTest:"test",
-    arrayTest:[1,2,3],
-    boolTest:"test"
-};
-var schemaTest = {
-   "properties":{
-        "arrayTest": {
-            "type":"array",
-            "required":false,
-            "maxItems":3,
-            "items":
-            {
-                "type":"integer",
-                "id": "0",
-                "required":false
+var val = require('lx-valid'),
+    typeTest = {
+        stringTest: "test",
+        arrayTest: [1, 2, 3],
+        boolTest: "test"
+    },
+    schemaTest = {
+        "properties": {
+            "arrayTest": {
+                "type": "array",
+                "required": false,
+                "maxItems": 3,
+                "items": {
+                    "type": "integer",
+                    "id": "0",
+                    "required": false
+                }
             }
         }
-    }
-};
+    },
+    res = val.validate(typeTest, schemaTest);
 
-var val = require('lx-valid');
-var res = val.validate(typeTest,schemaTest);
 console.log(res);
 ```
 
@@ -268,7 +276,7 @@ The value should match a valid format.
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format' }
+{ format: 'number-float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -280,141 +288,182 @@ The value should match a valid format.
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
-##### Example for format
-
+#### Example for format
 ```js
-var val = require('lx-valid');
-var objForTest = {
-    UuidTest:"507f191e810c19729de860ea",
-    floatTest:3.2,
-    IntTest:2
-};
-var schemaForTest = {
-    "properties":{
-        "UuidTest": {
-            "type":'string',
-            "required":true,
-            "format":'mongo-id'
-        },
-        "IntTest": {
-            "type":"integer",
-            "required":false
-        },
-        "floatTest": {
-            "type":"number",
-            "required":false,
-            "format":'number-float'
+var val = require('lx-valid'),
+    objForTest = {
+        UuidTest: "507f191e810c19729de860ea",
+        floatTest: 3.2,
+        IntTest: 2,
+        EmptyEmailTest: ''
+    },
+    schemaForTest = {
+        "properties": {
+            "UuidTest": {
+                "type": 'string',
+                "required": true,
+                "format": 'mongo-id'
+            },
+            "IntTest": {
+                "type": "integer",
+                "required": false
+            },
+            "floatTest": {
+                "type": "number",
+                "required": false,
+                "format": 'number-float'
+            },
+            "ip": {
+                "type": "string",
+                "format": ['ip-address', 'ipv6']
+            },
+            "emptyMail": {
+                "type": "string",
+                "format": ['empty', 'email']
+            }
         }
-    }
-}
-var result = val.validate(objForTest, schemaForTest);
+    },
+    result = val.validate(objForTest, schemaForTest);
+
 console.log(result);
 ```
 
 In this case values will be tested against predefined formats. The UuidTest property's value should be a string
 matching the format of a MongoDB ObjectId. The floatTest value should be a number matching a float.
 If additional characters are added to UuidTest's value, validation fails.
+It is also supported to validate an array of formats.
 
-##### Extension by custom formats
+#### Extension by custom formats
 Additionally the predefined formats can be extended by custom ones as the following example shows:
 
 ```js
 var val = require('lx-valid'),
-    testFormat = /^Test[0-9]{2}Test$/;
+    testFormat = /^Test[0-9]{2}Test$/,
+    objForTest = {
+        OwnFormatTest: "Test24Test"
+    },
+    schemaForTest = {
+        "properties": {
+            "OwnFormatTest": {
+                "type": 'string',
+                "required": true,
+                "format": 'test-format'
+            }
+        }
+    };
+
 try {
-    val.extendFormat('test-format',testFormat);
+    val.extendFormat('test-format', testFormat);
 }
 catch (e) {
     console.log(e);
 }
-var objForTest = {
-    OwnFormatTest:"Test24Test"
-};
-var schemaForTest = {
-    "properties":{
-        "OwnFormatTest": {
-            "type":'string',
-            "required":true,
-            "format":'test-format'
-        }
-    }
-}
-var result = val.validate(objForTest, schemaForTest);
-console.log(result);
+
+var res = val.validate(objForTest, schemaForTest);
+console.log(res);
 ```
 
 After extending the validator with the custom format it's accessible by any schema anytime.
 Custom formats can be registered with the validator only once. At this point an exception will be thrown in case
 a format already exists with the same key. This will be subject to change in future versions.
 
-#### "Conform" custom validation
+### "Conform" custom validation
 Value must conform to constraint denoted by expected value. Conform allows for extensive validation.
 A conform validator is a function accepting the value to the validated as single parameter.
-The return value of the function must be boolean true or false.
+The return value of the function must be boolean `true` or `false`.
 
 ```js
-{ conform: function (v) {
-    if (v%3==1) return true;
-    return false;
-  }
+{
+    conform: function (v) {
+        if (v % 3 == 1) {
+            return true;
+        }
+        return false;
+    }
 }
 ```
 
-#### Dependencies
+```js
+{
+    name: {
+        type: 'string'
+    },
+    verifiedName: {
+        type: 'string',
+        conform: function (actual, original) {
+            if (actual === original.name) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
+```
+
+### Dependencies
 Value is valid only if the dependent value is valid.
 
 ```js
 {
-  town: { required: true, dependencies: 'country' },
-  country: { maxLength: 3, required: true }
+    town: {
+        required: true,
+        dependencies: 'country'
+    },
+    country: {
+        required: true,
+        maxLength: 3
+    }
 }
 ```
 
-#### Nested Schema
+### Nested Schema
 We also allow nested schema.
 
 ```js
 {
-  properties: {
-    title: {
-      type: 'string',
-      maxLength: 140,
-      required: true
-    },
-    author: {
-      type: 'object',
-      required: true,
-      properties: {
-        name: {
-          type: 'string',
-          required: true
+    properties: {
+        title: {
+            required: true,
+            type: 'string',
+            maxLength: 140
         },
-        email: {
-          type: 'string',
-          format: 'email'
+        author: {
+            type: 'object',
+            required: true,
+            properties: {
+                name: {
+                    required: true,
+                    type: 'string'
+                },
+                email: {
+                    type: 'string',
+                    format: 'email'
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
-#### Custom Messages
+### Custom Messages
 We also allow custom message for different constraints.
 
 ```js
 {
-  type: 'string',
-  format: 'url'
-  messages: {
-    type: 'Not a string type',
-    format: 'Expected format is a url'
-  }
-{
-  conform: function () { ... },
-  message: 'This can be used as a global message'
+    type: 'string',
+    format: 'url',
+    messages: {
+        type: 'Not a string type',
+        format: 'Expected format is a url'
+    },
+    {
+        conform: function () { ... },
+        message: 'This can be used as a global message'
+    }
 }
 ```
 
@@ -423,59 +472,79 @@ Converts a property by the format defined in the schema. Modifies the original o
 
 ```js
 var data = {
-  birthdate: '1979-03-01T15:55:00.000Z'
-};
+        birthdate: '1979-03-01T15:55:00.000Z'
+    },
+    schema = {
+        properties: {
+            birthdate: {
+                type: 'string',
+                format: 'date-time'
+            }
+        }
+    },
+    convertFn = function (format, value) {
+        if (format === 'date-time') {
+            return new Date(value);
+        }
 
-var schema = {
-  properties: {
-    birthdate: {
-      type: 'string',
-      format: 'date-time'
-    }
-  }
-};
-
-var convertFn = function(format, value) {
-  if (format === 'date-time') {
-    return new Date(value);
-  }
-
-  return value;
-};
-
-var result = validate(data, schema, {convert: convertFn});
+        return value;
+    },
+    res = validate(data, schema, {convert: convertFn});
 
 // birthdate was converted
-typeof data.birthdate === 'object';
+console.log(typeof data.birthdate === 'object'); // true
+```
+### Schema validation when updating data
+When working with db's, you often update data. Sometimes you send just a part of the data and the the schema validation will be false because some required fields may be missing.
+To prevent this there is an option `isUpdate`. When set to `true` all required fields in the schema which are not part of the data are set to `required: false`.
+There is a helper function to get the validate function with this update check.
 
+```js
+var val = require('lx-valid'),
+    data = {name: 'wayne'},
+    schema = {
+        properties: {
+            id: {
+                type: 'int',
+                required: true
+            },
+            name: {
+                type: 'string',
+                required: false
+            }
+        }
+    },
+
+    valFn = val.getValidationFunction(),
+    res = valFn(data, schema, {isUpdate: true});
+
+console.log(res.valid); // true
+console.log(res.errors.length); // 0
 ```
 
-### Validation without schema
+## Validation without schema
 There is a simple API allowing for testing types, rules and formats without having to define a schema.
 
-* lx-valid.formats.<formatname>(value)
-* lx-valid.types.<typename>(value)
-* lx-valid.rules.<rulename>(value)
+* `lx-valid.formats.<formatname>(value)`
+* `lx-valid.types.<typename>(value)`
+* `lx-valid.rules.<rulename>(value)`
 
 An object is returned that contains information on the tested value matching the rule.
 In case of rule violation the returned object contains an array with the validation errors.
 
 ```js
 {
-  valid: true // oder false
-  errors: [/* Array mit Fehlern wenn valid false ist */]
+    valid: true // or false
+    errors: [/* in case valid: false, an array with validation rule violations */]
 }
 ```
 
-#### Examples for validation without schema
-
-##### Types
+### Types
 The types in lx-valid are additions to the JSON schema types to support all JavaScript value types.
 
-**lx-valid.types.<typename>(value)**
+`lx-valid.formats.<rulename>(value)`
 
-##### JSON schema types
-
+#### JSON schema types
 ```js
 { type: 'string' }
 { type: 'number' }
@@ -488,57 +557,54 @@ The types in lx-valid are additions to the JSON schema types to support all Java
 { type: ['boolean', 'string'] }
 ```
 
-##### lx-valid types
-
+#### lx-valid types
 ```js
 { type: 'string' }
 { type: 'number' }
 { type: 'boolean' }
 { type: 'object' }
-{ type: 'undefined' } *
+{ type: 'undefined' }
 { type: 'integer' }
-{ type: 'float' } *
+{ type: 'float' }
 { type: 'array' }
-{ type: 'date' } *
-{ type: 'regexp' } *
-{ type: 'null' } *
+{ type: 'date' }
+{ type: 'regexp' }
+{ type: 'null' }
+{ type: 'mongoId' }
 ```
 
 All JSON schema types are supported and additionally all JavaScript types.
 
-##### integer
-
+#### integer
 ```js
 var res = val.types.integer(123);
 ```
 
-##### float
-
+#### float
 ```js
 var res = val.types.float(12.3);
 ```
 
-##### regexp
+#### regexp
 ```js
 var res = val.types.regexp(/^hello/);
 ```
 
-##### date
-
+#### date
 ```js
 var res = val.types.date(new Date());
 ```
 
-There are more examples to be found in test/types.js.
+There are more examples to be found in [test/types.spec.js](test/types.spec.js).
 
-##### Formats
+### Formats
 Just like in JSON schema validation, values can be tested against predefined formats.
 
-**lx-valid.formats.<formatname>(value)**
+`lx-valid.formats.<formatname>(value)`
 
 ```js
 { format: 'mongo-id' }
-{ format: 'number-format' }
+{ format: 'number-float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -550,32 +616,30 @@ Just like in JSON schema validation, values can be tested against predefined for
 { format: 'host-name' }
 { format: 'utc-millisec' }
 { format: 'regex' }
+{ format: 'empty' }
 ```
 
-##### ipAddress
-
+#### ipAddress
 ```js
 var res1 = val.formats.ipAddress("192.168.1.10");
 ```
 
-##### ipv6
-
+#### ipv6
 ```js
 var res1 = val.formats.ipv6("2001:0db8:85a3:08d3:1319:8a2e:0370:7344");
 ```
 
-##### dateTime
-
+#### dateTime
 ```js
 var res1 = val.formats.dateTime("2013-01-09T12:28:03.150Z");
 ```
 
-More examples can be found in test/formats.js
+More examples can be found in [test/formats.spec.js](test/formats.spec.js)
 
-##### Rules
+### Rules
 Of course the API also supports testing against rules.
 
-**lx-valid.rules.<rulename>(value,ruleValue)**
+`lx-valid.rules.<rulename>(value,ruleValue)`
 
 ```js
 { pattern: /^[a-z]+$/ }
@@ -592,102 +656,112 @@ Of course the API also supports testing against rules.
 { enum: ['month', 'year'] }
 ```
 
-##### maxLength
-
+#### maxLength
 ```js
 var res = val.rules.maxLength("test",4);
 ```
 
-##### minLength
-
+#### minLength
 ```js
 var res = val.rules.minLength("test",2);
 ```
 
-##### divisibleBy
-
+#### divisibleBy
 ```js
 var res = val.rules.divisibleBy(6,3);
 ```
 
-More examples are to be found in test/rules.js
+More examples are to be found in [test/rules.spec.js](test/rules.spec.js)
 
-#### Asyncrone Validierung (ab 0.2.0)
+## Asynchronous validation
 The Asynchronous validation consists of registration of validators and the execution of validators.
 
-**lx-valid.asyncValidate.register(function, parameter)**
-**lx-valid.asyncValidate.exec(validationResult, callback)**
+* `lx-valid.asyncValidate.register(function, value)`
+* `lx-valid.asyncValidate.exec(validationResult, callback)`
 
-lx-valid.asyncValidate.exec leads the added about validators register in parallel.
+`lx-valid.asyncValidate.exec` executes the registered validators in parallel.
 
-```js
-validationResult = {
-    valid: true,
-    errors: []
-};
-```
-
-It is best to carry out the validation by schema validation.
+It is best practice to first execute the schema validation and than execute the asynchronous validation.
 The result of schema validation is passed to the asynchronous validation.
 
 ```js
 // json schema validate
-var valResult = val.validate(doc, schema);
+var val = require('lx-valid'),
+    valResult = val.validate(doc, schema);
 
 // register async validator
-val.asyncValidate.register(function1, userName);
-val.asyncValidate.register(function2, email);
+val.asyncValidate.register(function1, value1);
+val.asyncValidate.register(function2, value2);
 
 // async validate
-val.asyncValidate.exec(valResult, cb);
+val.asyncValidate.exec(valResult, callback);
 ```
 
-More examples are to be found in test/tests.spec.js
+More examples are to be found in [test/tests.spec.js](test/tests.spec.js)
 
 ## Development
 The lx-valid validator is currently under development. Scheduled functions are implemented step by step.
-Please refer to the change list and roadmap for further information on development progress.
+Please refer to the changelog and roadmap for further information on development progress.
 
 ## Roadmap
 
 ### v0.3.0
 
-* Changes through the integration into a production project
 * filtering and sanitising of string
 
-## Change List
+## Changelog
 
-### v0.2.1 update
+### v0.2.6
+* Update revalidator dependency
+* Add tests
+
+### v0.2.5
+* Fix error in IE when using the javascript keywords null and enum (pub.null is now pub['null'])
+
+### v0.2.4
+* add new format 'empty'
+* update dependency revalidator
+* add support to validate an array of formats
+
+### v0.2.3
+* add type mongoId
+
+### v0.2.2
+* add helper function to get validation function
+
+### v0.2.1
 * update revalidator dependency
 * add option for removing properties from object which are not defined in the schema
 * add option to convert properties by the format defined in the schema
 
-### v0.2.0 update
+### v0.2.0
 * asynchronous validation
 
-### v0.1.4 update
+### v0.1.4
 * update grunt to v0.4
 * rewrite unit test with jasmine-node
 
-### v0.1.3 update
+### v0.1.3
 * integrate grunt
 * refactor for jsHint
 
-### v0.1.2 update
+### v0.1.2
 * remove exceptions in rules
 
-### v0.1.1 update
-
+### v0.1.1
 * updated documentation
 * german documentation
 
 ### v0.1.0 initial
-
 * JSON schema validation
 * simple API for accessing all validation function without JSON schema
 * additional validation formats mongo-id and number-float
 * functionality for extending validation formats with custom ones
 
+## Author
+[Litixsoft GmbH](http://www.litixsoft.de)
+
+## License
 (The MIT License)
 
 Copyright (C) 2013 Litixsoft GmbH info@litixsoft.de
