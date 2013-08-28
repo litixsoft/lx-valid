@@ -88,6 +88,16 @@ var schemaForTest = {
             'type': 'string',
             'id': 'emptyemailTest',
             'format': ['empty', 'email']
+        },
+        'shortDate': {
+            'type': 'string',
+            'id': 'shortDateTest',
+            'format': 'date'
+        },
+        'testDate': {
+            'type': 'string',
+            'id': 'testDateTest',
+            'format': ['empty', 'date']
         }
     }
 };
@@ -217,7 +227,9 @@ beforeEach(function () {
         dateTest: '1973-06-01T15:49:00.000Z',
         urlTest: 'http://google.de',
         emailTest: 'info@litixsoft.de',
-        emptyEmailTest: ''
+        emptyEmailTest: '',
+        shortDate: '1973-06-01',
+        testDate: '1973-06-01'
     };
 
     dataForConvertTest = {
@@ -351,7 +363,7 @@ describe('Validator', function () {
                 return 'convertedMongoId';
             }
 
-            if (format === 'date-time') {
+            if (format === 'date-time' || format === 'date') {
                 return new Date(value);
             }
 
@@ -365,6 +377,9 @@ describe('Validator', function () {
         expect(data.UuidTest).toBe('convertedMongoId');
         expect(typeof data.dateTest).toBe('object');
         expect(data.dateTest.getFullYear()).toBe(1973);
+        expect(data.dateTest).toEqual(new Date('1973-06-01T15:49:00.000Z'));
+        expect(data.shortDate).toEqual(new Date('1973-06-01'));
+        expect(data.testDate).toEqual(new Date('1973-06-01'));
     });
 
     it('validate() should not convert if no convert function is defined', function () {
