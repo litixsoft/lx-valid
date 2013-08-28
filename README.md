@@ -710,6 +710,9 @@ Please refer to the changelog and roadmap for further information on development
 * filtering and sanitising of string
 
 ## Changelog
+### v0.2.7
+* Update revalidator dependenc
+* Update .gitignore and .npmignore
 
 ### v0.2.6
 * Update revalidator dependency
