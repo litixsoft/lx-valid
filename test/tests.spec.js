@@ -382,6 +382,31 @@ describe('Validator', function () {
         expect(data.testDate).toEqual(new Date('1973-06-01'));
     });
 
+    it('validate() should convert if convert function and trim option is defined', function () {
+        var convertFn = function (format, value) {
+            if (format === 'mongo-id') {
+                return {oid: 'convertedMongoId'};
+            }
+
+            if (format === 'date-time' || format === 'date') {
+                return new Date(value);
+            }
+
+            return value;
+        };
+        var data = convertJson(typeForTest);
+
+        var result = val.validate(data, schemaForTest, {convert: convertFn, trim: true});
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+        expect(data.UuidTest).toEqual({oid: 'convertedMongoId'});
+        expect(typeof data.dateTest).toBe('object');
+        expect(data.dateTest.getFullYear()).toBe(1973);
+        expect(data.dateTest).toEqual(new Date('1973-06-01T15:49:00.000Z'));
+        expect(data.shortDate).toEqual(new Date('1973-06-01'));
+        expect(data.testDate).toEqual(new Date('1973-06-01'));
+    });
+
     it('validate() should not convert if no convert function is defined', function () {
         var result = val.validate(convertJson(typeForTest), schemaForTest);
 
