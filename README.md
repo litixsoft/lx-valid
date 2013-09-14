@@ -710,8 +710,16 @@ Please refer to the changelog and roadmap for further information on development
 * filtering and sanitising of string
 
 ## Changelog
+### v0.2.8
+* Include revalidator in project
+* Improve code style
+* Execute conform function when value is undefined
+* Data object is updated when cast option is true and a value is casted
+* Add more tests
+* Update devDependencies
+
 ### v0.2.7
-* Update revalidator dependenc
+* Update revalidator dependency
 * Update .gitignore and .npmignore
 
 ### v0.2.6

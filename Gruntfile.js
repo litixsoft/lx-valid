@@ -131,8 +131,9 @@ module.exports = function (grunt) {
     // Register tasks.
     grunt.registerTask('test', ['clean:jasmine', 'jshint:test', 'jasmine_node']);
     grunt.registerTask('cover', ['clean:coverage', 'jshint:test', 'bgShell:coverage', 'open']);
+    grunt.registerTask('build', ['test', 'concat', 'uglify', 'compress']);
     grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node']);
 
     // Default task.
-    grunt.registerTask('default', ['test', 'concat', 'uglify', 'compress']);
+    grunt.registerTask('default', ['build']);
 };

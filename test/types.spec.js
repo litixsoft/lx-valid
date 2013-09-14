@@ -80,12 +80,16 @@ describe('Types', function () {
         // float
         var res = val.types.float(12.34);
         var res2 = val.types.float(123);
+        var res3 = val.types.float('12.34');
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
     });
 
     it('should validate an array correctly', function () {
