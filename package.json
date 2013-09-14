@@ -55,7 +55,6 @@
     ],
     "readmeFilename": "README.md",
     "dependencies": {
-        "revalidator": "git://github.com/litixsoft/revalidator.git",
         "async": "~0.2.9"
     },
     "main": "lib/lx-valid.js",
@@ -64,14 +63,14 @@
     },
     "devDependencies": {
         "grunt": "0.4.1",
-        "grunt-bg-shell": "~2.0.1",
-        "grunt-contrib-clean": "~0.4.0",
+        "grunt-bg-shell": "~2.1.0",
+        "grunt-contrib-clean": "~0.5.0",
         "grunt-contrib-compress": "~0.5.2",
-        "grunt-contrib-concat": "~0.2.0",
-        "grunt-contrib-jshint": "~0.6.0",
-        "grunt-contrib-uglify": "~0.2.0",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-jshint": "~0.6.4",
+        "grunt-contrib-uglify": "~0.2.4",
         "grunt-jasmine-node": "0.1.0",
-        "grunt-open": "~0.2.0",
-        "istanbul": "~0.1.40"
+        "grunt-open": "~0.2.2",
+        "istanbul": "~0.1.43"
     }
 }

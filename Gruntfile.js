@@ -23,7 +23,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: [
-                    'node_modules/revalidator/lib/revalidator.js',
+                    'lib/revalidator.js',
                     'node_modules/async/lib/async.js',
                     'lib/<%= pkg.name %>.js'
                 ],
@@ -59,7 +59,7 @@ module.exports = function (grunt) {
                 newcap: true,
                 noarg: true,
                 noempty: true,
-                nonew: true,
+                nonew: false,
                 regexp: true,
                 undef: true,
                 unused: true,
@@ -68,16 +68,17 @@ module.exports = function (grunt) {
                 quotmark: 'single',
                 loopfunc: true,
                 browser: true,
-                node: true
+                node: true,
+                sub: true
             },
-            test: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js'],
+            test: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
             jslint: {
                 options: {
                     reporter: 'jslint',
                     reporterOutput: 'build/reports/jshint.xml'
                 },
                 files: {
-                    src: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js']
+                    src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
                 }
             },
             checkstyle: {
@@ -86,7 +87,7 @@ module.exports = function (grunt) {
                     reporterOutput: 'build/reports/jshint_checkstyle.xml'
                 },
                 files: {
-                    src: ['Gruntfile.js', 'lib/**/.js', 'test/**/*.js']
+                    src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
                 }
             }
         },
