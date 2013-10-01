@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.8 - 2013-09-14
+ * lx-valid - v0.2.9 - 2013-10-01
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -336,7 +336,7 @@
             }
         }
 
-        if (schema.format && options.validateFormats) {
+        if (schema.format && options.validateFormats && typeof value === 'string') {
             var formats = isArray(schema.format) ? schema.format : [schema.format];
             valid = false;
 
@@ -1726,7 +1726,7 @@
 
             return getResult(null);
         };
-        pub.boolean = function (val) {
+        pub['boolean'] = function (val) {
             if (typeof val !== 'boolean') {
                 return getResult(getError('type', 'boolean', val));
             }
@@ -1740,7 +1740,7 @@
 
             return getResult(null);
         };
-        pub.undefined = function (val) {
+        pub['undefined'] = function (val) {
             if (typeof val !== 'undefined') {
                 return getResult(getError('type', 'undefined', val));
             }
@@ -1756,7 +1756,7 @@
 
             return getResult(null);
         };
-        pub.float = function (val) {
+        pub['float'] = function (val) {
             //noinspection JSValidateTypes
             if (typeof val !== 'number' || !new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val)) {
                 return getResult(getError('type', 'float', val));

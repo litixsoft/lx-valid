@@ -710,6 +710,9 @@ Please refer to the changelog and roadmap for further information on development
 * filtering and sanitising of string
 
 ## Changelog
+### v0.2.9
+* Allow multiple types and format validation
+
 ### v0.2.8
 * Include revalidator in project
 * Improve code style
