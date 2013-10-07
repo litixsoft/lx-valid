@@ -1,5 +1,8 @@
+'use strict';
+
 module.exports = function (grunt) {
-    'use strict';
+    // load grunt tasks
+    require('load-grunt-tasks')(grunt);
 
     // Project configuration.
     grunt.initConfig({
@@ -117,16 +120,6 @@ module.exports = function (grunt) {
             }
         }
     });
-
-    // Load tasks.
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-jasmine-node');
-    grunt.loadNpmTasks('grunt-bg-shell');
-    grunt.loadNpmTasks('grunt-open');
-    grunt.loadNpmTasks('grunt-contrib-compress');
 
     // Register tasks.
     grunt.registerTask('test', ['clean:jasmine', 'jshint:test', 'jasmine_node']);

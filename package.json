@@ -71,6 +71,7 @@
         "grunt-contrib-uglify": "~0.2.4",
         "grunt-jasmine-node": "0.1.0",
         "grunt-open": "~0.2.2",
-        "istanbul": "~0.1.44"
+        "istanbul": "~0.1.44",
+        "load-grunt-tasks": "~0.1.0"
     }
 }

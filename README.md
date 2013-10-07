@@ -4,7 +4,7 @@ A validator for Node.js and the client, based on [Flatiron Revalidator](https://
 
 ### available languages:
 * english
-* [german](http://www.litixsoft.de/products-lxvalid)
+* [german](http://www.litixsoft.de/products-lxvalid.html)
 
 ## The idea
 Nodejitsu's Revalidator is a great JSON schema validator and therefore the backbone of lx-valid.
@@ -78,7 +78,7 @@ In case the validation failed (rules are violated), the returned object also con
 * __validateFormatExtensions__: When `validateFormats` is `true` also validate formats defined in `validate.formatExtensions`.
 This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. ( __default: `true`__ )
 * __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
-e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. ( __default: `undefined`__ )
+e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. Modifies the original object. ( __default: `undefined`__ )
 * __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ )
 * __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
 * __trim__: Trims all properties of type `string`. Modifies the original object. ( __default: `false`__ )
@@ -272,7 +272,7 @@ console.log(res);
 Validation will be successful, since the array contains 3 values, all of integer type.
 
 #### Validation formats
-The value should match a valid format.
+The value should match a valid format. The format is only validated when the value is of type `string`.
 
 ```js
 { format: 'mongo-id' }
@@ -373,7 +373,7 @@ a format already exists with the same key. This will be subject to change in fut
 ### "Conform" custom validation
 Value must conform to constraint denoted by expected value. Conform allows for extensive validation.
 A conform validator is a function accepting the value to the validated as single parameter.
-The return value of the function must be boolean `true` or `false`.
+The return value of the function must be boolean `true` or `false`. The conform function is also executed for undefined values.
 
 ```js
 {
