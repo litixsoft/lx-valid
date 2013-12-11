@@ -1,6 +1,6 @@
-lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.png?branch=master)](https://travis-ci.org/litixsoft/lx-valid)
-===========
-A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
+lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.png?branch=master)](https://travis-ci.org/litixsoft/lx-valid) [![david-dm](https://david-dm.org/litixsoft/lx-valid.png)](https://david-dm.org/litixsoft/lx-valid/) [![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.png)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
+
+> A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
 ### available languages:
 * english

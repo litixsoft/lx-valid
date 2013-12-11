@@ -1,8 +1,8 @@
 .git*
 .idea/
 .travis.yml
+.jshintrc
 build/
 doc/
-example/
 test/
 Gruntfile.js

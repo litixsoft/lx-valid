@@ -1,4 +1,5 @@
 'use strict';
+var fs = require('fs');
 
 module.exports = function (grunt) {
     // load grunt tasks
@@ -7,6 +8,7 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        jshint_files_to_test: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
         banner: '/*!\n' +
             ' * <%= pkg.title || pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
             '<%= pkg.homepage ? " * " + pkg.homepage + "\\n" : "" %>' +
@@ -17,7 +19,8 @@ module.exports = function (grunt) {
         // Before generating any new files, remove any previously-created files.
         clean: {
             jasmine: ['build/reports/jasmine'],
-            coverage: ['build/coverage']
+            coverage: ['build/coverage'],
+            dist: ['dist']
         },
         concat: {
             options: {
@@ -30,7 +33,7 @@ module.exports = function (grunt) {
                     'node_modules/async/lib/async.js',
                     'lib/<%= pkg.name %>.js'
                 ],
-                dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+                dest: 'dist/<%= pkg.name %>.js'
             }
         },
         uglify: {
@@ -39,7 +42,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: ['<%= concat.dist.dest %>'],
-                dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
+                dest: 'dist/<%= pkg.name %>.min.js'
             }
         },
         compress: {
@@ -48,40 +51,21 @@ module.exports = function (grunt) {
                     mode: 'zip',
                     archive: 'dist/<%= pkg.name %>.zip'
                 },
-                src: ['dist/<%= pkg.name %>-<%= pkg.version %>.js', 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js']
+                src: ['dist/<%= pkg.name %>.js', 'dist/<%= pkg.name %>.min.js']
             }
         },
         jshint: {
             options: {
-                bitwise: true,
-                curly: true,
-                eqeqeq: true,
-                forin: true,
-                immed: true,
-                latedef: true,
-                newcap: true,
-                noarg: true,
-                noempty: true,
-                nonew: false,
-                regexp: true,
-                undef: true,
-                unused: true,
-                strict: true,
-                indent: 4,
-                quotmark: 'single',
-                loopfunc: true,
-                browser: true,
-                node: true,
-                sub: true
+                jshintrc: true
             },
-            test: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
+            test: '<%= jshint_files_to_test %>',
             jslint: {
                 options: {
                     reporter: 'jslint',
                     reporterOutput: 'build/reports/jshint.xml'
                 },
                 files: {
-                    src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+                    src: '<%= jshint_files_to_test %>'
                 }
             },
             checkstyle: {
@@ -90,7 +74,7 @@ module.exports = function (grunt) {
                     reporterOutput: 'build/reports/jshint_checkstyle.xml'
                 },
                 files: {
-                    src: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+                    src: '<%= jshint_files_to_test %>'
                 }
             }
         },
@@ -118,14 +102,40 @@ module.exports = function (grunt) {
                 useDotNotation: true,
                 consolidate: true
             }
+        },
+        changelog: {
+            options: {
+            }
+        },
+        bump: {
+            options: {
+                updateConfigs: ['pkg'],
+                commitFiles: ['-a'],
+                commitMessage: 'chore: release v%VERSION%',
+                push: false
+            }
         }
     });
 
     // Register tasks.
-    grunt.registerTask('test', ['clean:jasmine', 'jshint:test', 'jasmine_node']);
+    grunt.registerTask('git:commitHook', 'Install git commit hook', function () {
+        grunt.file.copy('validate-commit-msg.js', '.git/hooks/commit-msg');
+        fs.chmodSync('.git/hooks/commit-msg', '0755');
+        grunt.log.ok('Registered git hook: commit-msg');
+    });
+
+    grunt.registerTask('test', ['git:commitHook', 'clean:jasmine', 'jshint:test', 'jasmine_node']);
     grunt.registerTask('cover', ['clean:coverage', 'jshint:test', 'bgShell:coverage', 'open']);
-    grunt.registerTask('build', ['test', 'concat', 'uglify', 'compress']);
+    grunt.registerTask('build', ['clean:dist', 'test', 'concat', 'uglify', 'compress']);
     grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node']);
+    grunt.registerTask('release', 'Bump version, update changelog and tag version', function (version) {
+        grunt.task.run([
+            'bump:' + (version || 'patch') + ':bump-only',
+            'build',
+            'changelog',
+            'bump-commit'
+        ]);
+    });
 
     // Default task.
     grunt.registerTask('default', ['build']);

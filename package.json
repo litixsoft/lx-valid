@@ -62,16 +62,18 @@
         "test": "grunt test"
     },
     "devDependencies": {
-        "grunt": "0.4.1",
-        "grunt-bg-shell": "~2.1.0",
+        "grunt": "0.4.2",
+        "grunt-bg-shell": "~2.3.1",
+        "grunt-bump": "~0.0.13",
         "grunt-contrib-clean": "~0.5.0",
-        "grunt-contrib-compress": "~0.5.2",
+        "grunt-contrib-compress": "~0.5.3",
         "grunt-contrib-concat": "~0.3.0",
-        "grunt-contrib-jshint": "~0.6.4",
-        "grunt-contrib-uglify": "~0.2.4",
+        "grunt-contrib-jshint": "~0.7.2",
+        "grunt-contrib-uglify": "~0.2.7",
+        "grunt-conventional-changelog": "~1.0.0",
         "grunt-jasmine-node": "0.1.0",
         "grunt-open": "~0.2.2",
-        "istanbul": "~0.1.44",
-        "load-grunt-tasks": "~0.1.0"
+        "istanbul": "~0.1.46",
+        "load-grunt-tasks": "~0.2.0"
     }
 }
