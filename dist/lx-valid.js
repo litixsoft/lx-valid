@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.9 - 2013-12-11
+ * lx-valid - v0.2.10 - 2013-12-13
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2013 Litixsoft GmbH
@@ -504,7 +504,8 @@
                                 type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
                                     type === 'null' ? val === null :
                                         type === 'boolean' ? typeof val === 'boolean' :
-                                            type === 'any' ? typeof val !== 'undefined' : false) {
+                                            type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
+                                                type === 'any' ? typeof val !== 'undefined' : false) {
                 return callback(null, type);
             }
         }

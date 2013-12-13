@@ -1,3 +1,11 @@
+<a name="v0.2.10"></a>
+### v0.2.10 (2013-12-13)
+
+
+#### Features
+
+* add support for type date in schema ([24bda29d](https://github.com/litixsoft/lx-valid/commit/24bda29d6c7c904204c2fcc36f00e9ce9aba9d43))
+
 ### v0.2.9
 * Allow multiple types and format validation
 
