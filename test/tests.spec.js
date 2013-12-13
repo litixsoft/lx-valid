@@ -530,6 +530,26 @@ describe('Validator', function () {
         expect(result4.valid).toBeFalsy();
     });
 
+    it('validate() should validate a date type', function () {
+        var schema = {
+            properties: {
+                date: {
+                    type: 'date'
+                }
+            }
+        };
+
+        var result = val.validate({date: new Date()}, schema);
+        var result2 = val.validate({date: null}, schema);
+        var result3 = val.validate({date: 'abc'}, schema);
+        var result4 = val.validate({date: 123}, schema);
+
+        expect(result.valid).toBeTruthy();
+        expect(result2.valid).toBeFalsy();
+        expect(result3.valid).toBeFalsy();
+        expect(result4.valid).toBeFalsy();
+    });
+
     it('validate() should validate to false when the string values are empty and the option strictRequired is true', function () {
         var schema = {
                 properties: {
