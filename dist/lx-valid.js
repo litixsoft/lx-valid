@@ -1,8 +1,8 @@
 /*!
- * lx-valid - v0.2.10 - 2013-12-13
+ * lx-valid - v0.2.11 - 2014-02-18
  * https://github.com/litixsoft/lx-valid
  *
- * Copyright (c) 2013 Litixsoft GmbH
+ * Copyright (c) 2014 Litixsoft GmbH
  * Licensed MIT
  */
 
@@ -635,7 +635,10 @@
     else {
         async.nextTick = process.nextTick;
         if (typeof setImmediate !== 'undefined') {
-            async.setImmediate = setImmediate;
+            async.setImmediate = function (fn) {
+              // not a direct alias for IE10 compatibility
+              setImmediate(fn);
+            };
         }
         else {
             async.setImmediate = async.nextTick;
@@ -2004,6 +2007,14 @@
                 for (i = 0; i < length; i++) {
                     if (!doc.hasOwnProperty(keys[i])) {
                         schema.properties[keys[i]].required = false;
+                    }
+                }
+            }
+
+            if (validationOptions) {
+                for (var key in options) {
+                    if (options.hasOwnProperty(key)) {
+                        validationOptions[key] = options[key];
                     }
                 }
             }

@@ -1,3 +1,12 @@
+<a name="0.2.11"></a>
+### 0.2.11 (2014-02-18)
+
+
+#### Bug Fixes
+
+* fix error in getValidationFunction() that the options are not merged ([c9f42ec0](https://github.com/litixsoft/lx-valid/commit/c9f42ec0675dab2afd36120b6217a9914c1a5e6e))
+
+
 <a name="v0.2.10"></a>
 ### v0.2.10 (2013-12-13)
 
