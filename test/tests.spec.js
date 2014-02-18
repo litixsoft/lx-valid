@@ -439,8 +439,37 @@ describe('Validator', function () {
 
         expect(result.valid).toBe(true);
         expect(result.errors.length).toBe(0);
-        expect(typeForTest.someUnknownProperty).toBeUndefined();
-        expect(typeForTest.someUnknownObject).toBeUndefined();
+        expect(data.someUnknownProperty).toBeUndefined();
+        expect(data.someUnknownObject).toBeUndefined();
+    });
+
+    it('validate() should not remove properties in object which are no properties of the schema', function () {
+        var data = {
+            UuidTest: '507f191e810c19729de860ea',
+            stringTest: '3.31',
+            floatTest: 3.2,
+            IntTest: 2,
+            arrayTest: [1, 2, 3],
+            boolTest: true,
+            objectTest: {name: 'xenia'},
+            nullTest: null,
+            dateTest: '1973-06-01T15:49:00.000Z',
+            urlTest: 'http://google.de'
+        };
+
+        data.someUnknownProperty = 'wayne';
+        data.someUnknownObject = {
+            id: 1,
+            name: 'wayne'
+        };
+
+        var valFunction = val.getValidationFunction({deleteUnknownProperties: true});
+        var result = valFunction(data, schemaForTest, {deleteUnknownProperties: false});
+
+        expect(result.valid).toBe(true);
+        expect(result.errors.length).toBe(0);
+        expect(data.someUnknownProperty).toBe('wayne');
+        expect(data.someUnknownObject).toEqual({id: 1, name: 'wayne'});
     });
 
     it('validate() should validate a string correctly', function () {
