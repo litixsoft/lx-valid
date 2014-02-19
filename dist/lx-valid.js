@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.11 - 2014-02-18
+ * lx-valid - v0.2.12 - 2014-02-19
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2014 Litixsoft GmbH
@@ -1993,6 +1993,8 @@
      * @return {function(doc, schema, options)}
      */
     function getValidationFunction (validationOptions) {
+        validationOptions = validationOptions || {};
+
         return function (doc, schema, options) {
             doc = doc || {};
             options = options || {};
@@ -2011,16 +2013,16 @@
                 }
             }
 
-            if (validationOptions) {
-                for (var key in options) {
-                    if (options.hasOwnProperty(key)) {
-                        validationOptions[key] = options[key];
-                    }
+            // add default validation options to options object
+            for (var key in validationOptions) {
+                // only add options, do not override
+                if (validationOptions.hasOwnProperty(key) && !options.hasOwnProperty(key)) {
+                    options[key] = validationOptions[key];
                 }
             }
 
             // json schema validate
-            return exports.validate(doc, schema, validationOptions);
+            return exports.validate(doc, schema, options);
         };
     }
 

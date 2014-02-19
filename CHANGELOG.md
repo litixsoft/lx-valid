@@ -1,3 +1,12 @@
+<a name="0.2.12"></a>
+### 0.2.12 (2014-02-19)
+
+
+#### Bug Fixes
+
+* change handling of validation options in getValidationFunction() so that now the ([7cbc70d1](https://github.com/litixsoft/lx-valid/commit/7cbc70d1da858c514baf3a3de4b6258ebf0f6da1))
+
+
 <a name="0.2.11"></a>
 ### 0.2.11 (2014-02-18)
 
