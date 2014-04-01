@@ -429,6 +429,28 @@ describe('Validator', function () {
             expect(result.valid).toBeTruthy();
             expect(result.errors.length).toBe(0);
         });
+
+        it('should validate an array when the array is the root element', function () {
+            var schema = {
+                type: 'array',
+                items: {
+                    type: 'string'
+                }
+            };
+
+            var result = val.validate(['1', '2', '3'], schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate([1, 2, 3], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(3);
+            expect(result.errors).toEqual([
+                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' },
+                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' },
+                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' }
+            ]);
+        });
     });
 
     it('getValidationFunction() should return the validation function', function () {
@@ -927,4 +949,5 @@ describe('Validator', function () {
         expect(JSON.stringify(dataForConvertTest.myArray[0].myObject3.myArray3[0].myArray4[1])).toBe(convertedMongoId);
 
     });
-});
+})
+;
