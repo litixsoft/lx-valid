@@ -336,6 +336,101 @@ describe('Validator', function () {
         expect(result2.errors.length).toBe(0);
     });
 
+    describe('validates an array and', function () {
+        it('should return valid true when the data is correct', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({arr: ['1', '2', '3']}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate({}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate({arr: []}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+        });
+
+        it('should return valid false when the data is not correct', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({arr: [1, 2, 3]}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(3);
+            expect(result.errors).toEqual([
+                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' },
+                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' },
+                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' }
+            ]);
+
+            result = val.validate({arr: 10}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(1);
+            expect(result.errors).toEqual([
+                { attribute: 'type', property: 'arr', expected: 'array', actual: 'number', message: 'must be of array type' }
+            ]);
+
+            schema.properties.arr.required = true;
+
+            result = val.validate([], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(1);
+            expect(result.errors).toEqual([
+                { attribute: 'required', property: 'arr', expected: true, actual: undefined, message: 'is required' }
+            ]);
+        });
+
+        it('should validate an array with multipe different values', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: [
+                            {
+                                type: 'string'
+                            },
+                            {
+                                type: 'number'
+                            }
+                        ]
+                    }
+                }
+            };
+
+            var result = val.validate({arr: [1, 2, 3]}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate({arr: [1, '2', 3]}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate({arr: [1, '2', true]}, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+        });
+    });
+
     it('getValidationFunction() should return the validation function', function () {
         var valFn = val.getValidationFunction();
         var data = convertJson(typeForTest);
