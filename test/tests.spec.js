@@ -545,6 +545,26 @@ describe('Validator', function () {
         expect(data.names).toEqual(['wayne', 'chuck', 'norris', 'wat']);
     });
 
+    it('validate() should trim the string values when option trim is true', function () {
+        var schema = {
+                properties: {
+                    name: {
+                        type: 'string'
+                    }
+                }
+            },
+            data = {
+                name: null
+            };
+
+        var result = val.validate(data, schema);
+
+        expect(result.valid).toBeFalsy();
+        expect(result.errors.length).toBe(1);
+        expect(result.errors[0].message).toBe('must be of string type');
+        expect(result.errors[0].actual).toBe('null');
+    });
+
     it('validate() should validate multiple types and formats', function () {
         var schema = {
             properties: {

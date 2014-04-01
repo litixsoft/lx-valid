@@ -603,18 +603,18 @@ Just like in JSON schema validation, values can be tested against predefined for
 `lx-valid.formats.<formatname>(value)`
 
 ```js
-{ format: 'mongo-id' }
-{ format: 'number-float' }
+{ format: 'mongoId' }
+{ format: 'numberFloat' }
 { format: 'url' }
 { format: 'email' }
-{ format: 'ip-address' }
+{ format: 'ipAddress' }
 { format: 'ipv6' }
-{ format: 'date-time' }
+{ format: 'dateTime' }
 { format: 'date' }
 { format: 'time' }
 { format: 'color' }
-{ format: 'host-name' }
-{ format: 'utc-millisec' }
+{ format: 'hostName' }
+{ format: 'utcMillisec' }
 { format: 'regex' }
 { format: 'empty' }
 ```

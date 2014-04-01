@@ -8,12 +8,17 @@ describe('Types', function () {
         // string
         var res = val.types.string('test');
         var res2 = val.types.string(1);
+        var res3 = val.types.string(null);
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+        expect(res3.errors[0].message).toBe('must be of string type');
     });
 
     it('should validate a number correctly', function () {

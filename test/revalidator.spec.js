@@ -134,7 +134,7 @@ describe('revalidator', function () {
                                 attribute: 'type',
                                 property: 'value',
                                 expected: 'integer',
-                                actual: 'object',
+                                actual: 'null',
                                 message: 'must be of integer type'
                             }
                         ]
@@ -274,7 +274,7 @@ describe('revalidator', function () {
                                 attribute: 'type',
                                 property: 'value',
                                 expected: 'float',
-                                actual: 'object',
+                                actual: 'null',
                                 message: 'must be of float type'
                             }
                         ]
@@ -400,7 +400,7 @@ describe('revalidator', function () {
                                 attribute: 'type',
                                 property: 'value',
                                 expected: 'number',
-                                actual: 'object',
+                                actual: 'null',
                                 message: 'must be of number type'
                             }
                         ]
@@ -546,7 +546,7 @@ describe('revalidator', function () {
                                 attribute: 'type',
                                 property: 'value',
                                 expected: 'boolean',
-                                actual: 'object',
+                                actual: 'null',
                                 message: 'must be of boolean type'
                             }
                         ]
