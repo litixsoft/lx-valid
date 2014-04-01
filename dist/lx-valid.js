@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.12 - 2014-02-19
+ * lx-valid - v0.2.13 - 2014-04-01
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2014 Litixsoft GmbH
@@ -8,6 +8,41 @@
 
 (function (exports) {
     'use strict';
+
+    /**
+     * Gets the type of the value in lower case.
+     *
+     * @param {*} value The value to test.
+     * @returns {string}
+     */
+    function getType (value) {
+        // inspired by http://techblog.badoo.com/blog/2013/11/01/type-checking-in-javascript/
+
+        // handle null in old IE
+        if (value === null) {
+            return 'null';
+        }
+
+        // handle DOM elements
+        if (value && (value.nodeType === 1 || value.nodeType === 9)) {
+            return 'element';
+        }
+
+        var s = Object.prototype.toString.call(value);
+        var type = s.match(/\[object (.*?)\]/)[1].toLowerCase();
+
+        // handle NaN and Infinity
+        if (type === 'number') {
+            if (isNaN(value)) {
+                return 'nan';
+            }
+            if (!isFinite(value)) {
+                return 'infinity';
+            }
+        }
+
+        return type;
+    }
 
     //
     // ### function validate (object, schema, options)
@@ -45,7 +80,26 @@
         }
 
         var errors = [];
-        validateObject(object, schema, options, errors);
+
+        // handle array root element
+        if (schema.items) {
+            var __schema = schema;
+            var __object = {
+                array: object
+            };
+
+            if (schema) {
+                __schema = {
+                    properties: {
+                        array: schema
+                    }
+                };
+            }
+
+            validateObject(__object, __schema, options, errors);
+        } else {
+            validateObject(object, schema, options, errors);
+        }
 
         return {
             valid: !(errors.length),
@@ -384,8 +438,18 @@
             }
         }
 
-        if (schema['enum'] && schema['enum'].indexOf(value) === -1) {
-            error('enum', property, value, schema, errors);
+        if (schema['enum']) {
+            if (schema['type'] === 'array' && isArray(value)) {
+                for (i = 0; i < value.length; i++) {
+                    if (schema['enum'].indexOf(value[i]) === -1) {
+                        error('enum', property, value, schema, errors);
+                        break;
+                    }
+                }
+            }
+            else if (schema['enum'].indexOf(value) === -1) {
+                error('enum', property, value, schema, errors);
+            }
         }
 
         // Dependencies (see 5.8)
@@ -408,56 +472,56 @@
 
         checkType(value, schema.type, function (err, type) {
             if (err) {
-                return error('type', property, typeof value, schema, errors);
+                return error('type', property, getType(value), schema, errors);
             }
 
             constrain('conform', value, function (a, e, o) { return e(a, o); });
 
             switch (type || (isArray(value) ? 'array' : typeof value)) {
-            case 'string':
-                if (options.trim === true) {
-                    if (isArray(object[property])) {
-                        // find value in array
-                        var index = object[property].indexOf(value);
+                case 'string':
+                    if (options.trim === true) {
+                        if (isArray(object[property])) {
+                            // find value in array
+                            var index = object[property].indexOf(value);
 
-                        // only trim when value in object is still a string
-                        if (typeof object[property][index] === 'string') {
-                            object[property][index] = value.trim();
+                            // only trim when value in object is still a string
+                            if (typeof object[property][index] === 'string') {
+                                object[property][index] = value.trim();
+                            }
+                        } else if (typeof object[property] === 'string') {
+                            object[property] = value.trim();
                         }
-                    } else if (typeof object[property] === 'string') {
-                        object[property] = value.trim();
                     }
-                }
 
-                constrain('minLength', value.length, function (a, e) { return a >= e; });
-                constrain('maxLength', value.length, function (a, e) { return a <= e; });
-                constrain('pattern', value, function (a, e) {
+                    constrain('minLength', value.length, function (a, e) { return a >= e; });
+                    constrain('maxLength', value.length, function (a, e) { return a <= e; });
+                    constrain('pattern', value, function (a, e) {
                         e = typeof e === 'string' ? e = new RegExp(e) : e;
                         return e.test(a);
                     });
-                break;
-            case 'integer':
-            case 'number':
-                constrain('minimum', value, function (a, e) { return a >= e; });
-                constrain('maximum', value, function (a, e) { return a <= e; });
-                constrain('exclusiveMinimum', value, function (a, e) { return a > e; });
-                constrain('exclusiveMaximum', value, function (a, e) { return a < e; });
-                constrain('divisibleBy', value, function (a, e) {
+                    break;
+                case 'integer':
+                case 'number':
+                    constrain('minimum', value, function (a, e) { return a >= e; });
+                    constrain('maximum', value, function (a, e) { return a <= e; });
+                    constrain('exclusiveMinimum', value, function (a, e) { return a > e; });
+                    constrain('exclusiveMaximum', value, function (a, e) { return a < e; });
+                    constrain('divisibleBy', value, function (a, e) {
                         var multiplier = Math.max((a - Math.floor(a)).toString().length - 2, (e - Math.floor(e)).toString().length - 2);
                         multiplier = multiplier > 0 ? Math.pow(10, multiplier) : 1;
                         return (a * multiplier) % (e * multiplier) === 0;
                     });
-                break;
-            case 'array':
-                constrain('items', value, function (a, e) {
+                    break;
+                case 'array':
+                    constrain('items', value, function (a, e) {
                         for (var i = 0, l = a.length; i < l; i++) {
                             validateProperty(object, a[i], property, e, options, errors);
                         }
                         return true;
                     });
-                constrain('minItems', value, function (a, e) { return a.length >= e; });
-                constrain('maxItems', value, function (a, e) { return a.length <= e; });
-                constrain('uniqueItems', value, function (a) {
+                    constrain('minItems', value, function (a, e) { return a.length >= e; });
+                    constrain('maxItems', value, function (a, e) { return a.length <= e; });
+                    constrain('uniqueItems', value, function (a) {
                         var h = {};
 
                         for (var i = 0, l = a.length; i < l; i++) {
@@ -470,15 +534,15 @@
 
                         return true;
                     });
-                break;
-            case 'object':
-                // Recursive validation
-                if (schema.properties || schema.patternProperties || schema.additionalProperties) {
-                    validateObject(value, schema, options, errors);
-                }
-                break;
-            default:
-                break;
+                    break;
+                case 'object':
+                    // Recursive validation
+                    if (schema.properties || schema.patternProperties || schema.additionalProperties) {
+                        validateObject(value, schema, options, errors);
+                    }
+                    break;
+                default:
+                    break;
             }
         });
     }
@@ -497,15 +561,15 @@
         for (var i = 0, l = types.length; i < l; i++) {
             type = types[i].toLowerCase().trim();
             if (type === 'string' ? typeof val === 'string' :
-                type === 'array' ? isArray(val) :
+                    type === 'array' ? isArray(val) :
                     type === 'object' ? val && typeof val === 'object' && !isArray(val) :
-                        type === 'number' ? typeof val === 'number' :
-                            type === 'integer' ? typeof val === 'number' && ~~val === val :
-                                type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
-                                    type === 'null' ? val === null :
-                                        type === 'boolean' ? typeof val === 'boolean' :
-                                            type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
-                                                type === 'any' ? typeof val !== 'undefined' : false) {
+                    type === 'number' ? typeof val === 'number' :
+                    type === 'integer' ? typeof val === 'number' && ~~val === val :
+                    type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
+                    type === 'null' ? val === null :
+                    type === 'boolean' ? typeof val === 'boolean' :
+                    type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
+                    type === 'any' ? typeof val !== 'undefined' : false) {
                 return callback(null, type);
             }
         }
@@ -541,7 +605,8 @@
 
     exports.validate = validate;
     exports.mixin = mixin;
-})(typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
+})
+(typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
 
 (function () {
 

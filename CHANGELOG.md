@@ -1,3 +1,18 @@
+<a name="0.2.13"></a>
+### 0.2.13 (2014-04-01)
+
+
+#### Bug Fixes
+
+* enum validation when type is array ([0f0ca957](https://github.com/litixsoft/lx-valid/commit/0f0ca95784eae37ef4130d413b3c6254d6fe3a38))
+* show the correct type of tha actual value in the validation error message ([7a23f225](https://github.com/litixsoft/lx-valid/commit/7a23f225500a79bc4a423b81f862fe33cf55f4b5))
+
+
+#### Features
+
+* add support for arrays as root element ([47608b88](https://github.com/litixsoft/lx-valid/commit/47608b8834d5d9875b6d0dd3ebe4ca350be65eaa))
+
+
 <a name="0.2.12"></a>
 ### 0.2.12 (2014-02-19)
 
