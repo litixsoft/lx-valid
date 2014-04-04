@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.13 - 2014-04-01
+ * lx-valid - v0.2.14 - 2014-04-04
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2014 Litixsoft GmbH
@@ -608,6 +608,7 @@
 })
 (typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
 
+/*global setImmediate: false, setTimeout: false, console: false */
 (function () {
 
     var async = {};
@@ -635,6 +636,12 @@
     }
 
     //// cross-browser compatiblity functions ////
+
+    var _toString = Object.prototype.toString;
+
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
 
     var _each = function (arr, iterator) {
         if (arr.forEach) {
@@ -717,19 +724,20 @@
         }
         var completed = 0;
         _each(arr, function (x) {
-            iterator(x, only_once(function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed >= arr.length) {
-                        callback(null);
-                    }
-                }
-            }));
+            iterator(x, only_once(done) );
         });
+        function done(err) {
+          if (err) {
+              callback(err);
+              callback = function () {};
+          }
+          else {
+              completed += 1;
+              if (completed >= arr.length) {
+                  callback();
+              }
+          }
+        }
     };
     async.forEach = async.each;
 
@@ -748,7 +756,7 @@
                 else {
                     completed += 1;
                     if (completed >= arr.length) {
-                        callback(null);
+                        callback();
                     }
                     else {
                         iterate();
@@ -1005,8 +1013,9 @@
     async.auto = function (tasks, callback) {
         callback = callback || function () {};
         var keys = _keys(tasks);
-        if (!keys.length) {
-            return callback(null);
+        var remainingTasks = keys.length
+        if (!remainingTasks) {
+            return callback();
         }
 
         var results = {};
@@ -1024,20 +1033,24 @@
             }
         };
         var taskComplete = function () {
+            remainingTasks--
             _each(listeners.slice(0), function (fn) {
                 fn();
             });
         };
 
         addListener(function () {
-            if (_keys(results).length === keys.length) {
-                callback(null, results);
+            if (!remainingTasks) {
+                var theCallback = callback;
+                // prevent final callback from calling itself if it errors
                 callback = function () {};
+
+                theCallback(null, results);
             }
         });
 
         _each(keys, function (k) {
-            var task = (tasks[k] instanceof Function) ? [tasks[k]]: tasks[k];
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
             var taskCallback = function (err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {
@@ -1079,9 +1092,40 @@
         });
     };
 
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var attempts = [];
+        // Use defaults if times not passed
+        if (typeof times === 'function') {
+            callback = task;
+            task = times;
+            times = DEFAULT_TIMES;
+        }
+        // Make sure times is a number
+        times = parseInt(times, 10) || DEFAULT_TIMES;
+        var wrappedTask = function(wrappedCallback, wrappedResults) {
+            var retryAttempt = function(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            };
+            while (times) {
+                attempts.push(retryAttempt(task, !(times-=1)));
+            }
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || callback)(data.err, data.result);
+            });
+        }
+        // If a callback is passed, run this as a controll flow
+        return callback ? wrappedTask() : wrappedTask
+    };
+
     async.waterfall = function (tasks, callback) {
         callback = callback || function () {};
-        if (tasks.constructor !== Array) {
+        if (!_isArray(tasks)) {
           var err = new Error('First argument to waterfall must be an array of functions');
           return callback(err);
         }
@@ -1114,7 +1158,7 @@
 
     var _parallel = function(eachfn, tasks, callback) {
         callback = callback || function () {};
-        if (tasks.constructor === Array) {
+        if (_isArray(tasks)) {
             eachfn.map(tasks, function (fn, callback) {
                 if (fn) {
                     fn(function (err) {
@@ -1154,7 +1198,7 @@
 
     async.series = function (tasks, callback) {
         callback = callback || function () {};
-        if (tasks.constructor === Array) {
+        if (_isArray(tasks)) {
             async.mapSeries(tasks, function (fn, callback) {
                 if (fn) {
                     fn(function (err) {
@@ -1242,7 +1286,8 @@
             if (err) {
                 return callback(err);
             }
-            if (test()) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (test.apply(null, args)) {
                 async.doWhilst(iterator, test, callback);
             }
             else {
@@ -1270,7 +1315,8 @@
             if (err) {
                 return callback(err);
             }
-            if (!test()) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (!test.apply(null, args)) {
                 async.doUntil(iterator, test, callback);
             }
             else {
@@ -1284,8 +1330,16 @@
             concurrency = 1;
         }
         function _insert(q, data, pos, callback) {
-          if(data.constructor !== Array) {
+          if (!_isArray(data)) {
               data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
           }
           _each(data, function(task) {
               var item = {
@@ -1299,7 +1353,7 @@
                 q.tasks.push(item);
               }
 
-              if (q.saturated && q.tasks.length === concurrency) {
+              if (q.saturated && q.tasks.length === q.concurrency) {
                   q.saturated();
               }
               async.setImmediate(q.process);
@@ -1313,6 +1367,7 @@
             saturated: null,
             empty: null,
             drain: null,
+            paused: false,
             push: function (data, callback) {
               _insert(q, data, false, callback);
             },
@@ -1320,7 +1375,7 @@
               _insert(q, data, true, callback);
             },
             process: function () {
-                if (workers < q.concurrency && q.tasks.length) {
+                if (!q.paused && workers < q.concurrency && q.tasks.length) {
                     var task = q.tasks.shift();
                     if (q.empty && q.tasks.length === 0) {
                         q.empty();
@@ -1345,6 +1400,19 @@
             },
             running: function () {
                 return workers;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                if (q.paused === true) { return; }
+                q.paused = true;
+                q.process();
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                q.process();
             }
         };
         return q;
@@ -1360,8 +1428,9 @@
             saturated: null,
             empty: null,
             drain: null,
+            drained: true,
             push: function (data, callback) {
-                if(data.constructor !== Array) {
+                if (!_isArray(data)) {
                     data = [data];
                 }
                 _each(data, function(task) {
@@ -1369,6 +1438,7 @@
                         data: task,
                         callback: typeof callback === 'function' ? callback : null
                     });
+                    cargo.drained = false;
                     if (cargo.saturated && tasks.length === payload) {
                         cargo.saturated();
                     }
@@ -1378,13 +1448,14 @@
             process: function process() {
                 if (working) return;
                 if (tasks.length === 0) {
-                    if(cargo.drain) cargo.drain();
+                    if(cargo.drain && !cargo.drained) cargo.drain();
+                    cargo.drained = true;
                     return;
                 }
 
                 var ts = typeof payload === 'number'
                             ? tasks.splice(0, payload)
-                            : tasks.splice(0);
+                            : tasks.splice(0, tasks.length);
 
                 var ds = _map(ts, function (task) {
                     return task.data;
@@ -1452,7 +1523,9 @@
             var callback = args.pop();
             var key = hasher.apply(null, args);
             if (key in memo) {
-                callback.apply(null, memo[key]);
+                async.nextTick(function () {
+                    callback.apply(null, memo[key]);
+                });
             }
             else if (key in queues) {
                 queues[key].push(callback);
@@ -1496,8 +1569,8 @@
         return async.mapSeries(counter, iterator, callback);
     };
 
-    async.compose = function (/* functions... */) {
-        var fns = Array.prototype.reverse.call(arguments);
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
         return function () {
             var that = this;
             var args = Array.prototype.slice.call(arguments);
@@ -1513,6 +1586,10 @@
                 callback.apply(that, [err].concat(results));
             });
         };
+    };
+
+    async.compose = function (/* functions... */) {
+      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
     };
 
     var _applyEach = function (eachfn, fns /*args...*/) {
@@ -1549,15 +1626,15 @@
         next();
     };
 
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
     // AMD / RequireJS
-    if (typeof define !== 'undefined' && define.amd) {
+    else if (typeof define !== 'undefined' && define.amd) {
         define([], function () {
             return async;
         });
-    }
-    // Node.js
-    else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = async;
     }
     // included directly via <script> tag
     else {
@@ -1862,7 +1939,7 @@
             return getResult(null);
         };
         pub.mongoId = function (val) {
-            if (!revalidator.validate.formatExtensions['mongo-id'].test(val.toString())) {
+            if (!revalidator.validate.formatExtensions['mongo-id'].test((val || '').toString())) {
                 return getResult(getError('type', 'mongoId', val));
             }
 

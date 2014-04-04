@@ -1,3 +1,12 @@
+<a name="0.2.14"></a>
+### 0.2.14 (2014-04-04)
+
+
+#### Bug Fixes
+
+* test for type mongoid can now handle null and undefined values ([b898a00a](https://github.com/litixsoft/lx-valid/commit/b898a00a0323115798d15a9acc263adba8641d79))
+
+
 <a name="0.2.13"></a>
 ### 0.2.13 (2014-04-01)
 
