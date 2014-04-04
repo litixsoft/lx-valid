@@ -149,11 +149,15 @@ describe('Types', function () {
         // null
         var res = val.types.mongoId('507f191e810c19729de860ea');
         var res2 = val.types.mongoId(123);
+        var res3 = val.types.mongoId(null);
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
     });
 });

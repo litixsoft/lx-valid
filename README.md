@@ -1,4 +1,4 @@
-# lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.png?branch=master)](https://travis-ci.org/litixsoft/lx-valid) [![david-dm](https://david-dm.org/litixsoft/lx-valid.png)](https://david-dm.org/litixsoft/lx-valid/) [![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.png)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
+# lx-valid [![Build Status](https://travis-ci.org/litixsoft/lx-valid.svg?branch=master)](https://travis-ci.org/litixsoft/lx-valid) [![david-dm](https://david-dm.org/litixsoft/lx-valid.png)](https://david-dm.org/litixsoft/lx-valid/) [![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.png)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
 
 > A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
@@ -715,7 +715,7 @@ Please refer to the changelog and roadmap for further information on development
 ## License
 (The MIT License)
 
-Copyright (C) 2013 Litixsoft GmbH info@litixsoft.de
+Copyright (C) 2013-2014 Litixsoft GmbH info@litixsoft.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
