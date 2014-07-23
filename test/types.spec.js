@@ -125,12 +125,16 @@ describe('Types', function () {
         // regex
         var res = val.types.regexp(/^hello/);
         var res2 = val.types.regexp('');
+        var res3 = val.types.regexp(new RegExp('\\w+'));
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(true);
+        expect(res3.errors.length).toBe(0);
     });
 
     it('should validate null correctly', function () {
