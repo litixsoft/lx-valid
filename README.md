@@ -2,9 +2,9 @@
 > A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
 > [![NPM version](https://badge.fury.io/js/lx-valid.svg.svg)](http://badge.fury.io/js/lx-valid.svg)
-[![Build Status](https://secure.travis-ci.org/litixsoft/lx-valid.svg?branch=master)](https://travis-ci.org/litixsoft/lx-valid.svg)
-[![david-dm](https://david-dm.org/litixsoft/lx-valid.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid.svg/)
-[![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid.svg#info=devDependencies&view=table)
+[![Build Status](https://secure.travis-ci.org/litixsoft/lx-valid.svg?branch=master)](https://travis-ci.org/litixsoft/lx-valid)
+[![david-dm](https://david-dm.org/litixsoft/lx-valid.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid)
+[![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
 
 ### available languages:
 * english
