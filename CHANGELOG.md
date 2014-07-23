@@ -1,3 +1,12 @@
+<a name="0.2.15"></a>
+### 0.2.15 (2014-07-23)
+
+
+#### Features
+
+* add type regexp to schema validation ([d40293df](https://github.com/litixsoft/lx-valid/commit/d40293dfdc36681e0b2277137c235f02e8aeda51))
+
+
 <a name="0.2.14"></a>
 ### 0.2.14 (2014-04-04)
 
