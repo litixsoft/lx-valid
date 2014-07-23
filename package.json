@@ -8,30 +8,14 @@
         "email": "info@litixsoft.de"
     },
     "maintainers": [
-        {
-            "name": "Timo Liebetrau",
-            "email": "t.liebetrau@litixsoft.de"
-        },
-        {
-            "name": "Thomas Heinrich Linke",
-            "email": "t.heinrich-linke@litixsoft.de"
-        },
-        {
-            "name": "Marco Kannenberg",
-            "email": "m.kannenberg@litixsoft.de"
-        },
-        {
-            "name": "Andreas Krummsdorf",
-            "email": "a.krummsdorf@litixsoft.de"
-        },
-        {
-            "name": "Sven Bernstein",
-            "email": "s.bernstein@litixsoft.de"
-        },
-        {
-            "name": "Thomas Scheibe",
-            "email": "th.scheibe@litixsoft.de"
-        }
+        "Timo Liebetrau <t.liebetrau@litixsoft.de>",
+        "Marco Kannenberg <m.kannenberg@litixsoft.de>",
+        "Sven Bernstein <s.bernstein@litixsoft.de>",
+        "Dominic Sachs <d.sachs@litixsoft.de>",
+        "Thomas Scheibe <th.scheibe@litixsoft.de>",
+        "Mike Alig <m.alig@litixsoft.de>",
+        "Joerg Raschke <j.Raschke@litixsoft.de>",
+        "Andreas Krummsdorf <a.krummsdorf@litixsoft.de>"
     ],
     "repository": {
         "type": "git",
