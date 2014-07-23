@@ -9,7 +9,6 @@
     "noarg": true,
     "noempty": true,
     "nonew": false,
-    "regexp": true,
     "undef": true,
     "unused": true,
     "indent": 4,

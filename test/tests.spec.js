@@ -723,6 +723,30 @@ describe('Validator', function () {
         expect(result4.valid).toBeFalsy();
     });
 
+    it('validate() should validate a regexp type', function () {
+        var schema = {
+            properties: {
+                data: {
+                    type: 'regexp'
+                }
+            }
+        };
+
+        var result = val.validate({data: new RegExp('ab+c', 'i')}, schema);
+        var result2 = val.validate({data: new RegExp('\\w+')}, schema);
+        var result3 = val.validate({data: null}, schema);
+        var result4 = val.validate({data: 'abc'}, schema);
+        var result5 = val.validate({data: 123}, schema);
+        var result6 = val.validate({data: /^b/}, schema);
+
+        expect(result.valid).toBeTruthy();
+        expect(result2.valid).toBeTruthy();
+        expect(result3.valid).toBeFalsy();
+        expect(result4.valid).toBeFalsy();
+        expect(result5.valid).toBeFalsy();
+        expect(result6.valid).toBeTruthy();
+    });
+
     it('validate() should validate to false when the string values are empty and the option strictRequired is true', function () {
         var schema = {
                 properties: {
