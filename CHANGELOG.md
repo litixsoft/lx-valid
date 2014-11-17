@@ -1,3 +1,17 @@
+<a name="0.2.16"></a>
+### 0.2.16 (2014-11-17)
+
+
+#### Bug Fixes
+
+* type validator for mongoId now returns false if the value is an array ([3a7587b1](https://github.com/litixsoft/lx-valid/commit/3a7587b14c1b1c8525cd191ba02d87e1571e127f))
+
+
+#### Features
+
+* export validator.types function for shorter syntax ([974f6867](https://github.com/litixsoft/lx-valid/commit/974f68672628d41e7a0d9b88cb531065f47540df))
+
+
 <a name="0.2.15"></a>
 ### 0.2.15 (2014-07-23)
 

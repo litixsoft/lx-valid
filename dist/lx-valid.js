@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.15 - 2014-07-23
+ * lx-valid - v0.2.16 - 2014-11-17
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2014 Litixsoft GmbH
@@ -2029,7 +2029,7 @@
             return getResult(null);
         };
         pub.mongoId = function (val) {
-            if (!revalidator.validate.formatExtensions['mongo-id'].test((val || '').toString())) {
+            if (Array.isArray(val) || !revalidator.validate.formatExtensions['mongo-id'].test((val || '').toString())) {
                 return getResult(getError('type', 'mongoId', val));
             }
 
@@ -2266,6 +2266,25 @@
     exports.rules = rules();
     exports.asyncValidate = asyncValidate();
     exports.getValidationFunction = getValidationFunction;
+
+    function getValidationFunctionByKey (key, functions) {
+        return function(value) {
+            return functions[key](value).valid;
+        };
+    }
+
+    function getValidationFunctionName (functionName) {
+        return 'is' + functionName[0].toUpperCase() + functionName.substr(1);
+    }
+
+    // export type function
+    var i;
+    var keys = Object.keys(exports.types);
+    var length = keys.length;
+
+    for (i = 0; i < length; i++) {
+        exports[getValidationFunctionName(keys[i])] = getValidationFunctionByKey(keys[i], exports.types);
+    }
 })(
         typeof(window) === 'undefined' ? module.exports : (window.lxvalid = window.lxvalid || {}),
         typeof(window) === 'undefined' ? require('./revalidator') : (window.json),
