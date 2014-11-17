@@ -19,6 +19,10 @@ describe('Types', function () {
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
         expect(res3.errors[0].message).toBe('must be of string type');
+
+        expect(val.isString('test')).toBeTruthy();
+        expect(val.isString(1)).toBeFalsy();
+        expect(val.isString(null)).toBeFalsy();
     });
 
     it('should validate a number correctly', function () {
@@ -31,6 +35,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isNumber(1)).toBeTruthy();
+        expect(val.isNumber('1')).toBeFalsy();
     });
 
     it('should validate a boolean correctly', function () {
@@ -43,6 +50,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isBoolean(true)).toBeTruthy();
+        expect(val.isBoolean('false')).toBeFalsy();
     });
 
     it('should validate an object correctly', function () {
@@ -55,6 +65,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isObject({})).toBeTruthy();
+        expect(val.isObject('{}')).toBeFalsy();
     });
 
     it('should validate undefined correctly', function () {
@@ -67,6 +80,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isUndefined()).toBeTruthy();
+        expect(val.isUndefined('undefined')).toBeFalsy();
     });
 
     it('should validate an integer correctly', function () {
@@ -79,6 +95,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isUndefined()).toBeTruthy();
+        expect(val.isUndefined('undefined')).toBeFalsy();
     });
 
     it('should validate a float correctly', function () {
@@ -95,6 +114,9 @@ describe('Types', function () {
 
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
+
+        expect(val.isUndefined()).toBeTruthy();
+        expect(val.isUndefined('undefined')).toBeFalsy();
     });
 
     it('should validate an array correctly', function () {
@@ -107,6 +129,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isArray([])).toBeTruthy();
+        expect(val.isArray('[]')).toBeFalsy();
     });
 
     it('should validate a date correctly', function () {
@@ -119,6 +144,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isDate(new Date())).toBeTruthy();
+        expect(val.isDate('10.10.1999')).toBeFalsy();
     });
 
     it('should validate a regex correctly', function () {
@@ -135,6 +163,10 @@ describe('Types', function () {
 
         expect(res3.valid).toBe(true);
         expect(res3.errors.length).toBe(0);
+
+        expect(val.isRegexp(/^hello/)).toBeTruthy();
+        expect(val.isRegexp(new RegExp('\\w+'))).toBeTruthy();
+        expect(val.isRegexp('')).toBeFalsy();
     });
 
     it('should validate null correctly', function () {
@@ -147,6 +179,9 @@ describe('Types', function () {
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
+
+        expect(val.isNull(null)).toBeTruthy();
+        expect(val.isNull('null')).toBeFalsy();
     });
 
     it('should validate a mongoId correctly', function () {
@@ -163,5 +198,12 @@ describe('Types', function () {
 
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
+
+        expect(val.isMongoId('507f191e810c19729de860ea')).toBeTruthy();
+        expect(val.isMongoId(123)).toBeFalsy();
+        expect(val.isMongoId(null)).toBeFalsy();
+        expect(val.isMongoId(['507f191e810c19729de860ea'])).toBeFalsy();
+        expect(val.isMongoId(['507f191e810c19729de860ea', '507f191e810c19729de860ea'])).toBeFalsy();
+        expect(val.isMongoId({a: '507f191e810c19729de860ea'})).toBeFalsy();
     });
 });

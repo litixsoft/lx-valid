@@ -547,7 +547,11 @@ In case of rule violation the returned object contains an array with the validat
 ### Types
 The types in lx-valid are additions to the JSON schema types to support all JavaScript value types.
 
-`lx-valid.formats.<rulename>(value)`
+`lx-valid.types.<rulename>(value)` // returns the full validation object
+
+or
+
+`lx-valid.isType(value)` // returns boolean
 
 #### JSON schema types
 ```js
@@ -583,21 +587,25 @@ All JSON schema types are supported and additionally all JavaScript types.
 #### integer
 ```js
 var res = val.types.integer(123);
+val.isInteger(123);
 ```
 
 #### float
 ```js
 var res = val.types.float(12.3);
+val.isFloat(12.3);
 ```
 
 #### regexp
 ```js
 var res = val.types.regexp(/^hello/);
+val.isRegexp(/^hello/);
 ```
 
 #### date
 ```js
 var res = val.types.date(new Date());
+is.isDate(new Date());
 ```
 
 There are more examples to be found in [test/types.spec.js](test/types.spec.js).
