@@ -185,7 +185,7 @@ describe('Types', function () {
     });
 
     it('should validate a mongoId correctly', function () {
-        // null
+        // mongoId
         var res = val.types.mongoId('507f191e810c19729de860ea');
         var res2 = val.types.mongoId(123);
         var res3 = val.types.mongoId(null);
