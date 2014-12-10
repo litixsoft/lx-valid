@@ -1,3 +1,13 @@
+<a name="0.2.17"></a>
+### 0.2.17 (2014-12-10)
+
+
+#### Features
+
+* add option ignoreNullValues ([548ab06a](https://github.com/litixsoft/lx-valid/commit/548ab06a512e6a38a72a0f24a8a1e3e4be99b6d4))
+* add optional function transform to options ([548ab06a](https://github.com/litixsoft/lx-valid/commit/548ab06a512e6a38a72a0f24a8a1e3e4be99b6d4))
+
+
 <a name="0.2.16"></a>
 ### 0.2.16 (2014-11-17)
 
