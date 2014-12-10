@@ -973,5 +973,94 @@ describe('Validator', function () {
         expect(JSON.stringify(dataForConvertTest.myArray[0].myObject3.myArray3[0].myArray4[1])).toBe(convertedMongoId);
 
     });
-})
-;
+
+    describe('.validate()', function () {
+        it('should ignore null values when the option "ignoreNullValues" enabled', function () {
+            var schema = {
+                    properties: {
+                        name: {
+                            type: 'string'
+                        },
+                        names: {
+                            type: 'array',
+                            items: {
+                                type: 'number'
+                            }
+                        },
+                        arr: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    name: {
+                                        type: 'string'
+                                    },
+                                    name1: {
+                                        type: 'boolean'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                data = {
+                    name: null,
+                    names: null
+                };
+
+            var result = val.validate(data, schema);
+
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeTruthy();
+
+            data.name = undefined;
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeTruthy();
+
+            data.arr = [{name: 'test', name1: true}, null, {name: 'test1', name1: false}];
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeTruthy();
+
+            result = val.validate(data, schema);
+
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+        });
+
+        it('should call the transform function when "options.transform" is a function', function () {
+            var schema = {
+                    properties: {
+                        name: {
+                            type: 'string'
+                        },
+                        names: {
+                            type: 'array',
+                            items: {
+                                type: 'number'
+                            }
+                        }
+                    }
+                },
+                data = {
+                    name: 'test',
+                    names: [1, 2, 3]
+                };
+
+            var keys = [];
+
+            function transform(data) {
+                keys.push(data.property);
+            }
+            var result = val.validate(data, schema, {transform: transform} );
+
+            expect(result.valid).toBeTruthy();
+            expect(keys).toEqual(['name', 'names', 'names', 'names', 'names']);
+        });
+    });
+});

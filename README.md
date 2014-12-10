@@ -6,10 +6,6 @@
 [![david-dm](https://david-dm.org/litixsoft/lx-valid.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid)
 [![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
 
-### available languages:
-* english
-* [german](http://www.litixsoft.de/products-lxvalid.html)
-
 ## The idea
 Nodejitsu's Revalidator is a great JSON schema validator and therefore the backbone of lx-valid.
 But in practice there is often a need for a more general validator for simple checks that works on the client as
@@ -87,6 +83,14 @@ e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. Modifies the
 * __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
 * __trim__: Trims all properties of type `string`. Modifies the original object. ( __default: `false`__ )
 * __strictRequired__: Sets validity of empty `string` to `false`. ( __default: `false`__ )
+* __ignoreNullValues__: Do not validate properties of type `null`. ( __default: `false`__ )
+* __transform__: A `function` that runs for each property. ( __default: `null`__ ) It has one parameter "data" which looks like this:
+    * data.object `{object}` - The object which is validated.
+    * data.value `{*}` - The value of the current property.
+    * data.property `{string}` - The name of the current property.
+    * data.schema `{object}` - The schema of the current property.
+    * data.options `{object}` - The options of the validation function.
+    * data.errors `{array}` - The array with the validation errors which encoutered until yet.
 
 ### Validation types
 For a property an `value` is that which is given as input for validation where as an `expected value` is the value
