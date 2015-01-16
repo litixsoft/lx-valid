@@ -31,6 +31,31 @@ describe('revalidator', function () {
             expect(res.errors[0].message).toBe('name:type Not a string type, actual: number');
         });
 
+        it('should handle uniqueItems', function () {
+            schema = {
+                properties: {
+                    tags: {
+                        type: 'array',
+                        uniqueItems: true,
+                        items: {
+                            type: 'string'
+                        }
+                    }
+                }
+            };
+
+            var res = val.validate({tags: ['a', 'b', 'c']}, schema);
+            expect(res.valid).toBeTruthy();
+
+            res = val.validate({tags: ['a', 'b', 'b']}, schema);
+            expect(res.valid).toBeFalsy();
+
+            schema.properties.tags.uniqueItems = false;
+
+            res = val.validate({tags: ['a', 'b', 'b']}, schema);
+            expect(res.valid).toBeTruthy();
+        });
+
         describe('can have an option cast which', function () {
 
             describe('can cast an integer when set to true and', function () {
