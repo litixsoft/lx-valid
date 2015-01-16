@@ -1,3 +1,23 @@
+<a name="0.3.0"></a>
+## 0.3.0 (2015-01-16)
+
+Merge some pull request from the [revalidator](https://github.com/flatiron/revalidator) repo. Thanks to all the contributor there.
+
+
+#### Bug Fixes
+
+* handle uniqueItems is false for array correctly ([a8c523e5](https://github.com/litixsoft/lx-valid/commit/a8c523e5c25c679b56bb2e707519001c6220cd06))
+* patternProperties subjected to additionalProperties constraint ([c8138da3](https://github.com/litixsoft/lx-valid/commit/c8138da3a6acf6e2ca4dd3e2e1a812e79bc84a4e))
+
+
+#### Features
+
+* patternProperties that provide errors now provide the property name rather than  ([5be31575](https://github.com/litixsoft/lx-valid/commit/5be31575d802f73e49cb236a57b68883d554d3f4))
+* use Math.floor() instead of ~~ for integer type check ([31dc62a2](https://github.com/litixsoft/lx-valid/commit/31dc62a2ff7e347f64ff35710876e1616931f523))
+* errors use dot notation for properties ([51f42f4e](https://github.com/litixsoft/lx-valid/commit/51f42f4ed24e78faf5fa2f86b36035ab427566d0))
+* Make 'actual' available to custom error messages ([87415f6e](https://github.com/litixsoft/lx-valid/commit/87415f6e0db78ca03dacb14c40467896a90e613a))
+
+
 <a name="0.2.18"></a>
 ### 0.2.18 (2015-01-05)
 

@@ -1,7 +1,7 @@
 {
     "name": "lx-valid",
     "description": "A cross-browser / node.js validator, based on flatiron revalidator.",
-    "version": "0.2.18",
+    "version": "0.3.0",
     "homepage": "https://github.com/litixsoft/lx-valid",
     "author": {
         "name": "Litixsoft GmbH",
@@ -49,14 +49,14 @@
         "grunt-bg-shell": "^2.3.1",
         "grunt-bump": "^0.0.16",
         "grunt-contrib-clean": "^0.6.0",
-        "grunt-contrib-compress": "^0.12.0",
+        "grunt-contrib-compress": "^0.13.0",
         "grunt-contrib-concat": "^0.5.0",
         "grunt-contrib-jshint": "^0.10.0",
-        "grunt-contrib-uglify": "^0.6.0",
+        "grunt-contrib-uglify": "^0.7.0",
         "grunt-conventional-changelog": "^1.1.0",
         "grunt-jasmine-node": "0.2.1",
         "grunt-open": "^0.2.3",
         "istanbul": "^0.3.5",
-        "load-grunt-tasks": "^1.0.0"
+        "load-grunt-tasks": "^2.0.0"
     }
 }
