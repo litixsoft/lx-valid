@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.2.18 - 2015-01-05
+ * lx-valid - v0.3.0 - 2015-01-16
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -81,22 +81,9 @@
 
         var errors = [];
 
-        // handle array root element
+        //// handle array root element
         if (schema.items) {
-            var __schema = schema;
-            var __object = {
-                array: object
-            };
-
-            if (schema) {
-                __schema = {
-                    properties: {
-                        array: schema
-                    }
-                };
-            }
-
-            validateObject(__object, __schema, options, errors);
+            validateProperty(object, object, '', schema, options, errors);
         } else {
             validateObject(object, schema, options, errors);
         }
@@ -303,9 +290,9 @@
                     // Find all object properties that are matching `re`
                     for (var k in object) {
                         if (object.hasOwnProperty(k)) {
-                            visitedProps.push(k);
                             if (re.exec(k) !== null) {
-                                validateProperty(object, object[k], p, props[p], options, errors);
+                                validateProperty(object, object[k], k, props[p], options, errors);
+                                visitedProps.push(k);
                             }
                         }
                     }
@@ -377,8 +364,7 @@
             if (schema['default'] !== undefined && options.addMissingDefaults) {
                 if (typeof schema['default'] === 'function') {
                     object[property] = value = schema['default']();
-                }
-                else {
+                } else {
                     object[property] = value = schema['default'];
                 }
 
@@ -536,14 +522,33 @@
                     break;
                 case 'array':
                     constrain('items', value, function (a, e) {
+                        var nestedErrors;
+
                         for (var i = 0, l = a.length; i < l; i++) {
-                            validateProperty(object, a[i], property, e, options, errors);
+                            nestedErrors = [];
+                            validateProperty(object, a[i], property, e, options, nestedErrors);
+                            nestedErrors.forEach(function (err) {
+                                if (isArray(value) && err.property === property) {
+                                    err.property = (property ? property + '.' : '') + i;
+                                } else {
+                                    err.property = (property ? property + '.' : '') + i + (err.property ? '.' + err.property.replace(property + '.', '') : '');
+                                }
+
+                            });
+
+                            nestedErrors.unshift(0, 0);
+                            Array.prototype.splice.apply(errors, nestedErrors);
                         }
+
                         return true;
                     });
                     constrain('minItems', value, function (a, e) { return a.length >= e; });
                     constrain('maxItems', value, function (a, e) { return a.length <= e; });
-                    constrain('uniqueItems', value, function (a) {
+                    constrain('uniqueItems', value, function (a, e) {
+                        if (!e) {
+                            return true;
+                        }
+
                         var h = {};
 
                         for (var i = 0, l = a.length; i < l; i++) {
@@ -560,7 +565,14 @@
                 case 'object':
                     // Recursive validation
                     if (schema.properties || schema.patternProperties || schema.additionalProperties) {
-                        validateObject(value, schema, options, errors);
+                        var nestedErrors = [];
+
+                        validateObject(value, schema, options, nestedErrors);
+                        nestedErrors.forEach(function (e) {
+                            e.property = property + '.' + e.property;
+                        });
+                        nestedErrors.unshift(0, 0);
+                        Array.prototype.splice.apply(errors, nestedErrors);
                     }
                     break;
                 default:
@@ -568,7 +580,14 @@
             }
 
             if (options.transform && typeof options.transform === 'function') {
-                options.transform({object: object, value: value, property: property, schema: schema, options: options, errors: errors});
+                options.transform({
+                    object: object,
+                    value: value,
+                    property: property,
+                    schema: schema,
+                    options: options,
+                    errors: errors
+                });
             }
         });
     }
@@ -588,15 +607,15 @@
             type = types[i].toLowerCase().trim();
             if (type === 'string' ? typeof val === 'string' :
                     type === 'array' ? isArray(val) :
-                    type === 'object' ? val && typeof val === 'object' && !isArray(val) :
-                    type === 'number' ? typeof val === 'number' :
-                    type === 'integer' ? typeof val === 'number' && ~~val === val :
-                    type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
-                    type === 'null' ? val === null :
-                    type === 'boolean' ? typeof val === 'boolean' :
-                    type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
-                    type === 'regexp' ? Object.prototype.toString.call(val) === '[object RegExp]' :
-                    type === 'any' ? typeof val !== 'undefined' : false) {
+                        type === 'object' ? val && typeof val === 'object' && !isArray(val) :
+                            type === 'number' ? typeof val === 'number' :
+                                type === 'integer' ? typeof val === 'number' && Math.floor(val) === val :
+                                    type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
+                                        type === 'null' ? val === null :
+                                            type === 'boolean' ? typeof val === 'boolean' :
+                                                type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
+                                                    type === 'regexp' ? Object.prototype.toString.call(val) === '[object RegExp]' :
+                                                        type === 'any' ? typeof val !== 'undefined' : false) {
                 return callback(null, type);
             }
         }
@@ -605,7 +624,7 @@
     }
 
     function error (attribute, property, actual, schema, errors) {
-        var lookup = { expected: schema[attribute], attribute: attribute, property: property };
+        var lookup = {expected: schema[attribute], actual: actual, attribute: attribute, property: property};
         var message = schema.messages && schema.messages[attribute] || schema.message || validate.messages[attribute] || 'no default message';
         message = message.replace(/%\{([a-z]+)\}/ig, function (_, match) { return lookup[match.toLowerCase()] || ''; });
         errors.push({
