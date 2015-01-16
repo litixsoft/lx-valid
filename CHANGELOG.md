@@ -1,7 +1,7 @@
 <a name="0.3.0"></a>
 ## 0.3.0 (2015-01-16)
 
-Merge some pull request from the [revalidator](https://github.com/flatiron/revalidator) repo. Thanks to all the contributor there.
+Merge some pull request from the [revalidator](https://github.com/flatiron/revalidator) repo. Thanks to all the contributors there.
 
 
 #### Bug Fixes
