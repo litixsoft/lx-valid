@@ -300,7 +300,12 @@ beforeEach(function () {
 
 describe('Validator', function () {
     it('validate() should return true when type conform schema', function () {
+        //typeForTest.arrayTest = [1, 'a', 4];
+
         var result = val.validate(convertJson(typeForTest), schemaForTest);
+
+        //console.log('result.errors');
+        //console.log(result.errors);
 
         expect(result.valid).toBe(true);
         expect(result.errors.length).toBe(0);
@@ -378,16 +383,40 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(3);
             expect(result.errors).toEqual([
-                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' },
-                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' },
-                { attribute: 'type', property: 'arr', expected: 'string', actual: 'number', message: 'must be of string type' }
+                {
+                    attribute: 'type',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type',
+                    property: 'arr.2'
+                },
+                {
+                    attribute: 'type',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type',
+                    property: 'arr.1'
+                },
+                {
+                    attribute: 'type',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type',
+                    property: 'arr.0'
+                }
             ]);
 
             result = val.validate({arr: 10}, schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(1);
             expect(result.errors).toEqual([
-                { attribute: 'type', property: 'arr', expected: 'array', actual: 'number', message: 'must be of array type' }
+                {
+                    attribute: 'type',
+                    property: 'arr',
+                    expected: 'array',
+                    actual: 'number',
+                    message: 'must be of array type'
+                }
             ]);
 
             schema.properties.arr.required = true;
@@ -396,7 +425,7 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(1);
             expect(result.errors).toEqual([
-                { attribute: 'required', property: 'arr', expected: true, actual: undefined, message: 'is required' }
+                {attribute: 'required', property: 'arr', expected: true, actual: undefined, message: 'is required'}
             ]);
         });
 
@@ -446,10 +475,322 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(3);
             expect(result.errors).toEqual([
-                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' },
-                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' },
-                { attribute: 'type', property: 'array', expected: 'string', actual: 'number', message: 'must be of string type' }
+                {
+                    attribute: 'type',
+                    property: '2',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type'
+                },
+                {
+                    attribute: 'type',
+                    property: '1',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type'
+                },
+                {
+                    attribute: 'type',
+                    property: '0',
+                    expected: 'string',
+                    actual: 'number',
+                    message: 'must be of string type'
+                }
             ]);
+        });
+
+        it('should return the array index in the error message when single array', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({arr: ['2', 1, '3', 4, '5']}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+            expect(result.errors[0].property).toBe('arr.3');
+            expect(result.errors[1].property).toBe('arr.1');
+        });
+
+        it('should return the array index in the error message when array in array', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: {
+                            type: 'array',
+                            items: {
+                                type: 'string'
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({arr: [['2', 1, '3'], [4, '5']]}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+            expect(result.errors[0].property).toBe('arr.1.0');
+            expect(result.errors[1].property).toBe('arr.0.1');
+        });
+
+        it('should return the array index in the error message when object in array', function () {
+            var schema = {
+                properties: {
+                    arr: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                name: {
+                                    type: 'string'
+                                },
+                                lang: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        properties: {
+                                            name: {
+                                                type: 'string'
+                                            },
+                                            code: {
+                                                type: 'integer'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({
+                arr: [
+                    {
+                        name: '1', lang: [{name: 'de', code: 128}]
+                    },
+                    {
+                        name: '2', lang: [{name: 'en', code: 88}]
+                    }
+                ]
+            }, schema);
+            expect(result.valid).toBeTruthy();
+            expect(result.errors.length).toBe(0);
+
+            result = val.validate({arr: [{name: 1}, {name: '2'}]}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(1);
+            expect(result.errors[0].property).toBe('arr.0.name');
+
+            result = val.validate({
+                arr: [
+                    {name: '1', lang: [{name: 'de', code: 128}]},
+                    {name: '2', lang: [{name: 'en', code: '88'}]}
+                ]
+            }, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(1);
+            expect(result.errors[0].property).toBe('arr.1.lang.0.code');
+        });
+
+        it('should return the array index in the error message when array in complex object', function () {
+            var schema = {
+                properties: {
+                    person: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string'
+                            },
+                            codes: {
+                                type: 'array',
+                                items: {
+                                    type: 'integer'
+                                }
+                            },
+                            addresses: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    properties: {
+                                        street: {
+                                            type: 'string'
+                                        },
+                                        users: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'string'
+                                            }
+                                        },
+                                        frogs: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'object',
+                                                properties: {
+                                                    name: {
+                                                        type: 'string'
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    arrayWithArrays: {
+                        type: 'array',
+                        items: {
+                            type: 'array',
+                            items: {
+                                type: 'integer'
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate({person: {name: 'wayne', codes: [1, 2, 3]}}, schema);
+            expect(result.valid).toBeTruthy();
+
+            result = val.validate({person: {name: 55, codes: [1, 2, 3]}}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('person.name');
+
+            result = val.validate({person: {name: 'wayne', codes: [1, '2', 3]}}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('person.codes.1');
+
+            result = val.validate({person: {name: 'wayne', addresses: [{street: '1'}, {street: 2}, {street: '3'}]}}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('person.addresses.1.street');
+
+            result = val.validate({person: {name: 'wayne', addresses: [{street: '1'}, {street: 2, users: ['a', 'b']}, {street: '3', users: ['a', 5, 'c']}]}}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[1].property).toBe('person.addresses.1.street');
+            expect(result.errors[0].property).toBe('person.addresses.2.users.1');
+
+            result = val.validate({arrayWithArrays: [[1, 2, 3], [4, '5', 6], ['7', 8, 9]]}, schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('arrayWithArrays.2.0');
+            expect(result.errors[1].property).toBe('arrayWithArrays.1.1');
+
+        });
+
+        it('should return the array index in the error message when array in complex object and the array is on root', function () {
+            var schema = {
+                items: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string'
+                        },
+                        codes: {
+                            type: 'array',
+                            items: {
+                                type: 'integer'
+                            }
+                        },
+                        addresses: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    street: {
+                                        type: 'string'
+                                    },
+                                    users: {
+                                        type: 'array',
+                                        items: {
+                                            type: 'string'
+                                        }
+                                    },
+                                    frogs: {
+                                        type: 'array',
+                                        items: {
+                                            type: 'object',
+                                            properties: {
+                                                name: {
+                                                    type: 'string'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        arrayWithArrays: {
+                            type: 'array',
+                            items: {
+                                type: 'array',
+                                items: {
+                                    type: 'integer'
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var result = val.validate([{name: 'wayne', codes: [1, 2, 3]}], schema);
+            expect(result.valid).toBeTruthy();
+
+            result = val.validate([{name: 55, codes: [1, 2, 3]}], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('0.name');
+
+            result = val.validate([{name: 'wayne', codes: [1, '2', 3]}, {name: 'wayne', codes: [1, 2, 3]}, {name: 'wayne', codes: [1, 2, '3', 4]}], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[1].property).toBe('0.codes.1');
+            expect(result.errors[0].property).toBe('2.codes.2');
+
+            result = val.validate([{
+                name: 'wayne',
+                addresses: [{street: '1'}, {street: 2}, {street: '3'}]
+            }
+            ], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('0.addresses.1.street');
+
+            result = val.validate([ {
+                name: 'wayne',
+                addresses: [{street: '1'}, {street: 2, users: ['a', 'b']}, {street: '3', users: ['a', 5, 'c']}]
+            }
+            ], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[1].property).toBe('0.addresses.1.street');
+            expect(result.errors[0].property).toBe('0.addresses.2.users.1');
+
+            result = val.validate([{arrayWithArrays: [[1, 2, 3], [4, '5', 6], ['7', 8, 9]]}, {arrayWithArrays: [[1, 2, 3], [4, 5, 6], ['7', 8, 9]]}], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors[1].property).toBe('0.arrayWithArrays.2.0');
+            expect(result.errors[2].property).toBe('0.arrayWithArrays.1.1');
+            expect(result.errors[0].property).toBe('1.arrayWithArrays.2.0');
+
+        });
+
+        it('should return the array index in the error message when array in array and the array is in root', function () {
+            var schema = {
+                items: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                }
+            };
+
+            var result = val.validate([['2', 1, '3'], [4, '5']], schema);
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+            expect(result.errors[1].property).toBe('0.1');
+            expect(result.errors[0].property).toBe('1.0');
         });
     });
 
@@ -775,9 +1116,9 @@ describe('Validator', function () {
         result = val.validate(data, schema, {strictRequired: true});
 
         expect(result.valid).toBeFalsy();
-        expect(result.errors[0].property).toBe('name');
+        expect(result.errors[0].property).toBe('names.3');
         expect(result.errors[0].message).toBe('is required');
-        expect(result.errors[1].property).toBe('names');
+        expect(result.errors[1].property).toBe('name');
         expect(result.errors[1].message).toBe('is required');
     });
 
@@ -831,9 +1172,11 @@ describe('Validator', function () {
             for (i = 0, max = testDb.length; i < max; i += 1) {
                 if (testDb[i].userName === userName) {
                     result.valid = false;
-                    result.errors.push({attribute: 'checkUserName',
+                    result.errors.push({
+                        attribute: 'checkUserName',
                         property: 'userName', expected: false, actual: true,
-                        message: 'userName already exists'});
+                        message: 'userName already exists'
+                    });
                 }
             }
 
@@ -847,9 +1190,11 @@ describe('Validator', function () {
             for (i = 0, max = testDb.length; i < max; i += 1) {
                 if (testDb[i].email === email) {
                     result.valid = false;
-                    result.errors.push({attribute: 'checkEmail',
+                    result.errors.push({
+                        attribute: 'checkEmail',
                         property: 'email', expected: false, actual: true,
-                        message: 'email already exists'});
+                        message: 'email already exists'
+                    });
                 }
             }
 
@@ -898,9 +1243,11 @@ describe('Validator', function () {
             for (i = 0, max = testDb.length; i < max; i += 1) {
                 if (testDb[i].userName === userName) {
                     result.valid = false;
-                    result.errors.push({attribute: 'checkUserName',
+                    result.errors.push({
+                        attribute: 'checkUserName',
                         property: 'userName', expected: false, actual: true,
-                        message: 'userName already exists'});
+                        message: 'userName already exists'
+                    });
                 }
             }
 
@@ -914,9 +1261,11 @@ describe('Validator', function () {
             for (i = 0, max = testDb.length; i < max; i += 1) {
                 if (testDb[i].email === email) {
                     result.valid = false;
-                    result.errors.push({attribute: 'checkEmail',
+                    result.errors.push({
+                        attribute: 'checkEmail',
                         property: 'email', expected: false, actual: true,
-                        message: 'email already exists'});
+                        message: 'email already exists'
+                    });
                 }
             }
 
@@ -1054,10 +1403,11 @@ describe('Validator', function () {
 
             var keys = [];
 
-            function transform(data) {
+            function transform (data) {
                 keys.push(data.property);
             }
-            var result = val.validate(data, schema, {transform: transform} );
+
+            var result = val.validate(data, schema, {transform: transform});
 
             expect(result.valid).toBeTruthy();
             expect(keys).toEqual(['name', 'names', 'names', 'names', 'names']);
