@@ -89,6 +89,7 @@ describe('Types', function () {
         // integer
         var res = val.types.integer(123);
         var res2 = val.types.integer(12.3);
+        var res3 = val.types.integer(10000000000.5);
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
@@ -96,8 +97,11 @@ describe('Types', function () {
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
 
-        expect(val.isUndefined()).toBeTruthy();
-        expect(val.isUndefined('undefined')).toBeFalsy();
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(val.isInteger(123)).toBeTruthy();
+        expect(val.isInteger('123')).toBeFalsy();
     });
 
     it('should validate a float correctly', function () {
@@ -115,8 +119,8 @@ describe('Types', function () {
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
 
-        expect(val.isUndefined()).toBeTruthy();
-        expect(val.isUndefined('undefined')).toBeFalsy();
+        expect(val.isFloat(12.34)).toBeTruthy();
+        expect(val.isFloat('12.34')).toBeFalsy();
     });
 
     it('should validate an array correctly', function () {
