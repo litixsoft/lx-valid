@@ -8,6 +8,29 @@ describe('revalidator', function () {
 
     describe('.validate()', function () {
 
+        it('should handle a custom error message', function () {
+            schema = {
+                properties: {
+                    name: {
+                        type: 'string',
+                        messages: {
+                            type: '%{property}:%{attribute} Not a %{expected} type'
+                        }
+                    }
+                }
+            };
+
+            var res = val.validate({name: 5}, schema);
+            expect(res.valid).toBeFalsy();
+            expect(res.errors[0].message).toBe('name:type Not a string type');
+
+            schema.properties.name.messages.type += ', actual: %{actual}';
+
+            res = val.validate({name: 5}, schema);
+            expect(res.valid).toBeFalsy();
+            expect(res.errors[0].message).toBe('name:type Not a string type, actual: number');
+        });
+
         describe('can have an option cast which', function () {
 
             describe('can cast an integer when set to true and', function () {
