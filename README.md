@@ -79,7 +79,11 @@ In case the validation failed (rules are violated), the returned object also con
 This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. ( __default: `true`__ )
 * __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
 e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. Modifies the original object. ( __default: `undefined`__ )
-* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ )
+* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ ) __deprecated__
+* __unknownProperties__: Defines how properties which are not declared in the schema should be handled. ( __default: `ignore`__ )
+    * `ignore`: The properties are ignored in validation and are not deleted.
+    * `delete`: The properties are deleted.
+    * `error`: The properties are treated as error and are not deleted.
 * __convert__: Converts a property by the format defined in the schema. Modifies the original object. ( __default: `undefined`__ )
 * __trim__: Trims all properties of type `string`. Modifies the original object. ( __default: `false`__ )
 * __strictRequired__: Sets validity of empty `string` to `false`. ( __default: `false`__ )

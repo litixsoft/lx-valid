@@ -662,6 +662,106 @@ describe('revalidator', function () {
                 expect(res.valid).toBeFalsy();
             });
         });
-    });
 
+        describe('can have an option "unknownProperties" which', function () {
+            it('should ignore properties not defined in schema when set to "ignore"', function () {
+                schema = {
+                    properties: {
+                        int: {
+                            type: 'integer'
+                        },
+                        number: {
+                            type: 'number'
+                        },
+                        boolean: {
+                            type: 'boolean'
+                        },
+                        float: {
+                            type: 'float'
+                        }
+                    }
+                };
+                data = {int: 10, a: 3, b: '4'};
+                var res = val.validate(data, schema);
+
+                expect(res.valid).toBeTruthy();
+                expect(res.errors.length).toBe(0);
+                expect(data.a).toBe(3);
+                expect(data.b).toBe('4');
+
+                res = val.validate(data, schema, {unknownProperties: 'ignore'});
+
+                expect(res.valid).toBeTruthy();
+                expect(res.errors.length).toBe(0);
+                expect(data.a).toBe(3);
+                expect(data.b).toBe('4');
+            });
+
+            it('should delete properties not defined in schema when set to "delete"', function () {
+                schema = {
+                    properties: {
+                        int: {
+                            type: 'integer'
+                        },
+                        number: {
+                            type: 'number'
+                        },
+                        boolean: {
+                            type: 'boolean'
+                        },
+                        float: {
+                            type: 'float'
+                        }
+                    }
+                };
+                data = {int: 10, a: 3, b: '4'};
+                var res = val.validate(data, schema, {unknownProperties: 'delete'});
+
+                expect(res.valid).toBeTruthy();
+                expect(res.errors.length).toBe(0);
+                expect(data.a).not.toBeDefined();
+                expect(data.b).not.toBeDefined();
+            });
+
+            it('should return errors when properties not defined in schema when set to "error"', function () {
+                schema = {
+                    properties: {
+                        int: {
+                            type: 'integer'
+                        },
+                        number: {
+                            type: 'number'
+                        },
+                        boolean: {
+                            type: 'boolean'
+                        },
+                        float: {
+                            type: 'float'
+                        }
+                    }
+                };
+                data = {int: 10, a: 3, b: '4'};
+                var res = val.validate(data, schema, {unknownProperties: 'error'});
+
+                expect(res.valid).toBeFalsy();
+                expect(res.errors.length).toBe(2);
+                expect(res.errors[0]).toEqual({
+                    attribute: 'unknown',
+                    property: 'a',
+                    expected: undefined,
+                    actual: 3,
+                    message: 'is not defined in schema'
+                });
+                expect(res.errors[1]).toEqual({
+                    attribute: 'unknown',
+                    property: 'b',
+                    expected: undefined,
+                    actual: '4',
+                    message: 'is not defined in schema'
+                });
+                expect(data.a).toBe(3);
+                expect(data.b).toBe('4');
+            });
+        });
+    });
 });
