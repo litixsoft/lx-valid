@@ -1,3 +1,19 @@
+<a name="0.4.0"></a>
+## 0.4.0 (2015-01-17)
+
+
+#### Features
+
+* add option "unknownProperties" which replaces option deleteUnknownProperties ([8b07288c](https://github.com/litixsoft/lx-valid/commit/8b07288c59264ba95a36b82f249072ae22117d91), closes [#3](https://github.com/litixsoft/lx-valid/issues/3))
+
+
+#### Breaking Changes
+
+* 
+The option "deleteUnknownProperties" is now deprecated and will be removed in v0.5.0
+ ([8b07288c](https://github.com/litixsoft/lx-valid/commit/8b07288c59264ba95a36b82f249072ae22117d91))
+
+
 <a name="0.3.0"></a>
 ## 0.3.0 (2015-01-16)
 
