@@ -4,5 +4,5 @@
 .jshintrc
 build/
 doc/
-test/
+test*/
 Gruntfile.js
