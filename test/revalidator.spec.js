@@ -56,6 +56,66 @@ describe('revalidator', function () {
             expect(res.valid).toBeTruthy();
         });
 
+        it('should handle convert function in arrays', function () {
+            schema = {
+                properties: {
+                    demo: {
+                        type: 'array',
+                        items: {
+                            type: 'string',
+                            format: 'mongo-id'
+                        }
+                    }
+                }
+            };
+
+            var data = {demo: ['511106fc574d81d815000001', '511106fc574d81d815000001', '511106fc574d81d815000001']};
+
+            function convert (format, value) {
+                if (format === 'mongo-id') {
+                    return 1;
+                }
+
+                return value;
+            }
+
+            var res = val.validate(data, schema, {convert: convert});
+
+            expect(res.valid).toBeTruthy();
+            expect(data.demo[0]).toBe(1);
+            expect(data.demo[1]).toBe(1);
+            expect(data.demo[2]).toBe(1);
+            expect(data.demo.length).toBe(3);
+        });
+
+        it('should handle convert function in arrays when array is root element ', function () {
+            schema = {
+                type: 'array',
+                items: {
+                    type: 'string',
+                    format: 'mongo-id'
+                }
+            };
+
+            var data = ['511106fc574d81d815000001', '511106fc574d81d815000001', '511106fc574d81d815000001'];
+
+            function convert (format, value) {
+                if (format === 'mongo-id') {
+                    return 1;
+                }
+
+                return value;
+            }
+
+            var res = val.validate(data, schema, {convert: convert});
+
+            expect(res.valid).toBeTruthy();
+            expect(data[0]).toBe(1);
+            expect(data[1]).toBe(1);
+            expect(data[2]).toBe(1);
+            expect(data.length).toBe(3);
+        });
+
         describe('can have an option cast which', function () {
 
             describe('can cast an integer when set to true and', function () {
