@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.4.0 - 2015-01-17
+ * lx-valid - v0.4.1 - 2015-01-28
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -459,10 +459,12 @@
                     } else {
                         if (options.convert && typeof options.convert === 'function') {
                             // try to convert property by schema format
-                            if (isArray(object[property])) {
+                            if (isArray(object[property]) || isArray(object)) {
+                                var arr = isArray(object) ? object : object[property];
+
                                 // convert values in array
-                                var index = object[property].indexOf(value);
-                                object[property][index] = options.convert(format, value);
+                                var index = arr.indexOf(value);
+                                arr[index] = options.convert(format, value);
                             } else {
                                 object[property] = options.convert(format, value);
                             }

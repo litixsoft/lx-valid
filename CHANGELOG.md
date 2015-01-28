@@ -1,3 +1,12 @@
+<a name="0.4.1"></a>
+### 0.4.1 (2015-01-28)
+
+
+#### Bug Fixes
+
+* convert function is now working correctly for arrays which are at root level ([24cf5a78](https://github.com/litixsoft/lx-valid/commit/24cf5a78763d8765ae3c2634c5e9301dbcfbb70b))
+
+
 <a name="0.4.0"></a>
 ## 0.4.0 (2015-01-17)
 
