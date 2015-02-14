@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.4.1 - 2015-01-28
+ * lx-valid - v0.4.2 - 2015-02-14
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -142,15 +142,6 @@
          * </p>
          */
         addMissingDefaults: false,
-        /**
-         * <p>
-         * When {@link #deleteUnknownProperties} is <code>true</code>,
-         * if property is not declared in schema it is deleted from object.
-         * </p><p>
-         * <em>Default: <code>false</code></em>
-         * </p>
-         */
-        deleteUnknownProperties: false,
         /**
          * <p>
          * When {@link #unknownProperties} is set to <code>'delete'</code>,

@@ -1,3 +1,12 @@
+<a name="0.4.2"></a>
+### 0.4.2 (2015-02-14)
+
+
+#### Bug Fixes
+
+* remove option "deleteUnknownProperties" from default options ([a039964a](https://github.com/litixsoft/lx-valid/commit/a039964a94516b1703de78cfab6182d87086c5b4), closes [#5](https://github.com/litixsoft/lx-valid/issues/5))
+
+
 <a name="0.4.1"></a>
 ### 0.4.1 (2015-01-28)
 
