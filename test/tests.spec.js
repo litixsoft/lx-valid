@@ -906,7 +906,7 @@ describe('Validator', function () {
             name: 'wayne'
         };
 
-        var result = val.validate(data, schemaForTest, {deleteUnknownProperties: true});
+        var result = val.validate(data, schemaForTest, {unknownProperties: 'delete'});
 
         expect(result.valid).toBe(true);
         expect(result.errors.length).toBe(0);
@@ -934,8 +934,8 @@ describe('Validator', function () {
             name: 'wayne'
         };
 
-        var valFunction = val.getValidationFunction({deleteUnknownProperties: true});
-        var result = valFunction(data, schemaForTest, {deleteUnknownProperties: false});
+        var valFunction = val.getValidationFunction({unknownProperties: 'delete'});
+        var result = valFunction(data, schemaForTest, {unknownProperties: 'ignore'});
 
         expect(result.valid).toBe(true);
         expect(result.errors.length).toBe(0);
@@ -1432,14 +1432,51 @@ describe('Validator', function () {
                     num: {
                         type: ['string', 'integer'],
                         format: ['number-float']
+                    },
+                    id: {
+                        type: ['string', 'mongoId'],
+                        format: ['mongo-id']
                     }
                 }
             };
+
+            var ObjectID = require('bson').ObjectID;
 
             expect(val.validate({num: 3}, schema).valid).toBeTruthy();
             expect(val.validate({num: '3.55'}, schema).valid).toBeTruthy();
             expect(val.validate({num: '3'}, schema).valid).toBeFalsy();
             expect(val.validate({num: 'test'}, schema).valid).toBeFalsy();
+
+            expect(val.validate({id: new ObjectID()}, schema).valid).toBeTruthy();
+            expect(val.validate({id: new ObjectID().toString()}, schema).valid).toBeTruthy();
+            expect(val.validate({id: '507f191e810c19729de860'}, schema).valid).toBeFalsy();
+            expect(val.validate({id: {id: '123', _bsontype: 'ObjectID'}}, schema).valid).toBeFalsy();
+        });
+
+        it('should return false when validating a not existing type', function () {
+            var schema = {
+                properties: {
+                    num: {
+                        type: 'abc'
+                    }
+                }
+            };
+
+            expect(val.validate({num: 3}, schema).valid).toBeFalsy();
+        });
+
+        it('should handle types with capitalized first letter', function () {
+            var schema = {
+                properties: {
+                    test: {
+                        type: 'String'
+                    }
+                }
+            };
+
+            expect(val.validate({test: 'wayne'}, schema).valid).toBeTruthy();
+            expect(val.validate({test: 3}, schema).valid).toBeFalsy();
+            expect(val.validate({test: 3}, schema).errors[0].expected).toBe('String');
         });
     });
 });

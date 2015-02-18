@@ -152,16 +152,26 @@ describe('Formats', function () {
     it('should validate a float number correctly', function () {
         var res1 = val.formats.numberFloat(2.66);
         var res2 = val.formats.numberFloat(3);
-        var res3 = val.formats.numberFloat('2,88');
+        var res3 = val.formats.numberFloat('2.88');
+        var res4 = val.formats.numberFloat('2,88');
 
-        expect(res1.valid).toBe(true);
-        expect(res1.errors.length).toBe(0);
+        expect(res1.valid).toBe(false);
+        expect(res1.errors.length).toBe(1);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
 
-        expect(res3.valid).toBe(false);
-        expect(res3.errors.length).toBe(1);
+        expect(res3.valid).toBe(true);
+        expect(res3.errors.length).toBe(0);
+
+        expect(res4.valid).toBe(false);
+        expect(res4.errors.length).toBe(1);
+
+        expect(val.formats.float(2.66).valid).toBeFalsy();
+        expect(val.formats.float(3).valid).toBeFalsy();
+        expect(val.formats.float('2.88').valid).toBeTruthy();
+        expect(val.formats.float('2,88').valid).toBeFalsy();
+        expect(val.formats.float('2').valid).toBeFalsy();
     });
 
     it('should validate an empty string correctly', function () {
