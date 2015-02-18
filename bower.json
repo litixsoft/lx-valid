@@ -1,0 +1,43 @@
+{
+    "name": "lx-valid",
+    "version": "0.4.3",
+    "description": "A cross-browser / node.js JSON schema validator, based on flatiron revalidator.",
+    "homepage": "https://github.com/litixsoft/lx-valid",
+    "author": {
+        "name": "Litixsoft GmbH",
+        "email": "development@litixsoft.de",
+        "url": "http://www.litixsoft.de"
+    },
+    "maintainers": [
+        {
+            "name": "Timo Liebetrau",
+            "email": "t.liebetrau@litixsoft.de"
+        },
+        {
+            "name": "Andreas Krummsdorf",
+            "email": "a.krummsdorf@litixsoft.de"
+        }
+    ],
+    "keywords": [
+        "json schema",
+        "schema validator",
+        "validator",
+        "browser validator"
+    ],
+    "license": "MIT",
+    "ignore": [
+        ".*",
+        "doc",
+        "dist",
+        "lib",
+        "node_modules",
+        "Gruntfile.js",
+        "package.json",
+        "test",
+        "validate-commit-msg.js"
+    ],
+    "dependencies": {
+    },
+    "devDependencies": {
+    }
+}

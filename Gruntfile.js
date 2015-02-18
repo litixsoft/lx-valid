@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                     'node_modules/async/lib/async.js',
                     'lib/<%= pkg.name %>.js'
                 ],
-                dest: 'dist/<%= pkg.name %>.js'
+                dest: '<%= pkg.name %>.js'
             }
         },
         uglify: {
@@ -43,7 +43,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: ['<%= concat.dist.dest %>'],
-                dest: 'dist/<%= pkg.name %>.min.js'
+                dest: '<%= pkg.name %>.min.js'
             }
         },
         compress: {
@@ -133,7 +133,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', ['git:commitHook', 'clean:jasmine', 'jshint:test', 'jasmine_node:test']);
     grunt.registerTask('cover', ['clean:coverage', 'jshint:test', 'bgShell:coverage', 'open']);
-    grunt.registerTask('build', ['clean:dist', 'test', 'concat', 'uglify', 'compress']);
+    grunt.registerTask('build', ['test', 'concat', 'uglify']);
     grunt.registerTask('ci', ['clean:coverage', 'clean:jasmine', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node:ci']);
     grunt.registerTask('release', 'Bump version, update changelog and tag version', function (version) {
         grunt.task.run([
