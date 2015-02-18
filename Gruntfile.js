@@ -10,12 +10,12 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         jshint_files_to_test: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
         banner: '/*!\n' +
-            ' * <%= pkg.title || pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-            '<%= pkg.homepage ? " * " + pkg.homepage + "\\n" : "" %>' +
-            ' *\n' +
-            ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
-            ' * Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
-            ' */\n\n',
+        ' * <%= pkg.title || pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+        '<%= pkg.homepage ? " * " + pkg.homepage + "\\n" : "" %>' +
+        ' *\n' +
+        ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
+        ' * Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
+        ' */\n\n',
         // Before generating any new files, remove any previously-created files.
         clean: {
             jasmine: ['build/reports/jasmine'],
@@ -38,7 +38,8 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                banner: '<%= banner %>'
+                banner: '<%= banner %>',
+                sourceMap: true
             },
             dist: {
                 src: ['<%= concat.dist.dest %>'],
@@ -111,8 +112,7 @@ module.exports = function (grunt) {
             }
         },
         changelog: {
-            options: {
-            }
+            options: {}
         },
         bump: {
             options: {
@@ -134,7 +134,7 @@ module.exports = function (grunt) {
     grunt.registerTask('test', ['git:commitHook', 'clean:jasmine', 'jshint:test', 'jasmine_node:test']);
     grunt.registerTask('cover', ['clean:coverage', 'jshint:test', 'bgShell:coverage', 'open']);
     grunt.registerTask('build', ['clean:dist', 'test', 'concat', 'uglify', 'compress']);
-    grunt.registerTask('ci', ['clean', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node:ci']);
+    grunt.registerTask('ci', ['clean:coverage', 'clean:jasmine', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node:ci']);
     grunt.registerTask('release', 'Bump version, update changelog and tag version', function (version) {
         grunt.task.run([
             'bump:' + (version || 'patch') + ':bump-only',
