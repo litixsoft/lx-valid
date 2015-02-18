@@ -1,3 +1,13 @@
+<a name="0.5.0"></a>
+## 0.5.0 (2015-02-18)
+
+
+#### Features
+
+* add type mongoId to validate a MongoDB ObjectID in the schema ([d7db65cd](https://github.com/litixsoft/lx-valid/commit/d7db65cdb7f18f306631a5304c7e4bcf6790a588))
+* add support for bower ([e072a5f3](https://github.com/litixsoft/lx-valid/commit/e072a5f316454af113c04cf8a552124943a0cd3c))
+
+
 <a name="0.4.3"></a>
 ### 0.4.3 (2015-02-18)
 

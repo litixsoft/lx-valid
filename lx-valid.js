@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.4.3 - 2015-02-18
+ * lx-valid - v0.5.0 - 2015-02-18
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -69,10 +69,6 @@
     //
     function validate (object, schema, options) {
         options = mixin({}, validate.defaults, options);
-
-        if (options.hasOwnProperty('deleteUnknownProperties')) {
-            console.log('lx-valid: option "deleteUnknownProperties" is deprcated. It will be removed in version 0.5.0! Please use option "unknowProperties" instead.');
-        }
 
         if (options.trim === true) {
             // ensure that trim works in old browsers
@@ -242,7 +238,11 @@
 
                 return true;
             }
-        }
+        },
+        'mongo-id': /^[0-9a-fA-F]{8}[0-9a-fA-F]{6}[0-9a-fA-F]{4}[0-9a-fA-F]{6}$/,
+        'number-float': /^[\-\+]?\b(\d+[.]\d+$)$/,
+        'float': /^[\-\+]?\b(\d+[.]\d+$)$/,
+        'empty': /^$/
     };
 
     /**
@@ -251,6 +251,58 @@
     validate.formatExtensions = {
         'url': /^(https?|ftp|git):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
     };
+
+    validate.types = {
+        string: function(value) {
+            return getType(value) === 'string';
+        },
+        number: function(value) {
+            return getType(value) === 'number';
+        },
+        boolean: function(value) {
+            return getType(value) === 'boolean';
+        },
+        date: function(value) {
+            return getType(value) === 'date';
+        },
+        regexp: function(value) {
+            return getType(value) === 'regexp';
+        },
+        array: function(value) {
+            return getType(value) === 'array';
+        },
+        object: function(value) {
+            return getType(value) === 'object';
+        },
+        integer: function(value) {
+            return getType(value) === 'number' && Math.floor(value) === value;
+        },
+        float: function(value) {
+            return getType(value) === 'number' && new RegExp(validate.formats.float).exec(value);
+        },
+        null: function(value) {
+            return getType(value) === 'null';
+        },
+        undefined: function(value) {
+            return getType(value) === 'undefined';
+        },
+        any: function(value) {
+            return value !== undefined;
+        },
+        mongoId: function(value) {
+            return value && typeof value === 'object' && value._bsontype === 'ObjectID' && validate.formats['mongo-id'].test(value);
+        }
+    };
+
+    function getTypeCheckFunction(type) {
+        var result = validate.types[type];
+
+        if (!result) {
+            result = validate.types[type.toLowerCase()];
+        }
+
+        return result;
+    }
 
     function mixin (obj) {
         var sources = Array.prototype.slice.call(arguments, 1);
@@ -628,20 +680,17 @@
 
         // Go through available types
         // And fine first matching
-        /*jshint bitwise: false */
         for (var i = 0, l = types.length; i < l; i++) {
-            type = types[i].toLowerCase().trim();
-            if (type === 'string' ? typeof val === 'string' :
-                    type === 'array' ? isArray(val) :
-                        type === 'object' ? val && typeof val === 'object' && !isArray(val) :
-                            type === 'number' ? typeof val === 'number' :
-                                type === 'integer' ? typeof val === 'number' && Math.floor(val) === val :
-                                    type === 'float' ? typeof val === 'number' && new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val) :
-                                        type === 'null' ? val === null :
-                                            type === 'boolean' ? typeof val === 'boolean' :
-                                                type === 'date' ? Object.prototype.toString.call(val) === '[object Date]' :
-                                                    type === 'regexp' ? Object.prototype.toString.call(val) === '[object RegExp]' :
-                                                        type === 'any' ? typeof val !== 'undefined' : false) {
+            type = types[i].trim();
+
+            // get function to check type
+            var typeCheckFunction = getTypeCheckFunction(type);
+
+            if (!typeCheckFunction) {
+                return callback(true);
+            }
+
+            if (typeCheckFunction(val)) {
                 return callback(null, type);
             }
         }
@@ -1808,11 +1857,6 @@
 (function (exports, revalidator, async) {
     'use strict';
 
-    // add formats to revalidator
-    revalidator.validate.formatExtensions['mongo-id'] = /^[0-9a-fA-F]{8}[0-9a-fA-F]{6}[0-9a-fA-F]{4}[0-9a-fA-F]{6}$/;
-    revalidator.validate.formatExtensions['number-float'] = /^[\-\+]?\b(\d+[.]\d+$)$/;
-    revalidator.validate.formatExtensions['empty'] = /^$/;
-
     /**
      * Extend revalidator format extensions
      * @param extensionName
@@ -1839,7 +1883,7 @@
      * @return {String}
      */
     function getMsg (msgTyp, replacement) {
-        return String(revalidator.validate.messages[msgTyp].replace('%{expected}', replacement));
+        return (revalidator.validate.messages[msgTyp] || '').replace('%{expected}', replacement);
     }
 
     /**
@@ -1850,19 +1894,12 @@
      * @return {Object}
      */
     function getError (type, expected, actual) {
-        var error = {
-            attribute: '',
-            expected: '',
-            actual: '',
-            message: ''
+        return {
+            attribute: type,
+            expected: expected,
+            actual: actual,
+            message: getMsg(type, expected)
         };
-
-        error.attribute = type;
-        error.expected = expected;
-        error.actual = actual;
-        error.message = getMsg(type, expected);
-
-        return error;
     }
 
     /**
@@ -1988,21 +2025,28 @@
             return getResult(null);
         };
         pub.mongoId = function (val) {
-            if (!revalidator.validate.formatExtensions['mongo-id'].test(val)) {
+            if (!revalidator.validate.formats['mongo-id'].test(val)) {
                 return getResult(getError('format', 'mongoId', val));
             }
 
             return getResult(null);
         };
         pub.numberFloat = function (val) {
-            if (!revalidator.validate.formatExtensions['number-float'].test(val)) {
+            if (typeof val !== 'string' || !revalidator.validate.formats['number-float'].test(val)) {
+                return getResult(getError('format', 'float', val));
+            }
+
+            return getResult(null);
+        };
+        pub.float = function (val) {
+            if (typeof val !== 'string' || !revalidator.validate.formats['float'].test(val)) {
                 return getResult(getError('format', 'float', val));
             }
 
             return getResult(null);
         };
         pub.empty = function (val) {
-            if (!revalidator.validate.formatExtensions['empty'].test(val)) {
+            if (!revalidator.validate.formats['empty'].test(val)) {
                 return getResult(getError('format', 'empty', val));
             }
 
@@ -2019,93 +2063,13 @@
     function types () {
         var pub = {};
 
-        pub.string = function (val) {
-            if (typeof val !== 'string') {
-                return getResult(getError('type', 'string', val));
-            }
+        var i;
+        var keys = Object.keys(revalidator.validate.types);
+        var length = keys.length;
 
-            return getResult(null);
-        };
-        pub.number = function (val) {
-            if (typeof val !== 'number') {
-                return getResult(getError('type', 'number', val));
-            }
-
-            return getResult(null);
-        };
-        pub['boolean'] = function (val) {
-            if (typeof val !== 'boolean') {
-                return getResult(getError('type', 'boolean', val));
-            }
-
-            return getResult(null);
-        };
-        pub.object = function (val) {
-            if (typeof val !== 'object') {
-                return getResult(getError('type', 'object', val));
-            }
-
-            return getResult(null);
-        };
-        pub['undefined'] = function (val) {
-            if (typeof val !== 'undefined') {
-                return getResult(getError('type', 'undefined', val));
-            }
-
-            return getResult(null);
-        };
-        pub.integer = function (val) {
-
-            /*jshint bitwise: false */
-            if (!(typeof val === 'number' && ~~val === val)) {
-                return getResult(getError('type', 'integer', val));
-            }
-
-            return getResult(null);
-        };
-        pub['float'] = function (val) {
-            //noinspection JSValidateTypes
-            if (typeof val !== 'number' || !new RegExp(/^[\-\+]?\b(\d+[.]\d+$)$/).exec(val)) {
-                return getResult(getError('type', 'float', val));
-            }
-
-            return getResult(null);
-        };
-        pub.array = function (val) {
-            if (!Array.isArray(val)) {
-                return getResult(getError('type', 'array', val));
-            }
-
-            return getResult(null);
-        };
-        pub.date = function (val) {
-            if (!(val instanceof Date)) {
-                return getResult(getError('type', 'Date', val));
-            }
-
-            return getResult(null);
-        };
-        pub.regexp = function (val) {
-            if (!(val instanceof RegExp)) {
-                return getResult(getError('type', 'RegExp', val));
-            }
-
-            return getResult(null);
-        };
-        pub['null'] = function (val) {
-            if (val !== null) {
-                return getResult(getError('type', 'null', val));
-            }
-
-            return getResult(null);
-        };
-        pub.mongoId = function (val) {
-            if (val && typeof val === 'object' && val._bsontype === 'ObjectID' && revalidator.validate.formatExtensions['mongo-id'].test(val)) {
-                return getResult(null);
-            } else {
-                return getResult(getError('type', 'mongoId', val));
-            }
-        };
+        for (i = 0; i < length; i++) {
+            pub[keys[i]] = getValidationFunctionForTypesByKey(keys[i]);
+        }
 
         return pub;
     }
@@ -2339,8 +2303,18 @@
     exports.getValidationFunction = getValidationFunction;
 
     function getValidationFunctionByKey (key, functions) {
-        return function(value) {
+        return function (value) {
             return functions[key](value).valid;
+        };
+    }
+
+    function getValidationFunctionForTypesByKey (key) {
+        return function (value) {
+            if (revalidator.validate.types[key](value)){
+                return getResult(null);
+            } else {
+                return getResult(getError('type', key, value));
+            }
         };
     }
 
@@ -2357,7 +2331,7 @@
         exports[getValidationFunctionName(keys[i])] = getValidationFunctionByKey(keys[i], exports.types);
     }
 })(
-        typeof(window) === 'undefined' ? module.exports : (window.lxvalid = window.lxvalid || {}),
-        typeof(window) === 'undefined' ? require('./revalidator') : (window.json),
-        typeof(window) === 'undefined' ? require('async') : (window.async)
-    );
+    typeof(window) === 'undefined' ? module.exports : (window.lxvalid = window.lxvalid || {}),
+    typeof(window) === 'undefined' ? require('./revalidator') : (window.json),
+    typeof(window) === 'undefined' ? require('async') : (window.async)
+);
