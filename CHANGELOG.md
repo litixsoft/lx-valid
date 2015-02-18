@@ -1,3 +1,12 @@
+<a name="0.4.3"></a>
+### 0.4.3 (2015-02-18)
+
+
+#### Bug Fixes
+
+* type "mongoId" is now detected correctly ([0f99abe9](https://github.com/litixsoft/lx-valid/commit/0f99abe9c2719ce5d95719d20dd78e116bbcd0ca))
+
+
 <a name="0.4.2"></a>
 ### 0.4.2 (2015-02-14)
 
