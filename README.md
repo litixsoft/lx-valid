@@ -1,7 +1,8 @@
 # lx-valid
-> A validator for Node.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
+> A JSON schema validator for Node.js/io.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
-> [![NPM version](https://badge.fury.io/js/lx-valid.svg.svg)](http://badge.fury.io/js/lx-valid.svg)
+> [![NPM version](https://badge.fury.io/js/lx-valid.svg)](http://badge.fury.io/js/lx-valid)
+[![Bower version](https://badge.fury.io/bo/lx-valid.svg)](http://badge.fury.io/bo/lx-valid)
 [![Build Status](https://secure.travis-ci.org/litixsoft/lx-valid.svg?branch=master)](https://travis-ci.org/litixsoft/lx-valid)
 [![david-dm](https://david-dm.org/litixsoft/lx-valid.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid)
 [![david-dm](https://david-dm.org/litixsoft/lx-valid/dev-status.svg?theme=shields.io)](https://david-dm.org/litixsoft/lx-valid#info=devDependencies&view=table)
@@ -79,7 +80,6 @@ In case the validation failed (rules are violated), the returned object also con
 This option is used for lx-valid format extensions and additional custom formats. Those are stored in here. ( __default: `true`__ )
 * __cast__: Enforce casting of some types (for integers/numbers are only supported) when it's possible,
 e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. Modifies the original object. ( __default: `undefined`__ )
-* __deleteUnknownProperties__: Deletes all properties from object which are not declared in the schema. ( __default: `false`__ ) __deprecated__
 * __unknownProperties__: Defines how properties which are not declared in the schema should be handled. ( __default: `ignore`__ )
     * `ignore`: The properties are ignored in validation and are not deleted.
     * `delete`: The properties are deleted.
@@ -94,7 +94,7 @@ e.g. `"42" => 42`, but `"forty2" => "forty2"` for the integer type. Modifies the
     * data.property `{string}` - The name of the current property.
     * data.schema `{object}` - The schema of the current property.
     * data.options `{object}` - The options of the validation function.
-    * data.errors `{array}` - The array with the validation errors which encoutered until yet.
+    * data.errors `{array}` - The array with the validation errors which encountered until yet.
 
 ### Validation types
 For a property an `value` is that which is given as input for validation where as an `expected value` is the value
@@ -110,12 +110,15 @@ The type of value should be equal to the expected value.
 { type: 'string' }
 { type: 'number' }
 { type: 'integer' }
+{ type: 'float' }
 { type: 'array' }
 { type: 'boolean' }
 { type: 'object' }
 { type: 'null' }
 { type: 'regexp' }
 { type: 'any' }
+{ type: 'undefined' }
+{ type: 'mongoId' }
 { type: ['boolean', 'string'] }
 ```
 
@@ -290,6 +293,7 @@ The value should match a valid format. The format is only validated when the val
 ```js
 { format: 'mongo-id' }
 { format: 'number-float' }
+{ format: 'float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -626,6 +630,7 @@ Just like in JSON schema validation, values can be tested against predefined for
 ```js
 { format: 'mongoId' }
 { format: 'numberFloat' }
+{ format: 'float' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ipAddress' }
@@ -724,19 +729,13 @@ More examples are to be found in [test/tests.spec.js](test/tests.spec.js)
 The lx-valid validator is currently under development. Scheduled functions are implemented step by step.
 Please refer to the changelog and roadmap for further information on development progress.
 
-## Roadmap
-
-### v0.3.0
-
-* filtering and sanitising of string
-
 ## Author
 [Litixsoft GmbH](http://www.litixsoft.de)
 
 ## License
 (The MIT License)
 
-Copyright (C) 2013-2014 Litixsoft GmbH info@litixsoft.de
+Copyright (C) 2013-2015 Litixsoft GmbH info@litixsoft.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
