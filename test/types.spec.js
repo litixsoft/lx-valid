@@ -190,12 +190,18 @@ describe('Types', function () {
 
     it('should validate a mongoId correctly', function () {
         // mongoId
-        var res = val.types.mongoId('507f191e810c19729de860ea');
+        var ObjectID = require('bson').ObjectID;
+        var res = val.formats.mongoId(new ObjectID());
+        var res1 = val.types.mongoId('507f191e810c19729de860ea');
         var res2 = val.types.mongoId(123);
         var res3 = val.types.mongoId(null);
+        var res4 = val.types.mongoId({id: '123', _bsontype: 'ObjectID'});
 
         expect(res.valid).toBe(true);
         expect(res.errors.length).toBe(0);
+
+        expect(res1.valid).toBe(false);
+        expect(res1.errors.length).toBe(1);
 
         expect(res2.valid).toBe(false);
         expect(res2.errors.length).toBe(1);
@@ -203,7 +209,11 @@ describe('Types', function () {
         expect(res3.valid).toBe(false);
         expect(res3.errors.length).toBe(1);
 
-        expect(val.isMongoId('507f191e810c19729de860ea')).toBeTruthy();
+        expect(res4.valid).toBe(false);
+        expect(res4.errors.length).toBe(1);
+
+        expect(val.isMongoId(new ObjectID())).toBeTruthy();
+        expect(val.isMongoId('507f191e810c19729de860ea')).toBeFalsy();
         expect(val.isMongoId(123)).toBeFalsy();
         expect(val.isMongoId(null)).toBeFalsy();
         expect(val.isMongoId(['507f191e810c19729de860ea'])).toBeFalsy();

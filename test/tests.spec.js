@@ -668,11 +668,21 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors[0].property).toBe('person.codes.1');
 
-            result = val.validate({person: {name: 'wayne', addresses: [{street: '1'}, {street: 2}, {street: '3'}]}}, schema);
+            result = val.validate({
+                person: {
+                    name: 'wayne',
+                    addresses: [{street: '1'}, {street: 2}, {street: '3'}]
+                }
+            }, schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors[0].property).toBe('person.addresses.1.street');
 
-            result = val.validate({person: {name: 'wayne', addresses: [{street: '1'}, {street: 2, users: ['a', 'b']}, {street: '3', users: ['a', 5, 'c']}]}}, schema);
+            result = val.validate({
+                person: {
+                    name: 'wayne',
+                    addresses: [{street: '1'}, {street: 2, users: ['a', 'b']}, {street: '3', users: ['a', 5, 'c']}]
+                }
+            }, schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors[1].property).toBe('person.addresses.1.street');
             expect(result.errors[0].property).toBe('person.addresses.2.users.1');
@@ -746,7 +756,10 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors[0].property).toBe('0.name');
 
-            result = val.validate([{name: 'wayne', codes: [1, '2', 3]}, {name: 'wayne', codes: [1, 2, 3]}, {name: 'wayne', codes: [1, 2, '3', 4]}], schema);
+            result = val.validate([{name: 'wayne', codes: [1, '2', 3]}, {
+                name: 'wayne',
+                codes: [1, 2, 3]
+            }, {name: 'wayne', codes: [1, 2, '3', 4]}], schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors[1].property).toBe('0.codes.1');
             expect(result.errors[0].property).toBe('2.codes.2');
@@ -759,7 +772,7 @@ describe('Validator', function () {
             expect(result.valid).toBeFalsy();
             expect(result.errors[0].property).toBe('0.addresses.1.street');
 
-            result = val.validate([ {
+            result = val.validate([{
                 name: 'wayne',
                 addresses: [{street: '1'}, {street: 2, users: ['a', 'b']}, {street: '3', users: ['a', 5, 'c']}]
             }
@@ -1300,7 +1313,7 @@ describe('Validator', function () {
         });
     });
 
-    it('should convert the data if covert function is set', function () {
+    it('should convert the data if convert function is set', function () {
         var result = val.validate(dataForConvertTest, schemaForConvertTest, {convert: convert});
         var convertedMongoId = JSON.stringify({oid: '507f191e810c19729de860ea'});
 
@@ -1411,6 +1424,22 @@ describe('Validator', function () {
 
             expect(result.valid).toBeTruthy();
             expect(keys).toEqual(['name', 'names', 'names', 'names', 'names']);
+        });
+
+        it('should validate multiple types and also check for the format if one of the types is "string"', function () {
+            var schema = {
+                properties: {
+                    num: {
+                        type: ['string', 'integer'],
+                        format: ['number-float']
+                    }
+                }
+            };
+
+            expect(val.validate({num: 3}, schema).valid).toBeTruthy();
+            expect(val.validate({num: '3.55'}, schema).valid).toBeTruthy();
+            expect(val.validate({num: '3'}, schema).valid).toBeFalsy();
+            expect(val.validate({num: 'test'}, schema).valid).toBeFalsy();
         });
     });
 });
