@@ -388,7 +388,7 @@ describe('Validator', function () {
                     expected: 'string',
                     actual: 'number',
                     message: 'must be of string type',
-                    property: 'arr.2'
+                    property: 'arr.0'
                 },
                 {
                     attribute: 'type',
@@ -402,7 +402,7 @@ describe('Validator', function () {
                     expected: 'string',
                     actual: 'number',
                     message: 'must be of string type',
-                    property: 'arr.0'
+                    property: 'arr.2'
                 }
             ]);
 
@@ -477,7 +477,7 @@ describe('Validator', function () {
             expect(result.errors).toEqual([
                 {
                     attribute: 'type',
-                    property: '2',
+                    property: '0',
                     expected: 'string',
                     actual: 'number',
                     message: 'must be of string type'
@@ -491,7 +491,7 @@ describe('Validator', function () {
                 },
                 {
                     attribute: 'type',
-                    property: '0',
+                    property: '2',
                     expected: 'string',
                     actual: 'number',
                     message: 'must be of string type'
@@ -514,8 +514,8 @@ describe('Validator', function () {
             var result = val.validate({arr: ['2', 1, '3', 4, '5']}, schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(2);
-            expect(result.errors[0].property).toBe('arr.3');
-            expect(result.errors[1].property).toBe('arr.1');
+            expect(result.errors[0].property).toBe('arr.1');
+            expect(result.errors[1].property).toBe('arr.3');
         });
 
         it('should return the array index in the error message when array in array', function () {
@@ -536,8 +536,8 @@ describe('Validator', function () {
             var result = val.validate({arr: [['2', 1, '3'], [4, '5']]}, schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(2);
-            expect(result.errors[0].property).toBe('arr.1.0');
-            expect(result.errors[1].property).toBe('arr.0.1');
+            expect(result.errors[0].property).toBe('arr.0.1');
+            expect(result.errors[1].property).toBe('arr.1.0');
         });
 
         it('should return the array index in the error message when object in array', function () {
@@ -684,13 +684,13 @@ describe('Validator', function () {
                 }
             }, schema);
             expect(result.valid).toBeFalsy();
-            expect(result.errors[1].property).toBe('person.addresses.1.street');
-            expect(result.errors[0].property).toBe('person.addresses.2.users.1');
+            expect(result.errors[0].property).toBe('person.addresses.1.street');
+            expect(result.errors[1].property).toBe('person.addresses.2.users.1');
 
             result = val.validate({arrayWithArrays: [[1, 2, 3], [4, '5', 6], ['7', 8, 9]]}, schema);
             expect(result.valid).toBeFalsy();
-            expect(result.errors[0].property).toBe('arrayWithArrays.2.0');
-            expect(result.errors[1].property).toBe('arrayWithArrays.1.1');
+            expect(result.errors[0].property).toBe('arrayWithArrays.1.1');
+            expect(result.errors[1].property).toBe('arrayWithArrays.2.0');
 
         });
 
@@ -761,8 +761,8 @@ describe('Validator', function () {
                 codes: [1, 2, 3]
             }, {name: 'wayne', codes: [1, 2, '3', 4]}], schema);
             expect(result.valid).toBeFalsy();
-            expect(result.errors[1].property).toBe('0.codes.1');
-            expect(result.errors[0].property).toBe('2.codes.2');
+            expect(result.errors[0].property).toBe('0.codes.1');
+            expect(result.errors[1].property).toBe('2.codes.2');
 
             result = val.validate([{
                 name: 'wayne',
@@ -778,14 +778,14 @@ describe('Validator', function () {
             }
             ], schema);
             expect(result.valid).toBeFalsy();
-            expect(result.errors[1].property).toBe('0.addresses.1.street');
-            expect(result.errors[0].property).toBe('0.addresses.2.users.1');
+            expect(result.errors[0].property).toBe('0.addresses.1.street');
+            expect(result.errors[1].property).toBe('0.addresses.2.users.1');
 
             result = val.validate([{arrayWithArrays: [[1, 2, 3], [4, '5', 6], ['7', 8, 9]]}, {arrayWithArrays: [[1, 2, 3], [4, 5, 6], ['7', 8, 9]]}], schema);
             expect(result.valid).toBeFalsy();
+            expect(result.errors[0].property).toBe('0.arrayWithArrays.1.1');
             expect(result.errors[1].property).toBe('0.arrayWithArrays.2.0');
-            expect(result.errors[2].property).toBe('0.arrayWithArrays.1.1');
-            expect(result.errors[0].property).toBe('1.arrayWithArrays.2.0');
+            expect(result.errors[2].property).toBe('1.arrayWithArrays.2.0');
 
         });
 
@@ -802,8 +802,8 @@ describe('Validator', function () {
             var result = val.validate([['2', 1, '3'], [4, '5']], schema);
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(2);
-            expect(result.errors[1].property).toBe('0.1');
-            expect(result.errors[0].property).toBe('1.0');
+            expect(result.errors[0].property).toBe('0.1');
+            expect(result.errors[1].property).toBe('1.0');
         });
     });
 
@@ -1129,9 +1129,9 @@ describe('Validator', function () {
         result = val.validate(data, schema, {strictRequired: true});
 
         expect(result.valid).toBeFalsy();
-        expect(result.errors[0].property).toBe('names.3');
+        expect(result.errors[0].property).toBe('name');
         expect(result.errors[0].message).toBe('is required');
-        expect(result.errors[1].property).toBe('name');
+        expect(result.errors[1].property).toBe('names.3');
         expect(result.errors[1].message).toBe('is required');
     });
 
