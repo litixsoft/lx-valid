@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.5.0 - 2015-02-18
+ * lx-valid - v0.5.1 - 2015-02-27
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -614,7 +614,7 @@
 
                             });
 
-                            nestedErrors.unshift(0, 0);
+                            nestedErrors.unshift(errors.length, 0);
                             Array.prototype.splice.apply(errors, nestedErrors);
                         }
 
@@ -649,7 +649,7 @@
                         nestedErrors.forEach(function (e) {
                             e.property = property + '.' + e.property;
                         });
-                        nestedErrors.unshift(0, 0);
+                        nestedErrors.unshift(errors.length, 0);
                         Array.prototype.splice.apply(errors, nestedErrors);
                     }
                     break;

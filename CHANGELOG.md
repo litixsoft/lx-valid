@@ -1,3 +1,12 @@
+<a name="0.5.1"></a>
+### 0.5.1 (2015-02-27)
+
+
+#### Features
+
+* Save nested error messages in correct order ([058dad77](https://github.com/litixsoft/lx-valid/commit/058dad7791b7ea8b3371162857564d659a57b24a))
+
+
 <a name="0.5.0"></a>
 ## 0.5.0 (2015-02-18)
 
