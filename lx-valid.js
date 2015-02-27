@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.5.1 - 2015-02-27
+ * lx-valid - v0.5.2 - 2015-02-27
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -242,6 +242,7 @@
         'mongo-id': /^[0-9a-fA-F]{8}[0-9a-fA-F]{6}[0-9a-fA-F]{4}[0-9a-fA-F]{6}$/,
         'number-float': /^[\-\+]?\b(\d+[.]\d+$)$/,
         'float': /^[\-\+]?\b(\d+[.]\d+$)$/,
+        'integer': /^[\-\+]?[0-9]+$/,
         'empty': /^$/
     };
 
@@ -2041,6 +2042,13 @@
         pub.float = function (val) {
             if (typeof val !== 'string' || !revalidator.validate.formats['float'].test(val)) {
                 return getResult(getError('format', 'float', val));
+            }
+
+            return getResult(null);
+        };
+        pub.integer = function (val) {
+            if (typeof val !== 'string' || !revalidator.validate.formats['integer'].test(val)) {
+                return getResult(getError('format', 'integer', val));
             }
 
             return getResult(null);

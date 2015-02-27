@@ -174,6 +174,15 @@ describe('Formats', function () {
         expect(val.formats.float('2').valid).toBeFalsy();
     });
 
+    it('should validate a integer number correctly', function () {
+        expect(val.formats.integer(2).valid).toBeFalsy();
+        expect(val.formats.integer(-3).valid).toBeFalsy();
+        expect(val.formats.integer(+3).valid).toBeFalsy();
+        expect(val.formats.integer('2').valid).toBeTruthy();
+        expect(val.formats.integer('-3').valid).toBeTruthy();
+        expect(val.formats.integer('+3').valid).toBeTruthy();
+    });
+
     it('should validate an empty string correctly', function () {
         var res1 = val.formats.empty('');
         var res2 = val.formats.empty(null);

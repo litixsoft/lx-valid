@@ -1,3 +1,11 @@
+<a name="0.5.2"></a>
+### 0.5.2 (2015-02-27)
+
+#### Features
+
+* Add format integer ([210d8a5](https://github.com/litixsoft/lx-valid/commit/210d8a5eba9af4352f697da7bbc2213fe8bd3470))
+
+
 <a name="0.5.1"></a>
 ### 0.5.1 (2015-02-27)
 
