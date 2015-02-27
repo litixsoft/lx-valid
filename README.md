@@ -294,6 +294,7 @@ The value should match a valid format. The format is only validated when the val
 { format: 'mongo-id' }
 { format: 'number-float' }
 { format: 'float' }
+{ format: 'integer' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ip-address' }
@@ -631,6 +632,7 @@ Just like in JSON schema validation, values can be tested against predefined for
 { format: 'mongoId' }
 { format: 'numberFloat' }
 { format: 'float' }
+{ format: 'integer' }
 { format: 'url' }
 { format: 'email' }
 { format: 'ipAddress' }
