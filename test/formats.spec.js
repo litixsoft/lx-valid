@@ -149,6 +149,21 @@ describe('Formats', function () {
         expect(res3.errors.length).toBe(1);
     });
 
+    it('should validate an UUID  correctly', function () {
+        var res1 = val.formats.uuid('6648ae51-28f1-ad83-6b8d-f45284d2c173');
+        var res2 = val.formats.uuid('b5f41c10-a0ef-886a-c5d2-91c32a360f4e');
+        var res3 = val.formats.uuid('wayne');
+
+        expect(res1.valid).toBe(true);
+        expect(res1.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(true);
+        expect(res2.errors.length).toBe(0);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+    });
+
     it('should validate a float number correctly', function () {
         var res1 = val.formats.numberFloat(2.66);
         var res2 = val.formats.numberFloat(3);
