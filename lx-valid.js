@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.5.2 - 2015-02-27
+ * lx-valid - v0.5.3 - 2015-05-15
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -240,6 +240,7 @@
             }
         },
         'mongo-id': /^[0-9a-fA-F]{8}[0-9a-fA-F]{6}[0-9a-fA-F]{4}[0-9a-fA-F]{6}$/,
+        'uuid': /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
         'number-float': /^[\-\+]?\b(\d+[.]\d+$)$/,
         'float': /^[\-\+]?\b(\d+[.]\d+$)$/,
         'integer': /^[\-\+]?[0-9]+$/,
@@ -2028,6 +2029,13 @@
         pub.mongoId = function (val) {
             if (!revalidator.validate.formats['mongo-id'].test(val)) {
                 return getResult(getError('format', 'mongoId', val));
+            }
+
+            return getResult(null);
+        };
+        pub.uuid = function (val) {
+            if (!revalidator.validate.formats['uuid'].test(val)) {
+                return getResult(getError('format', 'uuid', val));
             }
 
             return getResult(null);

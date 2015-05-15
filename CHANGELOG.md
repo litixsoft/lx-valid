@@ -1,3 +1,13 @@
+<a name"0.5.3"></a>
+### 0.5.3 (2015-05-15)
+
+
+#### Features
+
+* add format uuid ([c5a5fd9a](https://github.com/litixsoft/lx-valid/commit/c5a5fd9a))
+* add format integer ([5f3e5746](https://github.com/litixsoft/lx-valid/commit/5f3e5746))
+
+
 <a name="0.5.2"></a>
 ### 0.5.2 (2015-02-27)
 
