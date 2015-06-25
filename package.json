@@ -30,7 +30,7 @@
         "validator",
         "browser validator"
     ],
-    "license": "The MIT License (MIT)",
+    "license": "MIT",
     "licenses": [
         {
             "type": "MIT",
