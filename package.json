@@ -17,6 +17,10 @@
         "Joerg Raschke <j.Raschke@litixsoft.de>",
         "Andreas Krummsdorf <a.krummsdorf@litixsoft.de>"
     ],
+    "contributors": [
+        "Sergey Korotkov <sergeyksv@gmail.com>",
+        "Vladimir Kalenyuk"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/litixsoft/lx-valid.git"
