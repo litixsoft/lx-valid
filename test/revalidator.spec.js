@@ -823,5 +823,34 @@ describe('revalidator', function () {
                 expect(data.b).toBe('4');
             });
         });
+
+        it('should not return errors when properties not defined in schema but defined in patternProperties when set to "error"', function () {
+            schema = {
+                patternProperties: {
+                    '^\\d+$': {
+                        type: 'integer'
+                    }
+                }
+            };
+            data = {'42': 5, '43': 'a', foo: 5};
+            var res = val.validate(data, schema, {unknownProperties: 'error'});
+
+            expect(res.valid).toBeFalsy();
+            expect(res.errors.length).toBe(2);
+            expect(res.errors[0]).toEqual({
+                attribute: 'type',
+                property: '43',
+                expected: 'integer',
+                actual: 'string',
+                message: 'must be of integer type'
+            });
+            expect(res.errors[1]).toEqual({
+                attribute: 'unknown',
+                property: 'foo',
+                expected: undefined,
+                actual: 5,
+                message: 'is not defined in schema'
+            });
+        });
     });
 });
