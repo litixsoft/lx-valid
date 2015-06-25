@@ -1,6 +1,6 @@
 {
     "name": "lx-valid",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "description": "A cross-browser / node.js JSON schema validator, based on flatiron revalidator.",
     "homepage": "https://github.com/litixsoft/lx-valid",
     "author": {

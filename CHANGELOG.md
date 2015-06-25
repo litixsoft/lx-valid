@@ -1,3 +1,12 @@
+<a name"0.5.4"></a>
+### 0.5.4 (2015-06-25)
+
+
+#### Bug Fixes
+
+* Proper support for patternProperties used with unknownProperties ([37c29993](https://github.com/litixsoft/lx-valid/commit/37c29993))
+
+
 <a name"0.5.3"></a>
 ### 0.5.3 (2015-05-15)
 
