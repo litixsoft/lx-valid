@@ -905,6 +905,7 @@ describe('Validator', function () {
             id: 1,
             name: 'wayne'
         };
+        data.$wayne = '123';
 
         var result = val.validate(data, schemaForTest, {unknownProperties: 'delete'});
 
@@ -912,6 +913,7 @@ describe('Validator', function () {
         expect(result.errors.length).toBe(0);
         expect(data.someUnknownProperty).toBeUndefined();
         expect(data.someUnknownObject).toBeUndefined();
+        expect(data.$wayne).toBeUndefined();
     });
 
     it('validate() should override the default validation options with the current options', function () {
@@ -1393,6 +1395,69 @@ describe('Validator', function () {
 
             expect(result.valid).toBeFalsy();
             expect(result.errors.length).toBe(2);
+        });
+
+        it('should return a validation error when the option "ignoreNullValues" is enabled but the property is required', function () {
+            var schema = {
+                    properties: {
+                        name: {
+                            type: 'string',
+                            required: true
+                        },
+                        names: {
+                            type: 'array',
+                            required: true,
+                            items: {
+                                type: 'number'
+                            }
+                        },
+                        arr: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    name: {
+                                        type: 'string'
+                                    },
+                                    name1: {
+                                        type: 'boolean'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                data = {
+                    name: null,
+                    names: null
+                };
+
+            var result = val.validate(data, schema);
+
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(2);
+
+            data.name = undefined;
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeFalsy();
+
+            data.name = 'wayne';
+            data.names = [1];
+            data.arr = [{name: 'test', name1: true}, null, {name: 'test1', name1: false}];
+            result = val.validate(data, schema, {ignoreNullValues: true});
+
+            expect(result.valid).toBeTruthy();
+
+            result = val.validate(data, schema);
+
+            expect(result.valid).toBeFalsy();
+            expect(result.errors.length).toBe(1);
         });
 
         it('should call the transform function when "options.transform" is a function', function () {
