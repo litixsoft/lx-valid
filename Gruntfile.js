@@ -111,8 +111,15 @@ module.exports = function (grunt) {
                 src: ['test/']
             }
         },
-        changelog: {
-            options: {}
+        conventionalChangelog: {
+            options: {
+                changelogOpts: {
+                    preset: 'angular'
+                }
+            },
+            release: {
+                src: 'CHANGELOG.md'
+            }
         },
         bump: {
             options: {
@@ -140,7 +147,7 @@ module.exports = function (grunt) {
         grunt.task.run([
             'bump:' + (version || 'patch') + ':bump-only',
             'build',
-            'changelog',
+            'conventionalChangelog:release',
             'bump-commit'
         ]);
     });
