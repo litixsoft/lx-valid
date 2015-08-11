@@ -1,3 +1,13 @@
+<a name="0.5.5"></a>
+## [0.5.5](https://github.com/litixsoft/lx-valid/compare/v0.5.4...v0.5.5) (2015-08-11)
+
+
+### Bug Fixes
+
+* also check if a property is required when option `ignoreNullValues` is enabled ([5d2333f](https://github.com/litixsoft/lx-valid/commit/5d2333f))
+
+
+
 <a name"0.5.4"></a>
 ### 0.5.4 (2015-06-25)
 
