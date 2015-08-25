@@ -214,7 +214,8 @@ describe('revalidator', function () {
                 });
 
                 it('should not cast to an integer when the value is a function', function () {
-                    var func = function () {};
+                    var func = function () {
+                    };
                     data = {value: func};
 
                     expect(val.validate(data, schema, {cast: true})).toEqual({
@@ -354,7 +355,8 @@ describe('revalidator', function () {
                 });
 
                 it('should not cast to a float when the value is a function', function () {
-                    var func = function () {};
+                    var func = function () {
+                    };
                     data = {value: func};
 
                     expect(val.validate(data, schema, {cast: true})).toEqual({
@@ -480,7 +482,8 @@ describe('revalidator', function () {
                 });
 
                 it('should not cast to a number when the value is a function', function () {
-                    var func = function () {};
+                    var func = function () {
+                    };
                     data = {value: func};
 
                     expect(val.validate(data, schema, {cast: true})).toEqual({
@@ -626,7 +629,8 @@ describe('revalidator', function () {
                 });
 
                 it('should not cast to a boolean when the value is a function', function () {
-                    var func = function () {};
+                    var func = function () {
+                    };
                     data = {value: func};
 
                     expect(val.validate(data, schema, {cast: true})).toEqual({
@@ -851,6 +855,35 @@ describe('revalidator', function () {
                 actual: 5,
                 message: 'is not defined in schema'
             });
+        });
+
+        it('should validate properties when schema itself has properties which are not of type object', function () {
+            schema = {
+                properties: {
+                    a: undefined,
+                    b: {type: 'string'}
+                }
+            };
+            data = {a: 'a', b: 'b', c: 'c'};
+            var res = val.validate(data, schema, {});
+
+            expect(res.valid).toBeTruthy();
+            expect(Object.keys(data).length).toBe(3);
+        });
+
+        it('should validate properties when schema itself has properties which are not of type object and remove properties which have schema with invalid properties', function () {
+            schema = {
+                properties: {
+                    a: undefined,
+                    b: {type: 'string'},
+                    d: []
+                }
+            };
+            data = {a: 'a', b: 'b', c: 'c', d: 'd'};
+            var res = val.validate(data, schema, {unknownProperties: 'delete'});
+
+            expect(res.valid).toBeTruthy();
+            expect(Object.keys(data).length).toBe(1);
         });
     });
 });
