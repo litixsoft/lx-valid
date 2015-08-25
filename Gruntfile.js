@@ -92,23 +92,35 @@ module.exports = function (grunt) {
                 path: 'build/coverage/lcov-report/index.html'
             }
         },
-        jasmine_node: {
+        jasmine_nodejs: {
             options: {
-                specNameMatcher: './*.spec', // load only specs containing specNameMatcher
-                requirejs: false,
-                forceExit: true
-            },
-            test: ['test/'],
-            ci: {
-                options: {
-                    jUnit: {
-                        report: true,
-                        savePath: './build/reports/jasmine/',
-                        useDotNotation: true,
-                        consolidate: true
+                specNameSuffix: 'spec.js', // also accepts an array
+                reporters: {
+                    console: {
+                        cleanStack: 1,
+                        verbosity: 3,
+                        listStyle: 'indent'
                     }
-                },
-                src: ['test/']
+                }
+            },
+            test: {
+                specs: ['test/**']
+            },
+            ci: {
+                specs: ['test/**'],
+                options: {
+                    reporters: {
+                        junit: {
+                            savePath: './build/reports/jasmine/'
+                        },
+                        console: {
+                            cleanStack: 1,
+                            verbosity: 3,
+                            listStyle: 'indent',
+                            activity: false
+                        }
+                    }
+                }
             }
         },
         conventionalChangelog: {
@@ -139,10 +151,10 @@ module.exports = function (grunt) {
         grunt.log.ok('Registered git hook: commit-msg');
     });
 
-    grunt.registerTask('test', ['git:commitHook', 'clean:jasmine', 'jshint:test', 'jasmine_node:test']);
+    grunt.registerTask('test', ['git:commitHook', 'clean:jasmine', 'jshint:test', 'jasmine_nodejs:test']);
     grunt.registerTask('cover', ['clean:coverage', 'jshint:test', 'bgShell:coverage', 'open']);
     grunt.registerTask('build', ['test', 'concat', 'uglify']);
-    grunt.registerTask('ci', ['clean:coverage', 'clean:jasmine', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_node:ci']);
+    grunt.registerTask('ci', ['clean:coverage', 'clean:jasmine', 'jshint:jslint', 'jshint:checkstyle', 'bgShell:coverage', 'bgShell:cobertura', 'jasmine_nodejs:ci']);
     grunt.registerTask('release', 'Bump version, update changelog and tag version', function (version) {
         grunt.task.run([
             'bump:' + (version || 'patch') + ':bump-only',

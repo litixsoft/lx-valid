@@ -1,4 +1,4 @@
-/*global describe, it, expect, runs, beforeEach */
+/*global describe, it, expect, beforeEach */
 'use strict';
 
 var val = require('../lib/lx-valid');
@@ -1172,7 +1172,7 @@ describe('Validator', function () {
         expect(result2.valid).toBeFalsy();
     });
 
-    it('asyncValidate() should find already existing values ​​and properly validate', function () {
+    it('asyncValidate() should find already existing values ​​and properly validate', function (done) {
 
         // test mock
         var testDb = [
@@ -1216,35 +1216,23 @@ describe('Validator', function () {
             cb(null, result);
         }
 
-        var valResult = {valid: true, errors: []},
-            flag, value;
+        var valResult = {valid: true, errors: []};
 
         // register async validator
         val.asyncValidate.register(checkUserName, 'user1');
         val.asyncValidate.register(checkEmail, 'user1@test.de');
 
-        // async validate
-        runs(function () {
-            flag = false;
-            val.asyncValidate.exec(valResult, function (err, res) {
-                if (err) {
-                    value = err;
-                }
-                else {
-                    value = res;
-                }
 
-                flag = true;
-            });
-        });
+        val.asyncValidate.exec(valResult, function (err, res) {
+            expect(err).toBeNull();
+            expect(res.valid).toBe(false);
+            expect(res.errors.length).toBe(2);
 
-        runs(function () {
-            expect(value.valid).toBe(false);
-            expect(value.errors.length).toBe(2);
+            done();
         });
     });
 
-    it('asyncValidate() should not validate existing values ​​correctly', function () {
+    it('asyncValidate() should not validate existing values ​​correctly', function (done) {
 
         // test mock
         var testDb = [
@@ -1287,31 +1275,17 @@ describe('Validator', function () {
             cb(null, result);
         }
 
-        var valResult = {valid: true, errors: []},
-            flag, value;
-
+        var valResult = {valid: true, errors: []};
         // register async validator
         val.asyncValidate.register(checkUserName, 'user1');
         val.asyncValidate.register(checkEmail, 'user1@test.de');
 
-        // async validate
-        runs(function () {
-            flag = false;
-            val.asyncValidate.exec(valResult, function (err, res) {
-                if (err) {
-                    value = err;
-                }
-                else {
-                    value = res;
-                }
+        val.asyncValidate.exec(valResult, function (err, res) {
+            expect(err).toBeNull();
+            expect(res.valid).toBe(true);
+            expect(res.errors.length).toBe(0);
 
-                flag = true;
-            });
-        });
-
-        runs(function () {
-            expect(value.valid).toBe(true);
-            expect(value.errors.length).toBe(0);
+            done();
         });
     });
 
