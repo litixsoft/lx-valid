@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v0.5.5 - 2015-08-11
+ * lx-valid - v0.5.6 - 2015-08-25
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2015 Litixsoft GmbH
@@ -334,9 +334,11 @@
         if (schema.properties) {
             props = schema.properties;
             for (p in props) {
-                if (props.hasOwnProperty(p)) {
+                if (props.hasOwnProperty(p) && getType(props[p]) === 'object') {
                     visitedProps.push(p);
                     validateProperty(object, object[p], p, props[p], options, errors);
+                } else {
+                    console.log('Schema invalid. Property ' + p + ' is not of type object, actual type: ' + getType(props[p]));
                 }
             }
         }
@@ -345,7 +347,7 @@
         if (schema.patternProperties) {
             props = schema.patternProperties;
             for (p in props) {
-                if (props.hasOwnProperty(p)) {
+                if (props.hasOwnProperty(p) && getType(props[p]) === 'object') {
                     var re = new RegExp(p);
 
                     // Find all object properties that are matching `re`
@@ -357,6 +359,8 @@
                             }
                         }
                     }
+                } else {
+                    console.log('Schema invalid. Property ' + p + ' is not of type object, actual type: ' + getType(props[p]));
                 }
             }
         }
@@ -408,7 +412,6 @@
                 }
             }
         }
-
     }
 
     function validateProperty (object, value, property, schema, options, errors) {

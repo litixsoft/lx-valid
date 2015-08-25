@@ -1,3 +1,13 @@
+<a name="0.5.6"></a>
+## [0.5.6](https://github.com/litixsoft/lx-valid/compare/v0.5.5...v0.5.6) (2015-08-25)
+
+
+### Bug Fixes
+
+* ignore invalid schema properties ([976ec2c](https://github.com/litixsoft/lx-valid/commit/976ec2c))
+
+
+
 <a name="0.5.5"></a>
 ## [0.5.5](https://github.com/litixsoft/lx-valid/compare/v0.5.4...v0.5.5) (2015-08-11)
 
