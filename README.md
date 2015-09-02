@@ -474,12 +474,11 @@ We also allow custom message for different constraints.
 {
     type: 'string',
     format: 'url',
+    conform: function (value, instance) { ... },
     messages: {
         type: 'Not a string type',
-        format: 'Expected format is a url'
-    },
-    {
-        conform: function () { ... },
+        format: 'Expected format is a url',
+        conform: 'Failed to pass custom validation',
         message: 'This can be used as a global message'
     }
 }
