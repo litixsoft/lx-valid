@@ -763,6 +763,38 @@ describe('revalidator', function () {
 
             it('should delete properties not defined in schema when set to "delete"', function () {
                 schema = {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        required: true,
+                        properties: {
+                            name: {
+                                type: 'string',
+                                maxLength: 10
+                            },
+                            id: {
+                                type: 'integer'
+                            }
+                        }
+                    }
+                };
+                data = [{id:1, name: 'a'}, {id:2, name: 'b', pwd: 33}, {id:3, name: 'c', aaa: 'eee'}];
+                var res = val.validate(data, schema, {unknownProperties: 'delete'});
+
+                expect(res.valid).toBeTruthy();
+                expect(res.errors.length).toBe(0);
+                expect(data[0].id).toBe(1);
+                expect(data[0].name).toBe('a');
+                expect(data[1].id).toBe(2);
+                expect(data[1].name).toBe('b');
+                expect(data[1].pwd).toBeUndefined();
+                expect(data[2].id).toBe(3);
+                expect(data[2].name).toBe('c');
+                expect(data[2].aaa).toBeUndefined();
+            });
+
+            it('should delete properties not defined in schema when set to "delete"', function () {
+                schema = {
                     properties: {
                         int: {
                             type: 'integer'
