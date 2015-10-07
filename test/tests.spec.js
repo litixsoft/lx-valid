@@ -918,7 +918,7 @@ describe('Validator', function () {
         expect(data.$wayne).toBeUndefined();
     });
 
-    fit('validate() should remove properties in array which are no properties of the schema', function () {
+    it('validate() should remove properties in array which are no properties of the schema', function () {
         var schema = {
             properties: {
                 users: {
