@@ -906,6 +906,7 @@ describe('Validator', function () {
             name: 'wayne'
         };
         data.$wayne = '123';
+        data.someUnknownSimpleArray = [5, 6, 7];
 
         var result = val.validate(data, schemaForTest, {unknownProperties: 'delete'});
 
@@ -913,7 +914,39 @@ describe('Validator', function () {
         expect(result.errors.length).toBe(0);
         expect(data.someUnknownProperty).toBeUndefined();
         expect(data.someUnknownObject).toBeUndefined();
+        expect(data.someUnknownSimpleArray).toBeUndefined();
         expect(data.$wayne).toBeUndefined();
+    });
+
+    fit('validate() should remove properties in array which are no properties of the schema', function () {
+        var schema = {
+            properties: {
+                users: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string'
+                            },
+                            idiot: {
+                                type: 'boolean'
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var data = {users: [{name: 'a', age: 11}, {name: 'wayne', idiot: true}, {name: 'blub', age: 99}]};
+
+        var result = val.validate(data, schema, {unknownProperties: 'delete'});
+
+        expect(result.valid).toBeTruthy();
+        expect(data.users[0].name).toBe('a');
+        expect(data.users[2].name).toBe('blub');
+        expect(data.users[0].age).toBeUndefined();
+        expect(data.users[2].age).toBeUndefined();
     });
 
     it('validate() should override the default validation options with the current options', function () {
@@ -1221,7 +1254,6 @@ describe('Validator', function () {
         // register async validator
         val.asyncValidate.register(checkUserName, 'user1');
         val.asyncValidate.register(checkEmail, 'user1@test.de');
-
 
         val.asyncValidate.exec(valResult, function (err, res) {
             expect(err).toBeNull();
