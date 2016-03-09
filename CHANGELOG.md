@@ -1,3 +1,17 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/litixsoft/lx-valid/compare/v0.5.6...v1.0.0) (2016-03-09)
+
+
+### Bug Fixes
+
+* Fix custom message sample syntax ([7ccee09](https://github.com/litixsoft/lx-valid/commit/7ccee09))
+
+### Features
+
+* add more types and formats ([281ca1e](https://github.com/litixsoft/lx-valid/commit/281ca1e))
+
+
+
 <a name="0.5.6"></a>
 ## [0.5.6](https://github.com/litixsoft/lx-valid/compare/v0.5.5...v0.5.6) (2015-08-25)
 
