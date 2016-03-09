@@ -1,16 +1,19 @@
 sudo: false
 language: node_js
+cache:
+  directories:
+    - node_modules
 node_js:
 - '0.10'
 - '0.12'
-- 'iojs'
+- '3'
 - '4'
 - '5'
 before_script:
 - npm install -g grunt-cli
 matrix:
   allow_failures:
-  - node_js: 'iojs'
+  - node_js: '3'
 notifications:
   slack:
     secure: Rwn7p66zY9BiLEsQjOquwZxD9N7PDwG/0+2gdTmuyw+7Gb4JIEjuypfwDKJgLnbOdM0q7QEp3SfReKFkFy+2CZ2FXUPHcjcpWvodbxkaPHbVbVcXQ8JR1gYO5h9jMJRqmt/WkhlEAQ8mmbU8sK3nGM7P6lPNlJreC/BrQOMWil4=
