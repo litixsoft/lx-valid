@@ -164,6 +164,21 @@ describe('Formats', function () {
         expect(res3.errors.length).toBe(1);
     });
 
+    it('should validate an LUUID  correctly', function () {
+        var res1 = val.formats.luuid('f44a1a75-22f6-46ab-9b08-202e8d9ab382');
+        var res2 = val.formats.luuid('f44a1a75-22f3-46ab-9b08-202e8d9ab382');
+        var res3 = val.formats.luuid('wayne');
+
+        expect(res1.valid).toBe(true);
+        expect(res1.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(true);
+        expect(res2.errors.length).toBe(0);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+    });
+
     it('should validate a float number correctly', function () {
         var res1 = val.formats.numberFloat(2.66);
         var res2 = val.formats.numberFloat(3);
@@ -196,6 +211,17 @@ describe('Formats', function () {
         expect(val.formats.integer('2').valid).toBeTruthy();
         expect(val.formats.integer('-3').valid).toBeTruthy();
         expect(val.formats.integer('+3').valid).toBeTruthy();
+    });
+
+    it('should validate a timestamp number correctly', function () {
+        expect(val.formats.timestamp('1456406006, 1').valid).toBeTruthy();
+        expect(val.formats.timestamp('1456406006,1').valid).toBeTruthy();
+        expect(val.formats.timestamp('1456406006.1').valid).toBeFalsy();
+        expect(val.formats.timestamp(-3).valid).toBeFalsy();
+        expect(val.formats.timestamp(+3).valid).toBeFalsy();
+        expect(val.formats.timestamp('1456406006').valid).toBeFalsy();
+        expect(val.formats.timestamp('-3').valid).toBeFalsy();
+        expect(val.formats.timestamp('+3').valid).toBeFalsy();
     });
 
     it('should validate an empty string correctly', function () {

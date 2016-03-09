@@ -1,5 +1,6 @@
 /*global describe, it, expect */
 var val = require('../lib/lx-valid');
+var bson = require('bson');
 
 describe('Types', function () {
     'use strict';
@@ -219,5 +220,147 @@ describe('Types', function () {
         expect(val.isMongoId(['507f191e810c19729de860ea'])).toBeFalsy();
         expect(val.isMongoId(['507f191e810c19729de860ea', '507f191e810c19729de860ea'])).toBeFalsy();
         expect(val.isMongoId({a: '507f191e810c19729de860ea'})).toBeFalsy();
+    });
+
+    it('should validate a DBRef correctly', function () {
+        // mongoId
+        var ref1 = new bson.DBRef('testCollection', new bson.ObjectID());
+        var ref2 = new bson.DBRef('testCollection', new bson.ObjectID(), 'testdb');
+
+        var res = val.types.dbRef(ref1);
+        var res1 = val.types.dbRef(ref2);
+        var res2 = val.types.dbRef(123);
+        var res3 = val.types.dbRef(null);
+        var res4 = val.types.dbRef({id: '123', _bsontype: 'DBRef'});
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res1.valid).toBe(true);
+        expect(res1.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(res4.valid).toBe(false);
+        expect(res4.errors.length).toBe(1);
+
+        expect(val.isDbRef(ref1)).toBeTruthy();
+        expect(val.isDbRef(ref2)).toBeTruthy();
+        expect(val.isDbRef('507f191e810c19729de860ea')).toBeFalsy();
+        expect(val.isDbRef(ref1.toString())).toBeFalsy();
+        expect(val.isDbRef(123)).toBeFalsy();
+        expect(val.isDbRef(null)).toBeFalsy();
+        expect(val.isDbRef([ref1])).toBeFalsy();
+        expect(val.isDbRef([ref1, ref2])).toBeFalsy();
+        expect(val.isDbRef({a: ref1})).toBeFalsy();
+    });
+
+    it('should validate a MinKey correctly', function () {
+        // mongoId
+        var ref1 = new bson.MinKey();
+
+        var res = val.types.minKey(ref1);
+        var res1 = val.types.minKey('123');
+        var res2 = val.types.minKey(123);
+        var res3 = val.types.minKey(null);
+        var res4 = val.types.minKey({id: '123', _bsontype: 'MinKey'});
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res1.valid).toBe(false);
+        expect(res1.errors.length).toBe(1);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(res4.valid).toBe(true);
+        expect(res4.errors.length).toBe(0);
+
+        expect(val.isMinKey(ref1)).toBeTruthy();
+        expect(val.isMinKey('507f191e810c19729de860ea')).toBeFalsy();
+        expect(val.isMinKey(ref1.toString())).toBeFalsy();
+        expect(val.isMinKey(123)).toBeFalsy();
+        expect(val.isMinKey(null)).toBeFalsy();
+        expect(val.isMinKey([ref1])).toBeFalsy();
+        expect(val.isMinKey([ref1, ref1])).toBeFalsy();
+        expect(val.isMinKey({a: ref1})).toBeFalsy();
+    });
+
+    it('should validate a MinKey correctly', function () {
+        // mongoId
+        var ref1 = new bson.MaxKey();
+
+        var res = val.types.maxKey(ref1);
+        var res1 = val.types.maxKey('123');
+        var res2 = val.types.maxKey(123);
+        var res3 = val.types.maxKey(null);
+        var res4 = val.types.maxKey({id: '123', _bsontype: 'MaxKey'});
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res1.valid).toBe(false);
+        expect(res1.errors.length).toBe(1);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(res4.valid).toBe(true);
+        expect(res4.errors.length).toBe(0);
+
+        expect(val.isMaxKey(ref1)).toBeTruthy();
+        expect(val.isMaxKey('507f191e810c19729de860ea')).toBeFalsy();
+        expect(val.isMaxKey(ref1.toString())).toBeFalsy();
+        expect(val.isMaxKey(123)).toBeFalsy();
+        expect(val.isMaxKey(null)).toBeFalsy();
+        expect(val.isMaxKey([ref1])).toBeFalsy();
+        expect(val.isMaxKey([ref1, ref1])).toBeFalsy();
+        expect(val.isMaxKey({a: ref1})).toBeFalsy();
+    });
+
+    it('should validate a Code correctly', function () {
+        // mongoId
+        var ref1 = new bson.Code('this.x= 1', {});
+
+        var res = val.types.code(ref1);
+        var res1 = val.types.code('123');
+        var res2 = val.types.code(123);
+        var res3 = val.types.code(null);
+        var res4 = val.types.code({id: '123', _bsontype: 'Code'});
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res1.valid).toBe(false);
+        expect(res1.errors.length).toBe(1);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(res4.valid).toBe(false);
+        expect(res4.errors.length).toBe(1);
+
+        expect(val.isCode(ref1)).toBeTruthy();
+        expect(val.isCode('507f191e810c19729de860ea')).toBeFalsy();
+        expect(val.isCode(ref1.toString())).toBeFalsy();
+        expect(val.isCode(123)).toBeFalsy();
+        expect(val.isCode(null)).toBeFalsy();
+        expect(val.isCode([ref1])).toBeFalsy();
+        expect(val.isCode([ref1, ref1])).toBeFalsy();
+        expect(val.isCode({a: ref1})).toBeFalsy();
     });
 });

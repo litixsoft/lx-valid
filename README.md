@@ -119,6 +119,10 @@ The type of value should be equal to the expected value.
 { type: 'any' }
 { type: 'undefined' }
 { type: 'mongoId' }
+{ type: 'dbRef' }
+{ type: 'minKey' }
+{ type: 'maxKey' }
+{ type: 'code' }
 { type: ['boolean', 'string'] }
 ```
 
@@ -307,6 +311,9 @@ The value should match a valid format. The format is only validated when the val
 { format: 'utc-millisec' }
 { format: 'regex' }
 { format: 'empty' }
+{ format: 'uuid' }
+{ format: 'luuid' }
+{ format: 'timestamp' }
 ```
 
 #### Example for format
@@ -592,6 +599,10 @@ or
 { type: 'regexp' }
 { type: 'null' }
 { type: 'mongoId' }
+{ type: 'dbRef' }
+{ type: 'minKey' }
+{ type: 'maxKey' }
+{ type: 'code' }
 ```
 
 All JSON schema types are supported and additionally all JavaScript types.
@@ -644,6 +655,9 @@ Just like in JSON schema validation, values can be tested against predefined for
 { format: 'utcMillisec' }
 { format: 'regex' }
 { format: 'empty' }
+{ format: 'uuid' }
+{ format: 'luuid' }
+{ format: 'timestamp' }
 ```
 
 #### ipAddress
@@ -736,7 +750,7 @@ Please refer to the changelog and roadmap for further information on development
 ## License
 (The MIT License)
 
-Copyright (C) 2013-2015 Litixsoft GmbH info@litixsoft.de
+Copyright (C) 2013-2016 Litixsoft GmbH info@litixsoft.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
