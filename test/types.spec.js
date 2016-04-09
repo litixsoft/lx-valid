@@ -363,4 +363,42 @@ describe('Types', function () {
         expect(val.isCode([ref1, ref1])).toBeFalsy();
         expect(val.isCode({a: ref1})).toBeFalsy();
     });
+
+    it('should validate nan correctly', function () {
+        // float
+        var res = val.types.nan(Number.NaN);
+        var res2 = val.types.nan(NaN);
+        var res3 = val.types.nan(12.34);
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(true);
+        expect(res2.errors.length).toBe(0);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(val.isNan(NaN)).toBeTruthy();
+        expect(val.isNan(12.34)).toBeFalsy();
+    });
+
+    it('should validate infinity correctly', function () {
+        // float
+        var res = val.types.infinity(Infinity);
+        var res2 = val.types.infinity(123);
+        var res3 = val.types.infinity(12.34);
+
+        expect(res.valid).toBe(true);
+        expect(res.errors.length).toBe(0);
+
+        expect(res2.valid).toBe(false);
+        expect(res2.errors.length).toBe(1);
+
+        expect(res3.valid).toBe(false);
+        expect(res3.errors.length).toBe(1);
+
+        expect(val.isInfinity(Infinity)).toBeTruthy();
+        expect(val.isInfinity(12.34)).toBeFalsy();
+    });
 });
