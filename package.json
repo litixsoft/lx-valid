@@ -50,7 +50,7 @@
     },
     "devDependencies": {
         "bson": "^0.4.23",
-        "grunt": "^1.0.1",
+        "grunt": "^0.4.5",
         "grunt-bg-shell": "^2.3.3",
         "grunt-bump": "^0.7.0",
         "grunt-contrib-clean": "^1.0.0",
