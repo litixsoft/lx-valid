@@ -49,20 +49,20 @@
         "async": "^1.5.2"
     },
     "devDependencies": {
-        "bson": "^0.4.22",
-        "grunt": "^0.4.5",
+        "bson": "^0.4.23",
+        "grunt": "^1.0.1",
         "grunt-bg-shell": "^2.3.3",
         "grunt-bump": "^0.7.0",
         "grunt-contrib-clean": "^1.0.0",
-        "grunt-contrib-compress": "^1.1.1",
+        "grunt-contrib-compress": "^1.2.0",
         "grunt-contrib-concat": "^1.0.0",
         "grunt-contrib-jshint": "^1.0.0",
-        "grunt-contrib-uglify": "^1.0.0",
+        "grunt-contrib-uglify": "^1.0.1",
         "grunt-conventional-changelog": "^6.1.0",
-        "grunt-jasmine-nodejs": "1.5.1",
+        "grunt-jasmine-nodejs": "1.5.2",
         "grunt-open": "^0.2.3",
-        "istanbul": "^0.4.2",
+        "istanbul": "^0.4.3",
         "jasmine": "^2.4.1",
-        "load-grunt-tasks": "^3.4.1"
+        "load-grunt-tasks": "^3.5.0"
     }
 }
