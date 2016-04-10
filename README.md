@@ -123,6 +123,8 @@ The type of value should be equal to the expected value.
 { type: 'minKey' }
 { type: 'maxKey' }
 { type: 'code' }
+{ type: 'nan' }
+{ type: 'infinity' }
 { type: ['boolean', 'string'] }
 ```
 
@@ -603,6 +605,8 @@ or
 { type: 'minKey' }
 { type: 'maxKey' }
 { type: 'code' }
+{ type: 'nan' }
+{ type: 'infinity' }
 ```
 
 All JSON schema types are supported and additionally all JavaScript types.
