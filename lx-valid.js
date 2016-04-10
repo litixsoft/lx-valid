@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v1.0.0 - 2016-03-09
+ * lx-valid - v1.1.0 - 2016-04-10
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2016 Litixsoft GmbH
@@ -307,6 +307,12 @@
         },
         code: function(value) {
             return value && typeof value === 'object' && value._bsontype === 'Code' && !!value.code && validate.types.string(value.code) && !!value.scope && typeof value.scope === 'object';
+        },
+        infinity: function(value) {
+            return getType(value) === 'infinity';
+        },
+        nan: function(value) {
+            return getType(value) === 'nan';
         }
     };
 
