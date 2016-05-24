@@ -778,7 +778,7 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = [{id:1, name: 'a'}, {id:2, name: 'b', pwd: 33}, {id:3, name: 'c', aaa: 'eee'}];
+                data = [{id: 1, name: 'a'}, {id: 2, name: 'b', pwd: 33}, {id: 3, name: 'c', aaa: 'eee'}];
                 var res = val.validate(data, schema, {unknownProperties: 'delete'});
 
                 expect(res.valid).toBeTruthy();
@@ -916,6 +916,38 @@ describe('revalidator', function () {
 
             expect(res.valid).toBeTruthy();
             expect(Object.keys(data).length).toBe(1);
+        });
+
+        it('should allow to extends the formats', function () {
+            var validator = require('../lib/lx-valid');
+            var data = {
+                validISO8601: '5'
+            };
+            var schema = {
+                properties: {
+                    validISO8601: {
+                        type: 'string',
+                        format: 'iso8601-date'
+                    }
+                }
+            };
+            var options = {
+                convert: function (format, value) {
+                    if (format === 'iso8601-date') {
+                        return new Date(value);
+                    }
+                    return value;
+                }
+            };
+
+            // add format iso-date
+            validator.formats['iso8601-date'] = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
+            validator.extendFormat('iso8601-date', /^[0-9]$/);
+
+            var result = validator.validate(data, schema, options);
+
+            expect(result.valid).toBeTruthy();
+            expect(data.validISO8601 instanceof Date).toBeTruthy();
         });
     });
 });
