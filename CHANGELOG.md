@@ -1,3 +1,13 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/litixsoft/lx-valid/compare/v1.1.0...v1.2.0) (2016-05-24)
+
+
+### Features
+
+* add support for required array (https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-5.4.3) ([2864712](https://github.com/litixsoft/lx-valid/commit/2864712))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/litixsoft/lx-valid/compare/v1.0.0...v1.1.0) (2016-04-10)
 

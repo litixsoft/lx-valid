@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v1.1.0 - 2016-04-10
+ * lx-valid - v1.2.0 - 2016-05-24
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2016 Litixsoft GmbH
@@ -81,7 +81,7 @@
 
         var errors = [];
 
-        //// handle array root element
+        // handle array root element
         if (schema.items) {
             validateProperty(object, object, '', schema, options, errors);
         } else {
@@ -348,13 +348,31 @@
 
     function validateObject (object, schema, options, errors) {
         var props, p, allProps = Object.keys(object),
-            visitedProps = [];
+            visitedProps = [], requiredArray = [];
+
+        // required array (schema draft 4)
+        if (getType(schema.required) === 'array') {
+            requiredArray = schema.required;
+        } else if (getType(schema._required) === 'array') {
+            requiredArray = schema._required;
+        }
 
         // see 5.2
         if (schema.properties) {
             props = schema.properties;
+
             for (p in props) {
                 if (props.hasOwnProperty(p) && getType(props[p]) === 'object') {
+                    var propertySchema = props[p];
+
+                    if (requiredArray.indexOf(p) > -1) {
+                        // save required array of current property
+                        propertySchema._required = propertySchema.required || [];
+
+                        // set required to true for validation
+                        propertySchema.required = true;
+                    }
+
                     visitedProps.push(p);
                     validateProperty(object, object[p], p, props[p], options, errors);
                 } else {
@@ -436,6 +454,7 @@
 
     function validateProperty (object, value, property, schema, options, errors) {
         var format, valid, spec, i, l;
+        var isRequired = schema.required === true;
 
         function constrain (name, value, assert) {
             if (schema[name] !== undefined && !assert(value, schema[name], object)) {
@@ -443,12 +462,12 @@
             }
         }
 
-        if (options.ignoreNullValues && value === null && !schema.required) {
+        if (options.ignoreNullValues && value === null && !isRequired) {
             return;
         }
 
         // check for values of type string and option strictRequired
-        if (typeof value === 'string' && options.strictRequired === true && schema.required) {
+        if (typeof value === 'string' && options.strictRequired === true && isRequired) {
             // perform trim before checking for required
             var valueToTest = options.trim === true ? value.trim() : value;
 
@@ -466,7 +485,7 @@
                 }
 
                 constrain('conform', value, function (a, e, o) { return e(a, o); });
-            } else if (schema.required && schema.type !== 'any') {
+            } else if (isRequired && schema.type !== 'any') {
                 return error('required', property, undefined, schema, errors);
             } else {
                 constrain('conform', value, function (a, e, o) { return e(a, o); });
