@@ -949,5 +949,81 @@ describe('revalidator', function () {
             expect(result.valid).toBeTruthy();
             expect(data.validISO8601 instanceof Date).toBeTruthy();
         });
+
+        it('should handle the required array', function () {
+            var schema = {
+                '$schema': 'http://json-schema.org/draft-04/schema#',
+                'description': '',
+                'type': 'object',
+                'properties': {
+                    'Id': {
+                        'type': 'string',
+                        'minLength': 1
+                    },
+                    'Name': {
+                        'type': 'string',
+                        'minLength': 1
+                    },
+                    'Location': {
+                        'type': 'object',
+                        'properties': {
+                            'Name': {
+                                'type': 'string',
+                                'minLength': 1
+                            },
+                            'Latitude': {
+                                'type': 'number'
+                            },
+                            'Longitude': {
+                                'type': 'number'
+                            },
+                            'Elevation': {
+                                'type': 'number'
+                            }
+                        },
+                        'required': ['Name', 'Longitude']
+                    },
+                    'Metadata': {
+                        'type': 'object',
+                        'properties': {}
+                    },
+                    'Tags': {
+                        'type': 'array',
+                        'items': {
+                            'properties': {
+                                'Name': {
+                                    'type': 'string',
+                                    'minLength': 1
+                                },
+                                'Id': {
+                                    'type': 'number'
+                                }
+                            },
+                            'required': ['Name', 'Id']
+                        }
+                    }
+                },
+                'required': [
+                    'Name',
+                    'Location'
+                ]
+            };
+            var data = {Id: '1', Location:{}, Tags:[{}]};
+
+            var res = val.validate(data, schema);
+
+            expect(res.valid).toBeFalsy();
+            expect(res.errors.length).toBe(5);
+            expect(res.errors[0].attribute).toBe('required');
+            expect(res.errors[0].property).toBe('Name');
+            expect(res.errors[1].attribute).toBe('required');
+            expect(res.errors[1].property).toBe('Location.Name');
+            expect(res.errors[2].attribute).toBe('required');
+            expect(res.errors[2].property).toBe('Location.Longitude');
+            expect(res.errors[3].attribute).toBe('required');
+            expect(res.errors[3].property).toBe('Tags.0.Name');
+            expect(res.errors[4].attribute).toBe('required');
+            expect(res.errors[4].property).toBe('Tags.0.Id');
+        });
     });
 });
