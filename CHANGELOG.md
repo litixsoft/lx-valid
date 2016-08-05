@@ -1,3 +1,13 @@
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/litixsoft/lx-valid/compare/v1.2.0...v1.2.1) (2016-08-05)
+
+
+### Bug Fixes
+
+* also check for properies in required array when using option isUpdate ([2d81711](https://github.com/litixsoft/lx-valid/commit/2d81711))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/litixsoft/lx-valid/compare/v1.1.0...v1.2.0) (2016-05-24)
 

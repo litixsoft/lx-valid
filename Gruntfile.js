@@ -14,7 +14,7 @@ module.exports = function (grunt) {
         '<%= pkg.homepage ? " * " + pkg.homepage + "\\n" : "" %>' +
         ' *\n' +
         ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
-        ' * Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
+        ' * Licensed <%= _.map(pkg.licenses, "type").join(", ") %>\n' +
         ' */\n\n',
         // Before generating any new files, remove any previously-created files.
         clean: {
