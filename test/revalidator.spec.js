@@ -1025,5 +1025,72 @@ describe('revalidator', function () {
             expect(res.errors[4].attribute).toBe('required');
             expect(res.errors[4].property).toBe('Tags.0.Id');
         });
+
+        it('should handle the required array when option "isUpdate" is used', function () {
+            var schema = {
+                '$schema': 'http://json-schema.org/draft-04/schema#',
+                'description': '',
+                'type': 'object',
+                'properties': {
+                    'Id': {
+                        'type': 'string',
+                        'minLength': 1
+                    },
+                    'Name': {
+                        'type': 'string',
+                        'minLength': 1
+                    },
+                    'Location': {
+                        'type': 'object',
+                        'properties': {
+                            'Name': {
+                                'type': 'string',
+                                'minLength': 1
+                            },
+                            'Latitude': {
+                                'type': 'number'
+                            },
+                            'Longitude': {
+                                'type': 'number'
+                            },
+                            'Elevation': {
+                                'type': 'number'
+                            }
+                        },
+                        'required': ['Name', 'Longitude']
+                    },
+                    'Metadata': {
+                        'type': 'object',
+                        'properties': {}
+                    },
+                    'Tags': {
+                        'type': 'array',
+                        'items': {
+                            'properties': {
+                                'Name': {
+                                    'type': 'string',
+                                    'minLength': 1
+                                },
+                                'Id': {
+                                    'type': 'number'
+                                }
+                            },
+                            'required': ['Name', 'Id']
+                        }
+                    }
+                },
+                'required': [
+                    'Name',
+                    'Location'
+                ]
+            };
+            var data = { Id: '1' };
+            var valFunc = val.getValidationFunction();
+
+            var res = valFunc(data, schema, {isUpdate: true});
+
+            expect(res.valid).toBeTruthy();
+            expect(res.errors.length).toBe(0);
+        });
     });
 });
