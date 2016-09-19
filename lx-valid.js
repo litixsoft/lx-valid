@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v1.2.1 - 2016-08-05
+ * lx-valid - v1.2.2 - 2016-09-19
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2016 Litixsoft GmbH
@@ -564,19 +564,22 @@
             }
         }
 
+        /* jshint ignore:start */
         if (schema['enum']) {
-            if (schema['type'] === 'array' && isArray(value)) {
+            if (value === null && isArray(schema.type) && schema.type.indexOf('null') > -1) {
+                // is allowed
+            } else if (schema['type'] === 'array' && isArray(value)) {
                 for (i = 0; i < value.length; i++) {
                     if (schema['enum'].indexOf(value[i]) === -1) {
                         error('enum', property, value, schema, errors);
                         break;
                     }
                 }
-            }
-            else if (schema['enum'].indexOf(value) === -1) {
+            } else if (schema['enum'].indexOf(value) === -1) {
                 error('enum', property, value, schema, errors);
             }
         }
+        /* jshint ignore:end */
 
         // Dependencies (see 5.8)
         if (typeof schema.dependencies === 'string' &&

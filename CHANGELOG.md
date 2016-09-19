@@ -1,3 +1,13 @@
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/litixsoft/lx-valid/compare/v1.2.1...v1.2.2) (2016-09-19)
+
+
+### Bug Fixes
+
+* allow type "null" in combination with proprtty "enum" ([2181673](https://github.com/litixsoft/lx-valid/commit/2181673))
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/litixsoft/lx-valid/compare/v1.2.0...v1.2.1) (2016-08-05)
 
