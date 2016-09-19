@@ -59,7 +59,7 @@
         "grunt-contrib-jshint": "^1.0.0",
         "grunt-contrib-uglify": "^2.0.0",
         "grunt-conventional-changelog": "^6.1.0",
-        "grunt-jasmine-nodejs": "1.5.3",
+        "grunt-jasmine-nodejs": "1.5.4",
         "grunt-open": "^0.2.3",
         "istanbul": "^0.4.4",
         "jasmine": "^2.4.1",
