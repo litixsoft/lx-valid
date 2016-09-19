@@ -1549,5 +1549,21 @@ describe('Validator', function () {
             expect(val.validate({test: 3}, schema).valid).toBeFalsy();
             expect(val.validate({test: 3}, schema).errors[0].expected).toBe('String');
         });
+
+        it('should handle types ["null", "string"] in combination with property "enum"', function () {
+            var schema = {
+                properties: {
+                    test: {
+                        type: ['null', 'string'],
+                        enum: ['a', 'b', 'c']
+                    }
+                }
+            };
+
+            expect(val.validate({}, schema).valid).toBeTruthy();
+            expect(val.validate({test: 'a'}, schema).valid).toBeTruthy();
+            expect(val.validate({test: 'r'}, schema).valid).toBeFalsy();
+            expect(val.validate({test: null}, schema).valid).toBeTruthy();
+        });
     });
 });
