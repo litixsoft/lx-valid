@@ -4,11 +4,11 @@
 var val = require('../lib/lx-valid'),
     schema, data;
 
-describe('revalidator', function () {
+describe('revalidator', function() {
 
-    describe('.validate()', function () {
+    describe('.validate()', function() {
 
-        it('should handle a custom error message', function () {
+        it('should handle a custom error message', function() {
             schema = {
                 properties: {
                     name: {
@@ -20,18 +20,18 @@ describe('revalidator', function () {
                 }
             };
 
-            var res = val.validate({name: 5}, schema);
+            var res = val.validate({ name: 5 }, schema);
             expect(res.valid).toBeFalsy();
             expect(res.errors[0].message).toBe('name:type Not a string type');
 
             schema.properties.name.messages.type += ', actual: %{actual}';
 
-            res = val.validate({name: 5}, schema);
+            res = val.validate({ name: 5 }, schema);
             expect(res.valid).toBeFalsy();
             expect(res.errors[0].message).toBe('name:type Not a string type, actual: number');
         });
 
-        it('should handle uniqueItems', function () {
+        it('should handle uniqueItems', function() {
             schema = {
                 properties: {
                     tags: {
@@ -44,19 +44,19 @@ describe('revalidator', function () {
                 }
             };
 
-            var res = val.validate({tags: ['a', 'b', 'c']}, schema);
+            var res = val.validate({ tags: ['a', 'b', 'c'] }, schema);
             expect(res.valid).toBeTruthy();
 
-            res = val.validate({tags: ['a', 'b', 'b']}, schema);
+            res = val.validate({ tags: ['a', 'b', 'b'] }, schema);
             expect(res.valid).toBeFalsy();
 
             schema.properties.tags.uniqueItems = false;
 
-            res = val.validate({tags: ['a', 'b', 'b']}, schema);
+            res = val.validate({ tags: ['a', 'b', 'b'] }, schema);
             expect(res.valid).toBeTruthy();
         });
 
-        it('should handle convert function in arrays', function () {
+        it('should handle convert function in arrays', function() {
             schema = {
                 properties: {
                     demo: {
@@ -69,9 +69,9 @@ describe('revalidator', function () {
                 }
             };
 
-            var data = {demo: ['511106fc574d81d815000001', '511106fc574d81d815000001', '511106fc574d81d815000001']};
+            var data = { demo: ['511106fc574d81d815000001', '511106fc574d81d815000001', '511106fc574d81d815000001'] };
 
-            function convert (format, value) {
+            function convert(format, value) {
                 if (format === 'mongo-id') {
                     return 1;
                 }
@@ -79,7 +79,7 @@ describe('revalidator', function () {
                 return value;
             }
 
-            var res = val.validate(data, schema, {convert: convert});
+            var res = val.validate(data, schema, { convert: convert });
 
             expect(res.valid).toBeTruthy();
             expect(data.demo[0]).toBe(1);
@@ -88,7 +88,7 @@ describe('revalidator', function () {
             expect(data.demo.length).toBe(3);
         });
 
-        it('should handle convert function in arrays when array is root element ', function () {
+        it('should handle convert function in arrays when array is root element ', function() {
             schema = {
                 type: 'array',
                 items: {
@@ -99,7 +99,7 @@ describe('revalidator', function () {
 
             var data = ['511106fc574d81d815000001', '511106fc574d81d815000001', '511106fc574d81d815000001'];
 
-            function convert (format, value) {
+            function convert(format, value) {
                 if (format === 'mongo-id') {
                     return 1;
                 }
@@ -107,7 +107,7 @@ describe('revalidator', function () {
                 return value;
             }
 
-            var res = val.validate(data, schema, {convert: convert});
+            var res = val.validate(data, schema, { convert: convert });
 
             expect(res.valid).toBeTruthy();
             expect(data[0]).toBe(1);
@@ -116,10 +116,10 @@ describe('revalidator', function () {
             expect(data.length).toBe(3);
         });
 
-        describe('can have an option cast which', function () {
+        describe('can have an option cast which', function() {
 
-            describe('can cast an integer when set to true and', function () {
-                beforeEach(function () {
+            describe('can cast an integer when set to true and', function() {
+                beforeEach(function() {
                     schema = {
                         properties: {
                             value: {
@@ -129,22 +129,22 @@ describe('revalidator', function () {
                     };
                 });
 
-                it('should cast to an integer when the value is an integer as string', function () {
-                    data = {value: '10'};
+                it('should cast to an integer when the value is an integer as string', function() {
+                    data = { value: '10' };
 
-                    expect(val.validate({value: 10}, schema, {cast: true})).toEqual({valid: true, errors: []});
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate({ value: 10 }, schema, { cast: true })).toEqual({ valid: true, errors: [] });
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(10);
 
-                    data = {value: '0'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: '0' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(0);
                 });
 
-                it('should not cast to an integer when the value is a string', function () {
-                    data = {value: 'aaa'};
+                it('should not cast to an integer when the value is a string', function() {
+                    data = { value: 'aaa' };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -159,10 +159,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe('aaa');
                 });
 
-                it('should not cast to an integer when the value is a float', function () {
-                    data = {value: 10.44};
+                it('should not cast to an integer when the value is a float', function() {
+                    data = { value: 10.44 };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -177,10 +177,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(10.44);
                 });
 
-                it('should not cast to an integer when the value is a boolean', function () {
-                    data = {value: true};
+                it('should not cast to an integer when the value is a boolean', function() {
+                    data = { value: true };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -195,10 +195,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(true);
                 });
 
-                it('should not cast to an integer when the value is an object', function () {
-                    data = {value: {}};
+                it('should not cast to an integer when the value is an object', function() {
+                    data = { value: {} };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -213,12 +213,12 @@ describe('revalidator', function () {
                     expect(data.value).toEqual({});
                 });
 
-                it('should not cast to an integer when the value is a function', function () {
-                    var func = function () {
+                it('should not cast to an integer when the value is a function', function() {
+                    var func = function() {
                     };
-                    data = {value: func};
+                    data = { value: func };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -233,10 +233,10 @@ describe('revalidator', function () {
                     expect(data.value).toEqual(func);
                 });
 
-                it('should not cast to an integer when the value is null', function () {
-                    data = {value: null};
+                it('should not cast to an integer when the value is null', function() {
+                    data = { value: null };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -251,16 +251,16 @@ describe('revalidator', function () {
                     expect(data.value).toBeNull();
                 });
 
-                it('should not cast to an integer when the value is undefined', function () {
-                    data = {value: undefined};
+                it('should not cast to an integer when the value is undefined', function() {
+                    data = { value: undefined };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBeUndefined();
                 });
             });
 
-            describe('can cast a float when set to true and', function () {
-                beforeEach(function () {
+            describe('can cast a float when set to true and', function() {
+                beforeEach(function() {
                     schema = {
                         properties: {
                             value: {
@@ -270,22 +270,22 @@ describe('revalidator', function () {
                     };
                 });
 
-                it('should cast to a float when the value is a float as string', function () {
-                    data = {value: '10.1'};
+                it('should cast to a float when the value is a float as string', function() {
+                    data = { value: '10.1' };
 
-                    expect(val.validate({value: 10.11}, schema, {cast: true})).toEqual({valid: true, errors: []});
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate({ value: 10.11 }, schema, { cast: true })).toEqual({ valid: true, errors: [] });
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(10.1);
 
-                    data = {value: '0.11'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: '0.11' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(0.11);
                 });
 
-                it('should not cast to a float when the value is a string', function () {
-                    data = {value: 'aaa'};
+                it('should not cast to a float when the value is a string', function() {
+                    data = { value: 'aaa' };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -300,10 +300,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe('aaa');
                 });
 
-                it('should not cast to a float when the value is an integer', function () {
-                    data = {value: 10};
+                it('should not cast to a float when the value is an integer', function() {
+                    data = { value: 10 };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -318,10 +318,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(10);
                 });
 
-                it('should not cast to a float when the value is a boolean', function () {
-                    data = {value: true};
+                it('should not cast to a float when the value is a boolean', function() {
+                    data = { value: true };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -336,10 +336,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(true);
                 });
 
-                it('should not cast to a float when the value is an object', function () {
-                    data = {value: {}};
+                it('should not cast to a float when the value is an object', function() {
+                    data = { value: {} };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -354,12 +354,12 @@ describe('revalidator', function () {
                     expect(data.value).toEqual({});
                 });
 
-                it('should not cast to a float when the value is a function', function () {
-                    var func = function () {
+                it('should not cast to a float when the value is a function', function() {
+                    var func = function() {
                     };
-                    data = {value: func};
+                    data = { value: func };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -374,10 +374,10 @@ describe('revalidator', function () {
                     expect(data.value).toEqual(func);
                 });
 
-                it('should not cast to a float when the value is null', function () {
-                    data = {value: null};
+                it('should not cast to a float when the value is null', function() {
+                    data = { value: null };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -392,16 +392,16 @@ describe('revalidator', function () {
                     expect(data.value).toBeNull();
                 });
 
-                it('should not cast to a float when the value is undefined', function () {
-                    data = {value: undefined};
+                it('should not cast to a float when the value is undefined', function() {
+                    data = { value: undefined };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBeUndefined();
                 });
             });
 
-            describe('can cast a number when set to true and', function () {
-                beforeEach(function () {
+            describe('can cast a number when set to true and', function() {
+                beforeEach(function() {
                     schema = {
                         properties: {
                             value: {
@@ -411,26 +411,26 @@ describe('revalidator', function () {
                     };
                 });
 
-                it('should cast to an number when the value is an integer as string', function () {
-                    data = {value: '10'};
+                it('should cast to an number when the value is an integer as string', function() {
+                    data = { value: '10' };
 
-                    expect(val.validate({value: 10}, schema, {cast: true})).toEqual({valid: true, errors: []});
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate({ value: 10 }, schema, { cast: true })).toEqual({ valid: true, errors: [] });
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(10);
 
-                    data = {value: '0'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: '0' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(0);
 
-                    data = {value: '5.88'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: '5.88' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(5.88);
                 });
 
-                it('should not cast to a number when the value is a string', function () {
-                    data = {value: 'aaa'};
+                it('should not cast to a number when the value is a string', function() {
+                    data = { value: 'aaa' };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -445,10 +445,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe('aaa');
                 });
 
-                it('should not cast to a number when the value is a boolean', function () {
-                    data = {value: true};
+                it('should not cast to a number when the value is a boolean', function() {
+                    data = { value: true };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -463,10 +463,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(true);
                 });
 
-                it('should not cast to a number when the value is an object', function () {
-                    data = {value: {}};
+                it('should not cast to a number when the value is an object', function() {
+                    data = { value: {} };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -481,12 +481,12 @@ describe('revalidator', function () {
                     expect(data.value).toEqual({});
                 });
 
-                it('should not cast to a number when the value is a function', function () {
-                    var func = function () {
+                it('should not cast to a number when the value is a function', function() {
+                    var func = function() {
                     };
-                    data = {value: func};
+                    data = { value: func };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -501,10 +501,10 @@ describe('revalidator', function () {
                     expect(data.value).toEqual(func);
                 });
 
-                it('should not cast to a number when the value is null', function () {
-                    data = {value: null};
+                it('should not cast to a number when the value is null', function() {
+                    data = { value: null };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -519,16 +519,16 @@ describe('revalidator', function () {
                     expect(data.value).toBeNull();
                 });
 
-                it('should not cast to a number when the value is undefined', function () {
-                    data = {value: undefined};
+                it('should not cast to a number when the value is undefined', function() {
+                    data = { value: undefined };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBeUndefined();
                 });
             });
 
-            describe('can cast a boolean when set to true and', function () {
-                beforeEach(function () {
+            describe('can cast a boolean when set to true and', function() {
+                beforeEach(function() {
                     schema = {
                         properties: {
                             value: {
@@ -538,46 +538,46 @@ describe('revalidator', function () {
                     };
                 });
 
-                it('should cast to a boolean when the value is "true" or "false"', function () {
-                    data = {value: 'true'};
+                it('should cast to a boolean when the value is "true" or "false"', function() {
+                    data = { value: 'true' };
 
-                    expect(val.validate({value: true}, schema, {cast: true})).toEqual({valid: true, errors: []});
-                    expect(val.validate({value: false}, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate({ value: true }, schema, { cast: true })).toEqual({ valid: true, errors: [] });
+                    expect(val.validate({ value: false }, schema, { cast: true })).toEqual({ valid: true, errors: [] });
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(true);
 
-                    data = {value: 'false'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: 'false' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(false);
                 });
 
-                it('should cast to a boolean when the value is 0 or 1', function () {
-                    data = {value: 1};
+                it('should cast to a boolean when the value is 0 or 1', function() {
+                    data = { value: 1 };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(true);
 
-                    data = {value: 0};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: 0 };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(false);
                 });
 
-                it('should cast to a boolean when the value is "0" or "1"', function () {
-                    data = {value: '1'};
+                it('should cast to a boolean when the value is "0" or "1"', function() {
+                    data = { value: '1' };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(true);
 
-                    data = {value: '0'};
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    data = { value: '0' };
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBe(false);
                 });
 
-                it('should not cast to a boolean when the value is a string', function () {
-                    data = {value: 'aaa'};
+                it('should not cast to a boolean when the value is a string', function() {
+                    data = { value: 'aaa' };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -592,10 +592,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe('aaa');
                 });
 
-                it('should not cast to a boolean when the value is a float', function () {
-                    data = {value: 10.44};
+                it('should not cast to a boolean when the value is a float', function() {
+                    data = { value: 10.44 };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -610,10 +610,10 @@ describe('revalidator', function () {
                     expect(data.value).toBe(10.44);
                 });
 
-                it('should not cast to a boolean when the value is an object', function () {
-                    data = {value: {}};
+                it('should not cast to a boolean when the value is an object', function() {
+                    data = { value: {} };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -628,12 +628,12 @@ describe('revalidator', function () {
                     expect(data.value).toEqual({});
                 });
 
-                it('should not cast to a boolean when the value is a function', function () {
-                    var func = function () {
+                it('should not cast to a boolean when the value is a function', function() {
+                    var func = function() {
                     };
-                    data = {value: func};
+                    data = { value: func };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -648,10 +648,10 @@ describe('revalidator', function () {
                     expect(data.value).toEqual(func);
                 });
 
-                it('should not cast to a boolean when the value is null', function () {
-                    data = {value: null};
+                it('should not cast to a boolean when the value is null', function() {
+                    data = { value: null };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({
+                    expect(val.validate(data, schema, { cast: true })).toEqual({
                         valid: false,
                         errors: [
                             {
@@ -666,15 +666,15 @@ describe('revalidator', function () {
                     expect(data.value).toBeNull();
                 });
 
-                it('should not cast to a boolean when the value is undefined', function () {
-                    data = {value: undefined};
+                it('should not cast to a boolean when the value is undefined', function() {
+                    data = { value: undefined };
 
-                    expect(val.validate(data, schema, {cast: true})).toEqual({valid: true, errors: []});
+                    expect(val.validate(data, schema, { cast: true })).toEqual({ valid: true, errors: [] });
                     expect(data.value).toBeUndefined();
                 });
             });
 
-            it('should not cast when the option is set to false', function () {
+            it('should not cast when the option is set to false', function() {
                 schema = {
                     properties: {
                         int: {
@@ -691,7 +691,7 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = {int: '10', number: '1.00', boolean: 'true', float: '3.33'};
+                data = { int: '10', number: '1.00', boolean: 'true', float: '3.33' };
                 var res = val.validate(data, schema);
 
                 expect(res.valid).toBeFalsy();
@@ -703,8 +703,8 @@ describe('revalidator', function () {
             });
         });
 
-        describe('.conform()', function () {
-            it('should check if a property conforms a condition', function () {
+        describe('.conform()', function() {
+            it('should check if a property conforms a condition', function() {
                 schema = {
                     properties: {
                         name: {
@@ -712,23 +712,23 @@ describe('revalidator', function () {
                         },
                         verifiedName: {
                             type: 'string',
-                            conform: function (actual, original) {
+                            conform: function(actual, original) {
                                 return actual !== '' && original.name !== '' && !!actual;
                             }
                         }
                     }
                 };
 
-                data = {name: 'wayne', verifiedName: 'wayne'};
-                expect(val.validate(data, schema)).toEqual({valid: true, errors: []});
-                data = {name: undefined, verifiedName: undefined};
+                data = { name: 'wayne', verifiedName: 'wayne' };
+                expect(val.validate(data, schema)).toEqual({ valid: true, errors: [] });
+                data = { name: undefined, verifiedName: undefined };
                 var res = val.validate(data, schema);
                 expect(res.valid).toBeFalsy();
             });
         });
 
-        describe('can have an option "unknownProperties" which', function () {
-            it('should ignore properties not defined in schema when set to "ignore"', function () {
+        describe('can have an option "unknownProperties" which', function() {
+            it('should ignore properties not defined in schema when set to "ignore"', function() {
                 schema = {
                     properties: {
                         int: {
@@ -745,7 +745,7 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = {int: 10, a: 3, b: '4'};
+                data = { int: 10, a: 3, b: '4' };
                 var res = val.validate(data, schema);
 
                 expect(res.valid).toBeTruthy();
@@ -753,7 +753,7 @@ describe('revalidator', function () {
                 expect(data.a).toBe(3);
                 expect(data.b).toBe('4');
 
-                res = val.validate(data, schema, {unknownProperties: 'ignore'});
+                res = val.validate(data, schema, { unknownProperties: 'ignore' });
 
                 expect(res.valid).toBeTruthy();
                 expect(res.errors.length).toBe(0);
@@ -761,7 +761,7 @@ describe('revalidator', function () {
                 expect(data.b).toBe('4');
             });
 
-            it('should delete properties not defined in schema when set to "delete"', function () {
+            it('should delete properties not defined in schema when set to "delete"', function() {
                 schema = {
                     type: 'array',
                     items: {
@@ -778,8 +778,8 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = [{id: 1, name: 'a'}, {id: 2, name: 'b', pwd: 33}, {id: 3, name: 'c', aaa: 'eee'}];
-                var res = val.validate(data, schema, {unknownProperties: 'delete'});
+                data = [{ id: 1, name: 'a' }, { id: 2, name: 'b', pwd: 33 }, { id: 3, name: 'c', aaa: 'eee' }];
+                var res = val.validate(data, schema, { unknownProperties: 'delete' });
 
                 expect(res.valid).toBeTruthy();
                 expect(res.errors.length).toBe(0);
@@ -793,7 +793,7 @@ describe('revalidator', function () {
                 expect(data[2].aaa).toBeUndefined();
             });
 
-            it('should delete properties not defined in schema when set to "delete"', function () {
+            it('should delete properties not defined in schema when set to "delete"', function() {
                 schema = {
                     properties: {
                         int: {
@@ -810,8 +810,8 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = {int: 10, a: 3, b: '4'};
-                var res = val.validate(data, schema, {unknownProperties: 'delete'});
+                data = { int: 10, a: 3, b: '4' };
+                var res = val.validate(data, schema, { unknownProperties: 'delete' });
 
                 expect(res.valid).toBeTruthy();
                 expect(res.errors.length).toBe(0);
@@ -819,7 +819,7 @@ describe('revalidator', function () {
                 expect(data.b).not.toBeDefined();
             });
 
-            it('should return errors when properties not defined in schema when set to "error"', function () {
+            it('should return errors when properties not defined in schema when set to "error"', function() {
                 schema = {
                     properties: {
                         int: {
@@ -836,8 +836,8 @@ describe('revalidator', function () {
                         }
                     }
                 };
-                data = {int: 10, a: 3, b: '4'};
-                var res = val.validate(data, schema, {unknownProperties: 'error'});
+                data = { int: 10, a: 3, b: '4' };
+                var res = val.validate(data, schema, { unknownProperties: 'error' });
 
                 expect(res.valid).toBeFalsy();
                 expect(res.errors.length).toBe(2);
@@ -860,7 +860,7 @@ describe('revalidator', function () {
             });
         });
 
-        it('should not return errors when properties not defined in schema but defined in patternProperties when set to "error"', function () {
+        it('should not return errors when properties not defined in schema but defined in patternProperties when set to "error"', function() {
             schema = {
                 patternProperties: {
                     '^\\d+$': {
@@ -868,8 +868,8 @@ describe('revalidator', function () {
                     }
                 }
             };
-            data = {'42': 5, '43': 'a', foo: 5};
-            var res = val.validate(data, schema, {unknownProperties: 'error'});
+            data = { '42': 5, '43': 'a', foo: 5 };
+            var res = val.validate(data, schema, { unknownProperties: 'error' });
 
             expect(res.valid).toBeFalsy();
             expect(res.errors.length).toBe(2);
@@ -889,36 +889,36 @@ describe('revalidator', function () {
             });
         });
 
-        it('should validate properties when schema itself has properties which are not of type object', function () {
+        it('should validate properties when schema itself has properties which are not of type object', function() {
             schema = {
                 properties: {
                     a: undefined,
-                    b: {type: 'string'}
+                    b: { type: 'string' }
                 }
             };
-            data = {a: 'a', b: 'b', c: 'c'};
+            data = { a: 'a', b: 'b', c: 'c' };
             var res = val.validate(data, schema, {});
 
             expect(res.valid).toBeTruthy();
             expect(Object.keys(data).length).toBe(3);
         });
 
-        it('should validate properties when schema itself has properties which are not of type object and remove properties which have schema with invalid properties', function () {
+        it('should validate properties when schema itself has properties which are not of type object and remove properties which have schema with invalid properties', function() {
             schema = {
                 properties: {
                     a: undefined,
-                    b: {type: 'string'},
+                    b: { type: 'string' },
                     d: []
                 }
             };
-            data = {a: 'a', b: 'b', c: 'c', d: 'd'};
-            var res = val.validate(data, schema, {unknownProperties: 'delete'});
+            data = { a: 'a', b: 'b', c: 'c', d: 'd' };
+            var res = val.validate(data, schema, { unknownProperties: 'delete' });
 
             expect(res.valid).toBeTruthy();
             expect(Object.keys(data).length).toBe(1);
         });
 
-        it('should allow to extends the formats', function () {
+        it('should allow to extends the formats', function() {
             var validator = require('../lib/lx-valid');
             var data = {
                 validISO8601: '5'
@@ -932,7 +932,7 @@ describe('revalidator', function () {
                 }
             };
             var options = {
-                convert: function (format, value) {
+                convert: function(format, value) {
                     if (format === 'iso8601-date') {
                         return new Date(value);
                     }
@@ -950,7 +950,7 @@ describe('revalidator', function () {
             expect(data.validISO8601 instanceof Date).toBeTruthy();
         });
 
-        it('should handle the required array', function () {
+        it('should handle the required array', function() {
             var schema = {
                 '$schema': 'http://json-schema.org/draft-04/schema#',
                 'description': '',
@@ -1008,7 +1008,7 @@ describe('revalidator', function () {
                     'Location'
                 ]
             };
-            var data = {Id: '1', Location:{}, Tags:[{}]};
+            var data = { Id: '1', Location: {}, Tags: [{}] };
 
             var res = val.validate(data, schema);
 
@@ -1026,7 +1026,7 @@ describe('revalidator', function () {
             expect(res.errors[4].property).toBe('Tags.0.Id');
         });
 
-        it('should handle the required array when option "isUpdate" is used', function () {
+        it('should handle the required array when option "isUpdate" is used', function() {
             var schema = {
                 '$schema': 'http://json-schema.org/draft-04/schema#',
                 'description': '',
@@ -1087,10 +1087,72 @@ describe('revalidator', function () {
             var data = { Id: '1' };
             var valFunc = val.getValidationFunction();
 
-            var res = valFunc(data, schema, {isUpdate: true});
+            var res = valFunc(data, schema, { isUpdate: true });
 
             expect(res.valid).toBeTruthy();
             expect(res.errors.length).toBe(0);
+        });
+
+        it('should handle nested arrays and "cast" option', function() {
+            var data = {
+                arrayOfIntegers: ['22', '421'],
+                nestedArray: [
+                    ['1', '2'],
+                    ['3', '4']
+                ],
+                nestedArray2: [
+                    [
+                        ['1', '2'],
+                        ['3', '4']
+                    ]
+                ]
+            };
+
+            var schema = {
+                properties: {
+                    arrayOfIntegers: {
+                        type: 'array',
+                        items: {
+                            type: 'integer',
+                            minimum: 0
+                        },
+                        required: true
+                    },
+                    nestedArray: {
+                        type: 'array',
+                        items: {
+                            type: 'array',
+                            items: {
+                                type: 'integer',
+                                minimum: 0
+                            },
+                            minimum: 0,
+                        },
+                        required: true
+                    },
+                    nestedArray2: {
+                        type: 'array',
+                        items: {
+                            type: 'array',
+                            items: {
+                                type: 'array',
+                                items: {
+                                    type: 'integer',
+                                    minimum: 0
+                                },
+                                minimum: 0,
+                            },
+                            minimum: 0,
+                        },
+                        required: true
+                    }
+                }
+            };
+
+            var res = val.validate(data, schema, { cast: true });
+
+            expect(res.valid).toBeTruthy();
+            expect(data).toEqual({ arrayOfIntegers: [22, 421], nestedArray: [[1, 2], [3, 4]], nestedArray2: [[[1, 2], [3, 4]]] });
         });
     });
 });
