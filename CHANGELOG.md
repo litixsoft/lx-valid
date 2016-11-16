@@ -1,3 +1,13 @@
+<a name="1.2.4"></a>
+## [1.2.4](https://github.com/litixsoft/lx-valid/compare/v1.2.2...v1.2.4) (2016-11-16)
+
+
+### Bug Fixes
+
+* Values in nested arrays are now casted correctly ([a3bd4a7](https://github.com/litixsoft/lx-valid/commit/a3bd4a7)), closes [#17](https://github.com/litixsoft/lx-valid/issues/17)
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/litixsoft/lx-valid/compare/v1.2.1...v1.2.2) (2016-09-19)
 

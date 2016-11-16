@@ -1,5 +1,5 @@
 /*!
- * lx-valid - v1.2.2 - 2016-09-19
+ * lx-valid - v1.2.4 - 2016-11-16
  * https://github.com/litixsoft/lx-valid
  *
  * Copyright (c) 2016 Litixsoft GmbH
@@ -15,7 +15,7 @@
      * @param {*} value The value to test.
      * @returns {string}
      */
-    function getType (value) {
+    function getType(value) {
         // inspired by http://techblog.badoo.com/blog/2013/11/01/type-checking-in-javascript/
 
         // handle null in old IE
@@ -67,7 +67,7 @@
     // as <code>null</code>, <code>undefinded</code>, or the empty object
     // (<code>{}</code>) in this case.
     //
-    function validate (object, schema, options) {
+    function validate(object, schema, options) {
         options = mixin({}, validate.defaults, options);
 
         if (options.trim === true) {
@@ -228,7 +228,7 @@
         'host-name': /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])/,
         'utc-millisec': {
             test: function (value) {
-                return typeof(value) === 'number' && value >= 0;
+                return typeof (value) === 'number' && value >= 0;
             }
         },
         'regex': {
@@ -257,64 +257,84 @@
     };
 
     validate.types = {
-        string: function(value) {
+        string: function (value) {
             return getType(value) === 'string';
         },
-        number: function(value) {
+        number: function (value) {
             return getType(value) === 'number';
         },
-        boolean: function(value) {
+        boolean: function (value) {
             return getType(value) === 'boolean';
         },
-        date: function(value) {
+        date: function (value) {
             return getType(value) === 'date';
         },
-        regexp: function(value) {
+        regexp: function (value) {
             return getType(value) === 'regexp';
         },
-        array: function(value) {
+        array: function (value) {
             return getType(value) === 'array';
         },
-        object: function(value) {
+        object: function (value) {
             return getType(value) === 'object';
         },
-        integer: function(value) {
+        integer: function (value) {
             return getType(value) === 'number' && Math.floor(value) === value;
         },
-        float: function(value) {
+        float: function (value) {
             return getType(value) === 'number' && new RegExp(validate.formats.float).exec(value);
         },
-        null: function(value) {
+        null: function (value) {
             return getType(value) === 'null';
         },
-        undefined: function(value) {
+        undefined: function (value) {
             return getType(value) === 'undefined';
         },
-        any: function(value) {
+        any: function (value) {
             return value !== undefined;
         },
-        mongoId: function(value) {
+        mongoId: function (value) {
             return value && typeof value === 'object' && value._bsontype === 'ObjectID' && validate.formats['mongo-id'].test(value);
         },
-        dbRef: function(value) {
+        dbRef: function (value) {
             return value && typeof value === 'object' && value._bsontype === 'DBRef' && !!value.namespace && validate.types.string(value.namespace) && !!value.oid;
         },
-        minKey: function(value) {
+        minKey: function (value) {
             return value && typeof value === 'object' && value._bsontype === 'MinKey';
         },
-        maxKey: function(value) {
+        maxKey: function (value) {
             return value && typeof value === 'object' && value._bsontype === 'MaxKey';
         },
-        code: function(value) {
+        code: function (value) {
             return value && typeof value === 'object' && value._bsontype === 'Code' && !!value.code && validate.types.string(value.code) && !!value.scope && typeof value.scope === 'object';
         },
-        infinity: function(value) {
+        infinity: function (value) {
             return getType(value) === 'infinity';
         },
-        nan: function(value) {
+        nan: function (value) {
             return getType(value) === 'nan';
         }
     };
+
+    function setValueInArray(data, oldValue, newValue) {
+        if (getType(data) === 'array') {
+            // find item in array
+            var index = data.indexOf(oldValue);
+
+            if (index > -1) {
+                // set value directly
+                data[data.indexOf(oldValue)] = newValue;
+            } else {
+                var i = 0;
+                var length = data.length;
+
+                // set value recursively
+                for (i; i < length; i++) {
+                    setValueInArray(data[i], oldValue, newValue);
+                }
+            }
+        }
+    }
 
     function getTypeCheckFunction(type) {
         var result = validate.types[type];
@@ -326,13 +346,13 @@
         return result;
     }
 
-    function mixin (obj) {
+    function mixin(obj) {
         var sources = Array.prototype.slice.call(arguments, 1);
         while (sources.length) {
             var source = sources.shift();
             if (!source) { continue; }
 
-            if (typeof(source) !== 'object') {
+            if (typeof (source) !== 'object') {
                 throw new TypeError('mixin non-object');
             }
 
@@ -346,7 +366,7 @@
         return obj;
     }
 
-    function validateObject (object, schema, options, errors) {
+    function validateObject(object, schema, options, errors) {
         var props, p, allProps = Object.keys(object),
             visitedProps = [], requiredArray = [];
 
@@ -452,11 +472,11 @@
         }
     }
 
-    function validateProperty (object, value, property, schema, options, errors) {
+    function validateProperty(object, value, property, schema, options, errors) {
         var format, valid, spec, i, l;
         var isRequired = schema.required === true;
 
-        function constrain (name, value, assert) {
+        function constrain(name, value, assert) {
             if (schema[name] !== undefined && !assert(value, schema[name], object)) {
                 error(name, property, value, schema, errors);
             }
@@ -496,20 +516,35 @@
         if (options.cast) {
             if ('integer' === schema.type || 'number' === schema.type || 'float' === schema.type) {
                 if (value !== null && typeof value !== 'boolean' && !isNaN(+value)) {
+                    if (getType(object[property]) === 'array') {
+                        setValueInArray(object[property], value, +value);
+                    } else {
+                        object[property] = +value;
+                    }
+
                     value = +value;
-                    object[property] = value;
                 }
             }
 
             if ('boolean' === schema.type) {
                 if ('true' === value || '1' === value || 1 === value) {
+                    if (getType(object[property]) === 'array') {
+                        setValueInArray(object[property], value, true);
+                    } else {
+                        object[property] = true;
+                    }
+
                     value = true;
-                    object[property] = value;
                 }
 
                 if ('false' === value || '0' === value || 0 === value) {
+                    if (getType(object[property]) === 'array') {
+                        setValueInArray(object[property], value, false);
+                    } else {
+                        object[property] = false;
+                    }
+
                     value = false;
-                    object[property] = value;
                 }
             }
         }
@@ -713,7 +748,7 @@
         });
     }
 
-    function checkType (val, type, callback) {
+    function checkType(val, type, callback) {
         var types = isArray(type) ? type : [type];
 
         // No type - no check
@@ -741,8 +776,8 @@
         callback(true);
     }
 
-    function error (attribute, property, actual, schema, errors) {
-        var lookup = {expected: schema[attribute], actual: actual, attribute: attribute, property: property};
+    function error(attribute, property, actual, schema, errors) {
+        var lookup = { expected: schema[attribute], actual: actual, attribute: attribute, property: property };
         var message = schema.messages && schema.messages[attribute] || schema.message || validate.messages[attribute] || 'no default message';
         message = message.replace(/%\{([a-z]+)\}/ig, function (_, match) { return lookup[match.toLowerCase()] || ''; });
         errors.push({
@@ -754,7 +789,7 @@
         });
     }
 
-    function isArray (value) {
+    function isArray(value) {
         var s = typeof value;
         if (s === 'object') {
             if (value) {
@@ -770,7 +805,7 @@
     exports.validate = validate;
     exports.mixin = mixin;
 })
-(typeof(window) === 'undefined' ? module.exports : (window.json = window.json || {}));
+    (typeof (window) === 'undefined' ? module.exports : (window.json = window.json || {}));
 
 //noinspection JSUnresolvedVariable
 (function (exports, revalidator, async) {
