@@ -1,3 +1,6 @@
+    Project is deprecated. No continue development, no bugfixing anymore.
+---
+
 # lx-valid
 > A JSON schema validator for Node.js/io.js and the client, based on [Flatiron Revalidator](https://github.com/flatiron/revalidator).
 
